@@ -14,7 +14,7 @@ const config = {
 		adapter: adapter({
 			precompress: {
 				brotli: false,
-				gzip: true,
+				gzip: true
 			}
 		})
 	}

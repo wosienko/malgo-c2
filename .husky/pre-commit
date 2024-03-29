@@ -1,2 +1,4 @@
-bun run --bun format
-bun run --bun lint
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+bunx --no-install lint-staged
