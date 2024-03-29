@@ -2,7 +2,6 @@
 	import { enhance } from '$app/forms';
 	import { emailSchema, passwordSchema } from '$lib/validationSchemas';
 	import ZodIssues from '$lib/components/ZodIssues.svelte';
-	import { tick } from 'svelte';
 
 	let { form } = $props();
 

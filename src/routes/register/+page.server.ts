@@ -18,7 +18,7 @@ export const actions = {
 		if (result.data.password !== result.data.passwordConfirmation) {
 			console.log('bbb');
 
-			let issue: ZodIssue = {
+			const issue: ZodIssue = {
 				code: 'custom',
 				message: 'Passwords do not match',
 				path: ['Confirm Password']
