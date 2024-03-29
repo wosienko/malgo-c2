@@ -19,27 +19,27 @@ const config: PlaywrightTestConfig = {
 		baseURL: process.env.PUBLIC_ROOT_URL || 'http://localhost:5173',
 
 		launchOptions: {
-			slowMo: parseInt(process.env.SLOW_MO || '0'),
+			slowMo: parseInt(process.env.SLOW_MO || '0')
 		},
 
 		/* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
 		trace: 'on-first-retry',
-		video: 'retain-on-failure',
+		video: 'retain-on-failure'
 	},
 
 	/* Configure projects for major browsers */
 	projects: [
-		{name: 'setup', testMatch: /.*\.setup\.ts/},
+		{ name: 'setup', testMatch: /.*\.setup\.ts/ },
 		{
 			name: 'chromium',
-			use: {...devices['Desktop Chrome']},
-			dependencies: ['setup'],
+			use: { ...devices['Desktop Chrome'] },
+			dependencies: ['setup']
 		},
 
 		{
 			name: 'firefox',
-			use: {...devices['Desktop Firefox']},
-			dependencies: ['setup'],
+			use: { ...devices['Desktop Firefox'] },
+			dependencies: ['setup']
 		},
 
 		// {
@@ -54,9 +54,9 @@ const config: PlaywrightTestConfig = {
 		// },
 		{
 			name: 'Mobile Safari',
-			use: {...devices['iPhone 14']},
-			dependencies: ['setup'],
-		},
+			use: { ...devices['iPhone 14'] },
+			dependencies: ['setup']
+		}
 
 		/* Test against branded browsers. */
 		// {
@@ -72,11 +72,15 @@ const config: PlaywrightTestConfig = {
 	/* Run your local dev server before starting the tests */
 	webServer: !process.env.CI
 		? {
-			command: 'bun run --bun dev',
-			port: 5173,
-			reuseExistingServer: true,
+				command: 'bun run --bun dev',
+				port: 5173,
+				reuseExistingServer: true
+			}
+		: {
+		    command: 'bun run --bun build && bun run --bun preview',
+				port: 4173,
+				reuseExistingServer: true
 		}
-		: undefined,
 };
 
 export default config;
