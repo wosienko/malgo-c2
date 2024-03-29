@@ -2,6 +2,7 @@
 	import '../main.css';
 	import { onMount } from 'svelte';
 	import { version } from '$lib';
+	import { PUBLIC_ENVIRONMENT } from '$env/static/public';
 
 	// inline dark mode store, no need for separate file
 	let lightMode = $state(false);
@@ -43,7 +44,9 @@
 			<div class="flex-none">
 				<ul class="menu menu-horizontal px-1">
 					<li><a href="/login">Login</a></li>
-					<li><a href="/register">Register</a></li>
+					{#if PUBLIC_ENVIRONMENT === 'DEV'}
+						<li><a href="/register">Register</a></li>
+					{/if}
 				</ul>
 			</div>
 		</div>

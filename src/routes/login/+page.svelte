@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>Login</title>
+</svelte:head>
+
 <form action="/login" method="POST" class="flex flex-col space-y-5">
 	<div class="flex flex-col items-center space-y-2">
 		<label for="email">Email</label>
