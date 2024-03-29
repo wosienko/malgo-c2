@@ -33,7 +33,7 @@
 	/>
 {/if}
 
-<form action="/login" method="POST" class="flex flex-col space-y-5" use:enhance>
+<form action="/login" method="POST" class="flex flex-col space-y-4" use:enhance>
 	<div class="flex flex-col items-center space-y-2">
 		<label for="email">Email</label>
 		{#if !isEmailValid.success}
