@@ -16,7 +16,7 @@ const config: PlaywrightTestConfig = {
 	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 	use: {
 		/* Base URL to use in actions like `await page.goto('/')`. */
-		baseURL: process.env.PUBLIC_ROOT_URL || 'http://localhost:5173',
+		baseURL: !process.env.CI ? 'http://localhost:5173' : 'http://localhost:3000',
 
 		launchOptions: {
 			slowMo: parseInt(process.env.SLOW_MO || '0')
