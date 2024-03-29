@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { fieldSchema, emailSchema, passwordSchema } from '$lib/validationSchemas';
+	import ZodIssues from '$lib/components/ZodIssues.svelte';
+
+	let { form } = $props();
 
 	let name = $state('');
 	let surname = $state('');
@@ -25,7 +28,16 @@
 	<title>Register</title>
 </svelte:head>
 
-<form action="/login" method="POST" class="flex flex-col space-y-5" use:enhance>
+{#if form?.issues && form.issues.length > 0}
+	<ZodIssues
+		issues={form.issues}
+		on:close={() => {
+			form.issues = [];
+		}}
+	/>
+{/if}
+
+<form method="POST" class="flex flex-col space-y-5" use:enhance>
 	<div class="flex flex-col items-center space-y-2">
 		<label for="name">Name</label>
 		{#if !isNameValid.success}
@@ -114,6 +126,7 @@
 	</div>
 	<div class="flex flex-col items-center">
 		<button class="btn btn-neutral w-full max-w-xs" type="submit" class:btn-disabled={!isFormValid}
+		on:click={() => { password = ''; passwordConfirmation = ''; }}
 			>Register</button
 		>
 	</div>

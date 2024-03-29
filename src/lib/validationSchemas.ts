@@ -12,10 +12,9 @@ const loginSchema = z.object({
 const registerSchema = z.object({
 	email: emailSchema,
 	password: passwordSchema,
-	// password confirmation equals password
 	passwordConfirmation: passwordSchema,
-	firstName: fieldSchema,
-	lastName: fieldSchema
+	name: fieldSchema,
+	surname: fieldSchema
 });
 
 export { fieldSchema, emailSchema, passwordSchema, loginSchema, registerSchema };
