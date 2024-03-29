@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '../main.css';
 	import { onMount } from 'svelte';
+	import { navigating } from '$app/stores';
 	import { version } from '$lib';
 	import { PUBLIC_ENVIRONMENT } from '$env/static/public';
 
@@ -27,10 +28,12 @@
 		contentElement = document.querySelector('main');
 		checkOverflow();
 		window.addEventListener('resize', checkOverflow);
+		let unsubscribe = navigating.subscribe(checkOverflow);
 
 		// cleanup. We can't use onDestroy because onDestroy runs on server side
 		return () => {
 			window.removeEventListener('resize', checkOverflow);
+			unsubscribe();
 		};
 	});
 </script>

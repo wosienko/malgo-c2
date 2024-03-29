@@ -50,5 +50,8 @@
 		"*.{js,jsx,ts,tsx,json}": [
 			"bunx prettier --config .prettierrc --write"
 		]
+	},
+	"dependencies": {
+		"zod": "^3.22.4"
 	}
 }
