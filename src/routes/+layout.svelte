@@ -2,8 +2,11 @@
 	import '../main.css';
 	import { onMount } from 'svelte';
 	import { navigating } from '$app/stores';
+	import { enhance } from '$app/forms';
 	import { version } from '$lib';
-	import { PUBLIC_ENVIRONMENT } from '$env/static/public';
+	import { dev } from '$app/environment';
+
+	let { data } = $props();
 
 	// inline dark mode store, no need for separate file
 	let lightMode = $state(false);
@@ -42,13 +45,29 @@
 	<header id="header" class="flex-none">
 		<div class="navbar bg-base-300">
 			<div class="flex-1">
-				<a class="kbd kbd-lg text-xl" href="/">MALGO</a>
+				{#if data.loggedIn}
+					<a class="kbd kbd-lg text-xl" href="/home">MALGO</a>
+					<ul class="menu menu-horizontal px-1">
+						<li><a href="/sessions">Sessions</a></li>
+					</ul>
+				{:else}
+					<a class="kbd kbd-lg text-xl" href="/">MALGO</a>
+				{/if}
 			</div>
 			<div class="flex-none">
 				<ul class="menu menu-horizontal px-1">
-					<li><a href="/login">Login</a></li>
-					{#if PUBLIC_ENVIRONMENT === 'DEV'}
-						<li><a href="/register">Register</a></li>
+					{#if data.loggedIn}
+						<li><a href="/settings">Settings</a></li>
+						<li>
+							<form method="post" action="/logout" use:enhance>
+								<button>Sign out</button>
+							</form>
+						</li>
+					{:else}
+						<li><a href="/login">Login</a></li>
+						{#if dev}
+							<li><a href="/register">Register</a></li>
+						{/if}
 					{/if}
 				</ul>
 			</div>

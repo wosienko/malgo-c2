@@ -49,7 +49,9 @@
 	<div class="flex flex-col items-center space-y-2">
 		<label for="name">Name</label>
 		{#if !isNameValid.success}
-			<p class="text-xs text-error" style="margin: 0">{isNameValid.error.errors[0].message.replace('String', '')}</p>
+			<p class="text-xs text-error" style="margin: 0">
+				{isNameValid.error.errors[0].message.replace('String', '')}
+			</p>
 		{:else}
 			<p class="text-xs text-transparent" style="margin: 0">For formatting sake</p>
 		{/if}
@@ -87,7 +89,9 @@
 	<div class="flex flex-col items-center space-y-2">
 		<label for="email">Email</label>
 		{#if !isEmailValid.success}
-			<p class="text-xs text-error" style="margin: 0">{isEmailValid.error.errors[0].message.replace('String', '')}</p>
+			<p class="text-xs text-error" style="margin: 0">
+				{isEmailValid.error.errors[0].message.replace('String', '')}
+			</p>
 		{:else}
 			<p class="text-xs text-transparent" style="margin: 0">For formatting sake</p>
 		{/if}
