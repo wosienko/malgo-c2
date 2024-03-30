@@ -33,7 +33,7 @@
 </script>
 
 <svelte:head>
-	<title>Register</title>
+	<title>MALGO - Register</title>
 </svelte:head>
 
 {#if form?.issues && form.issues.length > 0}

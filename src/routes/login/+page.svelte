@@ -21,7 +21,7 @@
 </script>
 
 <svelte:head>
-	<title>Login</title>
+	<title>MALGO - Login</title>
 </svelte:head>
 
 {#if form?.issues && form.issues.length > 0}
