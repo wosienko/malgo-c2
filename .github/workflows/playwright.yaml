@@ -27,6 +27,8 @@ jobs:
         run: bun install
       - name: Setup database
         run: bun run migrate
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/test
       - name: Install Playwright Browsers
         run: bunx playwright install --with-deps
       - name: Run Playwright tests
