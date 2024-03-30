@@ -1,6 +1,6 @@
 import type { Actions } from './$types';
 import { registerSchema } from '$lib/validationSchemas';
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import type { ZodIssue } from 'zod';
 
 import { db } from '$lib/db/db.server';
@@ -48,12 +48,13 @@ export const actions = {
 						code: 'custom',
 						message: 'User with this email already exists',
 						path: ['Email']
-					}
+					} satisfies ZodIssue
 				]
 			});
 		}
 
-		// successful registration
-		redirect(303, '/login');
+		return {
+			message: 'User registered successfully'
+		};
 	}
 } satisfies Actions;

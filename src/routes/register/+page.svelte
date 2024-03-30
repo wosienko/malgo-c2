@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { fieldSchema, emailSchema, passwordSchema } from '$lib/validationSchemas';
 	import ZodIssues from '$lib/components/ZodIssues.svelte';
+	import {goto} from '$app/navigation';
 
 	let { form } = $props();
 
@@ -30,6 +31,24 @@
 			passwordConfirmation = '';
 		}
 	});
+
+	// Show registration successful
+	let countdown = $state(3);
+	let modalTimeout: ReturnType<typeof setTimeout>;
+	$effect(() => {
+		if (form?.message) {
+			const dialog = document.getElementById('registration-successful') as HTMLDialogElement;
+			dialog.showModal();
+			let countdownInterval = setInterval(() => {
+				countdown -= 1;
+			}, 1000);
+			modalTimeout = setTimeout(() => {
+				dialog.close();
+				clearInterval(countdownInterval);
+				goto('/login');
+			}, 4000); // 3 seconds + 1 second for the last countdown
+		}
+	});
 </script>
 
 <svelte:head>
@@ -44,6 +63,18 @@
 		}}
 	/>
 {/if}
+
+<dialog id="registration-successful" class="modal modal-bottom sm:modal-middle">
+	<div class="modal-box">
+		<h3 class="font-bold text-lg">User registered successfully!</h3>
+		<p class="py-4">You will be redirected to login in <span class="countdown"><span style="--value:{countdown};"></span></span></p>
+		<div class="modal-action">
+			<form method="dialog">
+				<button class="btn" on:click={()=>{clearTimeout(modalTimeout); goto('/login')}}>Go right now!</button>
+			</form>
+		</div>
+	</div>
+</dialog>
 
 <form method="POST" class="flex flex-col space-y-4" use:enhance>
 	<div class="flex flex-col items-center space-y-2">
