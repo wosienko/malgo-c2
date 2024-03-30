@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { fieldSchema, emailSchema, passwordSchema } from '$lib/validationSchemas';
 	import ZodIssues from '$lib/components/ZodIssues.svelte';
-	import {goto} from '$app/navigation';
+	import { goto } from '$app/navigation';
 
 	let { form } = $props();
 
@@ -66,11 +66,21 @@
 
 <dialog id="registration-successful" class="modal modal-bottom sm:modal-middle">
 	<div class="modal-box">
-		<h3 class="font-bold text-lg">User registered successfully!</h3>
-		<p class="py-4">You will be redirected to login in <span class="countdown"><span style="--value:{countdown};"></span></span></p>
+		<h3 class="text-lg font-bold">User registered successfully!</h3>
+		<p class="py-4">
+			You will be redirected to login in <span class="countdown"
+				><span style="--value:{countdown};"></span></span
+			>
+		</p>
 		<div class="modal-action">
 			<form method="dialog">
-				<button class="btn" on:click={()=>{clearTimeout(modalTimeout); goto('/login')}}>Go right now!</button>
+				<button
+					class="btn"
+					on:click={() => {
+						clearTimeout(modalTimeout);
+						goto('/login');
+					}}>Go right now!</button
+				>
 			</form>
 		</div>
 	</div>
