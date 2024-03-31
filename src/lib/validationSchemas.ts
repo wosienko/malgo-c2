@@ -9,6 +9,8 @@ const loginSchema = z.object({
 	password: passwordSchema
 });
 
+type LoginSchema = z.infer<typeof loginSchema>;
+
 const registerSchema = z.object({
 	email: emailSchema,
 	password: passwordSchema,
@@ -17,4 +19,7 @@ const registerSchema = z.object({
 	surname: fieldSchema
 });
 
+type RegisterSchema = z.infer<typeof registerSchema>;
+
 export { fieldSchema, emailSchema, passwordSchema, loginSchema, registerSchema };
+export type { LoginSchema, RegisterSchema };

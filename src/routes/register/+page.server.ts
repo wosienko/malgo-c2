@@ -2,10 +2,7 @@ import type { Actions } from './$types';
 import { registerSchema } from '$lib/validationSchemas';
 import { fail } from '@sveltejs/kit';
 import type { ZodIssue } from 'zod';
-
-import { db } from '$lib/db/db.server';
-import { Users, UserRoles } from '$lib/db/schema/users';
-import { Argon2id } from 'oslo/password';
+import { registerNewUser } from '$lib/services/user-service';
 
 export const actions = {
 	default: async ({ request }) => {
@@ -31,31 +28,7 @@ export const actions = {
 			});
 		}
 
-		try {
-			await db.transaction(async (tx) => {
-				const newUser = await tx
-					.insert(Users)
-					.values({
-						name: result.data.name,
-						surname: result.data.surname,
-						email: result.data.email,
-						password: await new Argon2id().hash(result.data.password)
-					})
-					.returning({ id: Users.id });
-
-				const rolesAvailable = await tx.query.Roles.findMany({
-					columns: {
-						id: true
-					}
-				});
-				for (const role of rolesAvailable) {
-					await tx.insert(UserRoles).values({
-						user_id: newUser[0].id,
-						role_id: role.id
-					});
-				}
-			});
-		} catch (e) {
+		if (!(await registerNewUser(result.data))) {
 			return fail(500, {
 				issues: [
 					{
