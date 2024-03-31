@@ -4,7 +4,7 @@ import { fail } from '@sveltejs/kit';
 import type { ZodIssue } from 'zod';
 
 import { db } from '$lib/db/db.server';
-import { Users } from '$lib/db/schema/users';
+import { Users, UserRoles } from '$lib/db/schema/users';
 import { Argon2id } from 'oslo/password';
 
 export const actions = {
@@ -32,11 +32,28 @@ export const actions = {
 		}
 
 		try {
-			await db.insert(Users).values({
-				name: result.data.name,
-				surname: result.data.surname,
-				email: result.data.email,
-				password: await new Argon2id().hash(result.data.password)
+			await db.transaction(async (tx) => {
+				const newUser = await tx
+					.insert(Users)
+					.values({
+						name: result.data.name,
+						surname: result.data.surname,
+						email: result.data.email,
+						password: await new Argon2id().hash(result.data.password)
+					})
+					.returning({ id: Users.id });
+
+				const rolesAvailable = await tx.query.Roles.findMany({
+					columns: {
+						id: true
+					}
+				});
+				for (const role of rolesAvailable) {
+					await tx.insert(UserRoles).values({
+						user_id: newUser[0].id,
+						role_id: role.id
+					});
+				}
 			});
 		} catch (e) {
 			return fail(500, {
