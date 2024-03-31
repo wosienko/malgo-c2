@@ -32,3 +32,65 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.session = session;
 	return resolve(event);
 };
+
+// on startup code - insert default roles and admin user
+import { db } from '$lib/db/db.server';
+import { Users } from '$lib/db/schema/users';
+import { Roles } from '$lib/db/schema/users';
+import { UserRoles } from '$lib/db/schema/users';
+import { Argon2id } from 'oslo/password';
+import { DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_PASSWORD } from '$env/static/private';
+
+await db.transaction(async (tx) => {
+	const adminRoleId = await tx
+		.insert(Roles)
+		.values({ name: 'Admin' })
+		.returning({ id: Roles.id })
+		.onConflictDoNothing();
+
+	const operatorRoleId = await tx
+		.insert(Roles)
+		.values({ name: 'Operator' })
+		.returning({ id: Roles.id })
+		.onConflictDoNothing();
+
+	const userRoleId = await tx
+		.insert(Roles)
+		.values({ name: 'User' })
+		.returning({ id: Roles.id })
+		.onConflictDoNothing();
+
+	const adminId = await tx
+		.insert(Users)
+		.values({
+			name: 'Admin',
+			surname: 'Admin',
+			email: DEFAULT_ADMIN_EMAIL,
+			password: await new Argon2id().hash(DEFAULT_ADMIN_PASSWORD)
+		})
+		.returning({ id: Users.id })
+		.onConflictDoNothing();
+
+	if (!adminId.length || !adminRoleId.length || !operatorRoleId.length || !userRoleId.length) {
+		console.log('Default roles and admin user already exist');
+		return;
+	}
+
+	await tx
+		.insert(UserRoles)
+		.values([
+			{
+				user_id: adminId[0].id,
+				role_id: adminRoleId[0].id
+			},
+			{
+				user_id: adminId[0].id,
+				role_id: operatorRoleId[0].id
+			},
+			{
+				user_id: adminId[0].id,
+				role_id: userRoleId[0].id
+			}
+		])
+		.onConflictDoNothing();
+});

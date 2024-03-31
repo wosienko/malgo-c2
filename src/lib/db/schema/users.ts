@@ -1,5 +1,5 @@
 import { pgTable, serial, uuid, varchar } from 'drizzle-orm/pg-core';
-import { sql } from 'drizzle-orm';
+import { sql, relations } from 'drizzle-orm';
 
 export const Users = pgTable('users', {
 	id: uuid('id')
@@ -25,3 +25,22 @@ export const UserRoles = pgTable('user_roles', {
 		.references(() => Users.id),
 	role_id: serial('role_id').notNull()
 });
+
+export const userRelations = relations(Users, ({ many }) => ({
+	UserRoles: many(UserRoles)
+}));
+
+export const roleRelations = relations(Roles, ({ many }) => ({
+	UserRoles: many(UserRoles)
+}));
+
+export const userRolesRelations = relations(UserRoles, ({ one }) => ({
+	User: one(Users, {
+		fields: [UserRoles.user_id],
+		references: [Users.id]
+	}),
+	Role: one(Roles, {
+		fields: [UserRoles.role_id],
+		references: [Roles.id]
+	})
+}));
