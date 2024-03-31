@@ -35,6 +35,8 @@ jobs:
         run: bun run test:e2e
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/test
+          DEFAULT_ADMIN_EMAIL: admin@admin.com
+          DEFAULT_ADMIN_PASSWORD: admin
       - uses: actions/upload-artifact@v3
         if: always()
         with:
