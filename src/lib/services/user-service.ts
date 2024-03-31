@@ -37,10 +37,12 @@ export const registerNewUser = async (userRegister: RegisterSchema): Promise<boo
 
 			const rolesAvailable = await tx.query.Roles.findMany({
 				columns: {
-					id: true
+					id: true,
+					name: true
 				}
 			});
 			for (const role of rolesAvailable) {
+				if (role.name !== 'User') continue;
 				await tx.insert(UserRoles).values({
 					user_id: newUser[0].id,
 					role_id: role.id
@@ -67,12 +69,6 @@ export const createDefaultAdminAndRoles = async (): Promise<void> => {
 			.returning({ id: Roles.id })
 			.onConflictDoNothing();
 
-		const userRoleId = await tx
-			.insert(Roles)
-			.values({ name: 'User' })
-			.returning({ id: Roles.id })
-			.onConflictDoNothing();
-
 		const adminId = await tx
 			.insert(Users)
 			.values({
@@ -84,7 +80,7 @@ export const createDefaultAdminAndRoles = async (): Promise<void> => {
 			.returning({ id: Users.id })
 			.onConflictDoNothing();
 
-		if (!adminId.length || !adminRoleId.length || !operatorRoleId.length || !userRoleId.length) {
+		if (!adminId.length || !adminRoleId.length || !operatorRoleId.length) {
 			console.log('Default roles and admin user already exist');
 			return;
 		}
@@ -99,10 +95,6 @@ export const createDefaultAdminAndRoles = async (): Promise<void> => {
 				{
 					user_id: adminId[0].id,
 					role_id: operatorRoleId[0].id
-				},
-				{
-					user_id: adminId[0].id,
-					role_id: userRoleId[0].id
 				}
 			])
 			.onConflictDoNothing();

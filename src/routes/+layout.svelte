@@ -47,7 +47,9 @@
 				{#if data.loggedIn}
 					<a class="kbd kbd-lg text-xl" href="/home">MALGO</a>
 					<ul class="menu menu-horizontal px-1">
-						<li><a href="/sessions">Sessions</a></li>
+						{#if data.isOperator}
+							<li><a href="/sessions">Sessions</a></li>
+						{/if}
 					</ul>
 				{:else}
 					<a class="kbd kbd-lg text-xl" href="/">MALGO</a>
@@ -56,7 +58,10 @@
 			<div class="flex-none">
 				<ul class="menu menu-horizontal px-1">
 					{#if data.loggedIn}
-						<li><a href="/settings">Settings</a></li>
+						{#if data.isAdmin}
+							<li><a href="/admin">Admin</a></li>
+						{/if}
+						<li><a href="/settings">User settings</a></li>
 						<li>
 							<form method="post" action="/logout" use:enhance>
 								<button>Sign out</button>
