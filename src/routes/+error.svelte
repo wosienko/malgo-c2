@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
+	// TODO: Update once page is officially updated
 </script>
 
 <svelte:head>
