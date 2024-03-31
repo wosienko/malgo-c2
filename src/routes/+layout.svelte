@@ -4,7 +4,6 @@
 	import { navigating } from '$app/stores';
 	import { enhance } from '$app/forms';
 	import { version } from '$lib';
-	import { dev } from '$app/environment';
 
 	let { data } = $props();
 
@@ -65,7 +64,7 @@
 						</li>
 					{:else}
 						<li><a href="/login">Login</a></li>
-						{#if dev}
+						{#if !import.meta.env.PROD}
 							<li><a href="/register">Register</a></li>
 						{/if}
 					{/if}

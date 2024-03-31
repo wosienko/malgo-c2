@@ -1,4 +1,4 @@
-import type { Handle } from '@sveltejs/kit';
+import type { Handle, HandleServerError } from '@sveltejs/kit';
 import { lucia } from '$lib/auth.server';
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -31,6 +31,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.user = user;
 	event.locals.session = session;
 	return resolve(event);
+};
+
+export const handleError: HandleServerError = async ({ error, status }) => {
+	if (status === 401 || status === 403 || status === 404) {
+		return;
+	}
+	console.error(error);
 };
 
 // on startup code - insert default roles and admin user
