@@ -77,7 +77,7 @@ const config: PlaywrightTestConfig = {
 				reuseExistingServer: true
 			}
 		: {
-				command: 'bun run build && bun ./build/index.js',
+				command: 'bun run ./build/index.js',
 				port: 3000,
 				reuseExistingServer: true
 			}
