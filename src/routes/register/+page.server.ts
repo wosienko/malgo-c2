@@ -11,7 +11,6 @@ export const actions = {
 	default: async ({ request }) => {
 		const data = await request.formData();
 		const userRegister = Object.fromEntries(data.entries());
-		console.log(userRegister);
 
 		const result = registerSchema.safeParse(userRegister);
 		if (!result.success) {
@@ -21,8 +20,6 @@ export const actions = {
 		}
 
 		if (result.data.password !== result.data.passwordConfirmation) {
-			console.log('bbb');
-
 			const issue: ZodIssue = {
 				code: 'custom',
 				message: 'Passwords do not match',
