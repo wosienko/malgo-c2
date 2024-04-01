@@ -14,9 +14,7 @@
 	let isOverflowing = $state(false);
 	let contentElement: Element | null = null;
 	const checkOverflow = () => {
-		isOverflowing =
-			contentElement!.scrollHeight > contentElement!.clientHeight ||
-			contentElement!.scrollWidth > contentElement!.clientWidth;
+		isOverflowing = contentElement!.scrollHeight > contentElement!.clientHeight;
 	};
 
 	onMount(() => {
@@ -61,11 +59,21 @@
 						{#if data.isAdmin}
 							<li><a href="/admin">Admin</a></li>
 						{/if}
-						<li><a href="/settings">User settings</a></li>
 						<li>
-							<form method="post" action="/logout" use:enhance>
-								<button>Sign out</button>
-							</form>
+							<div class="dropdown dropdown-end dropdown-bottom dropdown-hover">
+								<span tabindex="-1" role="button">Options</span>
+								<ul
+									tabindex="-1"
+									class="menu dropdown-content z-[1] w-52 rounded-box bg-base-200 p-2 shadow"
+								>
+									<li><a href="/settings">Settings</a></li>
+									<li>
+										<form method="post" action="/logout" use:enhance>
+											<button class="w-40 text-left">Sign out</button>
+										</form>
+									</li>
+								</ul>
+							</div>
 						</li>
 					{:else}
 						<li><a href="/login">Login</a></li>
@@ -79,7 +87,7 @@
 	</header>
 
 	<main class="grow overflow-y-auto py-3">
-		<div class="flex w-full items-center justify-center" class:h-full={!isOverflowing}>
+		<div class="flex w-full flex-col items-center justify-center" class:h-full={!isOverflowing}>
 			<slot />
 		</div>
 	</main>

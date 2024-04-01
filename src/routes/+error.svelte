@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
+	import { browser } from '$app/environment';
 	// TODO: Update once page is officially updated
 </script>
 
@@ -13,5 +14,10 @@
 		{get(page).status}
 	</h1>
 	<p class="text-lg">{get(page).error?.message}</p>
-	<a href="/" class="btn">Go back</a>
+	<button
+		class="btn"
+		on:click={() => {
+			if (browser) window.history.back();
+		}}>Go back</button
+	>
 </div>
