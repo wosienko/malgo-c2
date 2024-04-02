@@ -343,54 +343,54 @@
 		<p class="py-4">
 			Password change for <span class="font-bold">{userToAlter.name} {userToAlter.surname}</span>
 		</p>
-		<div class="space-y-8">
-			<div class="flex items-center justify-between">
-				<label for="password">Password</label>
-				<div class="-mt-4 flex flex-col items-center">
-					{#if !isPasswordValid.success}
-						<p class="mb-1.5 text-xs text-error">
-							{isPasswordValid.error.errors[0].message.replace('String', '')}
-						</p>
-					{:else}
-						<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
-					{/if}
-					<input
-						type="password"
-						id="password"
-						name="password"
-						autocomplete="off"
-						required
-						class="input input-bordered w-full max-w-xs"
-						bind:value={password}
-						class:input-error={!isPasswordValid.success}
-					/>
+		<form method="dialog">
+			<div class="space-y-8">
+				<div class="flex items-center justify-between">
+					<label for="password">Password</label>
+					<div class="-mt-4 flex flex-col items-center">
+						{#if !isPasswordValid.success}
+							<p class="mb-1.5 text-xs text-error">
+								{isPasswordValid.error.errors[0].message.replace('String', '')}
+							</p>
+						{:else}
+							<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+						{/if}
+						<input
+							type="password"
+							id="password"
+							name="password"
+							autocomplete="off"
+							required
+							class="input input-bordered w-full max-w-xs"
+							bind:value={password}
+							class:input-error={!isPasswordValid.success}
+						/>
+					</div>
+				</div>
+				<div class="flex items-center justify-between">
+					<label for="passwordConfirmation">Confirm Password</label>
+					<div class="-mt-4 flex flex-col items-center">
+						{#if !isPasswordConfirmationValid.success}
+							<p class="mb-1.5 text-xs text-error">
+								{isPasswordConfirmationValid.error.errors[0].message.replace('String', '')}
+							</p>
+						{:else}
+							<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+						{/if}
+						<input
+							type="password"
+							id="passwordConfirmation"
+							name="passwordConfirmation"
+							autocomplete="off"
+							required
+							class="input input-bordered w-full max-w-xs"
+							bind:value={passwordConfirmation}
+							class:input-error={!isPasswordConfirmationValid.success}
+						/>
+					</div>
 				</div>
 			</div>
-			<div class="flex items-center justify-between">
-				<label for="passwordConfirmation">Confirm Password</label>
-				<div class="-mt-4 flex flex-col items-center">
-					{#if !isPasswordConfirmationValid.success}
-						<p class="mb-1.5 text-xs text-error">
-							{isPasswordConfirmationValid.error.errors[0].message.replace('String', '')}
-						</p>
-					{:else}
-						<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
-					{/if}
-					<input
-						type="password"
-						id="passwordConfirmation"
-						name="passwordConfirmation"
-						autocomplete="off"
-						required
-						class="input input-bordered w-full max-w-xs"
-						bind:value={passwordConfirmation}
-						class:input-error={!isPasswordConfirmationValid.success}
-					/>
-				</div>
-			</div>
-		</div>
-		<div class="modal-action">
-			<form method="dialog" class="space-x-3">
+			<div class="modal-action space-x-3">
 				<button
 					class="btn btn-warning"
 					class:btn-disabled={!isPasswordValid.success || !isPasswordConfirmationValid.success}
@@ -400,145 +400,153 @@
 					}}>Change password</button
 				>
 				<button class="btn">Cancel</button>
-			</form>
-		</div>
+			</div>
+		</form>
 	</div>
 </dialog>
 
 <dialog id="register-new-user" class="modal modal-middle">
 	<div class="modal-box">
 		<h3 class="mb-3 text-lg font-bold">Register new user</h3>
-		<div class="space-y-8">
-			<div class="flex items-center justify-between">
-				<label for="name">Name</label>
-				<div class="-mt-4 flex flex-col items-center">
-					{#if !newUserVerification.name.success}
-						<p class="mb-1.5 text-xs text-error">
-							{newUserVerification.name.error.errors[0].message.replace('String', '')}
-						</p>
-					{:else}
-						<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
-					{/if}
-					<input
-						type="text"
-						id="name"
-						name="name"
-						autocomplete="off"
-						required
-						class="input input-bordered w-full max-w-xs"
-						bind:value={newUser.name}
-						class:input-error={!newUserVerification.name.success}
-					/>
+		<form method="dialog">
+			<div class="space-y-8">
+				<div class="flex items-center justify-between">
+					<label for="name">Name</label>
+					<div class="-mt-4 flex flex-col items-center">
+						{#if !newUserVerification.name.success}
+							<p class="mb-1.5 text-xs text-error">
+								{newUserVerification.name.error.errors[0].message.replace('String', '')}
+							</p>
+						{:else}
+							<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+						{/if}
+						<input
+							type="text"
+							id="name"
+							name="name"
+							autocomplete="off"
+							required
+							class="input input-bordered w-full max-w-xs"
+							bind:value={newUser.name}
+							class:input-error={!newUserVerification.name.success}
+						/>
+					</div>
+				</div>
+				<div class="flex items-center justify-between">
+					<label for="surname">Surname</label>
+					<div class="-mt-4 flex flex-col items-center">
+						{#if !newUserVerification.surname.success}
+							<p class="mb-1.5 text-xs text-error">
+								{newUserVerification.surname.error.errors[0].message.replace('String', '')}
+							</p>
+						{:else}
+							<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+						{/if}
+						<input
+							type="text"
+							id="surname"
+							name="surname"
+							autocomplete="off"
+							required
+							class="input input-bordered w-full max-w-xs"
+							bind:value={newUser.surname}
+							class:input-error={!newUserVerification.surname.success}
+						/>
+					</div>
+				</div>
+				<div class="flex items-center justify-between">
+					<label for="email">Email</label>
+					<div class="-mt-4 flex flex-col items-center">
+						{#if !newUserVerification.email.success}
+							<p class="mb-1.5 text-xs text-error">
+								{newUserVerification.email.error.errors[0].message.replace('String', '')}
+							</p>
+						{:else}
+							<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+						{/if}
+						<input
+							type="email"
+							id="email"
+							name="email"
+							autocomplete="off"
+							required
+							class="input input-bordered w-full max-w-xs"
+							bind:value={newUser.email}
+							class:input-error={!newUserVerification.email.success}
+						/>
+					</div>
+				</div>
+				<div class="flex items-center justify-between">
+					<label for="password">Password</label>
+					<div class="-mt-4 flex flex-col items-center">
+						{#if !newUserVerification.password.success}
+							<p class="mb-1.5 text-xs text-error">
+								{newUserVerification.password.error.errors[0].message.replace('String', '')}
+							</p>
+						{:else}
+							<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+						{/if}
+						<input
+							type="password"
+							id="password"
+							name="password"
+							autocomplete="off"
+							required
+							class="input input-bordered w-full max-w-xs"
+							bind:value={newUser.password}
+							class:input-error={!newUserVerification.password.success}
+						/>
+					</div>
+				</div>
+				<div class="flex items-center justify-between">
+					<label for="passwordConfirmation">Confirm Password</label>
+					<div class="-mt-4 flex flex-col items-center">
+						{#if !newUserVerification.passwordConfirmation.success}
+							<p class="mb-1.5 text-xs text-error">
+								{newUserVerification.passwordConfirmation.error.errors[0].message.replace(
+									'String',
+									''
+								)}
+							</p>
+						{:else}
+							<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+						{/if}
+						<input
+							type="password"
+							id="passwordConfirmation"
+							name="passwordConfirmation"
+							autocomplete="off"
+							required
+							class="input input-bordered w-full max-w-xs"
+							bind:value={newUser.passwordConfirmation}
+							class:input-error={!newUserVerification.passwordConfirmation.success}
+						/>
+					</div>
+				</div>
+				<div class="flex w-full justify-around">
+					<div class="form-control max-w-40 flex-1">
+						<label class="label cursor-pointer">
+							<span class="label-text">Admin</span>
+							<input
+								type="checkbox"
+								bind:checked={newUser.admin}
+								class="checkbox-warning checkbox"
+							/>
+						</label>
+					</div>
+					<div class="form-control max-w-40 flex-1">
+						<label class="label cursor-pointer">
+							<span class="label-text">Operator</span>
+							<input
+								type="checkbox"
+								bind:checked={newUser.operator}
+								class="checkbox-info checkbox"
+							/>
+						</label>
+					</div>
 				</div>
 			</div>
-			<div class="flex items-center justify-between">
-				<label for="surname">Surname</label>
-				<div class="-mt-4 flex flex-col items-center">
-					{#if !newUserVerification.surname.success}
-						<p class="mb-1.5 text-xs text-error">
-							{newUserVerification.surname.error.errors[0].message.replace('String', '')}
-						</p>
-					{:else}
-						<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
-					{/if}
-					<input
-						type="text"
-						id="surname"
-						name="surname"
-						autocomplete="off"
-						required
-						class="input input-bordered w-full max-w-xs"
-						bind:value={newUser.surname}
-						class:input-error={!newUserVerification.surname.success}
-					/>
-				</div>
-			</div>
-			<div class="flex items-center justify-between">
-				<label for="email">Email</label>
-				<div class="-mt-4 flex flex-col items-center">
-					{#if !newUserVerification.email.success}
-						<p class="mb-1.5 text-xs text-error">
-							{newUserVerification.email.error.errors[0].message.replace('String', '')}
-						</p>
-					{:else}
-						<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
-					{/if}
-					<input
-						type="email"
-						id="email"
-						name="email"
-						autocomplete="off"
-						required
-						class="input input-bordered w-full max-w-xs"
-						bind:value={newUser.email}
-						class:input-error={!newUserVerification.email.success}
-					/>
-				</div>
-			</div>
-			<div class="flex items-center justify-between">
-				<label for="password">Password</label>
-				<div class="-mt-4 flex flex-col items-center">
-					{#if !newUserVerification.password.success}
-						<p class="mb-1.5 text-xs text-error">
-							{newUserVerification.password.error.errors[0].message.replace('String', '')}
-						</p>
-					{:else}
-						<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
-					{/if}
-					<input
-						type="password"
-						id="password"
-						name="password"
-						autocomplete="off"
-						required
-						class="input input-bordered w-full max-w-xs"
-						bind:value={newUser.password}
-						class:input-error={!newUserVerification.password.success}
-					/>
-				</div>
-			</div>
-			<div class="flex items-center justify-between">
-				<label for="passwordConfirmation">Confirm Password</label>
-				<div class="-mt-4 flex flex-col items-center">
-					{#if !newUserVerification.passwordConfirmation.success}
-						<p class="mb-1.5 text-xs text-error">
-							{newUserVerification.passwordConfirmation.error.errors[0].message.replace(
-								'String',
-								''
-							)}
-						</p>
-					{:else}
-						<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
-					{/if}
-					<input
-						type="password"
-						id="passwordConfirmation"
-						name="passwordConfirmation"
-						autocomplete="off"
-						required
-						class="input input-bordered w-full max-w-xs"
-						bind:value={newUser.passwordConfirmation}
-						class:input-error={!newUserVerification.passwordConfirmation.success}
-					/>
-				</div>
-			</div>
-			<div class="flex w-full justify-around">
-				<div class="form-control max-w-40 flex-1">
-					<label class="label cursor-pointer">
-						<span class="label-text">Admin</span>
-						<input type="checkbox" bind:checked={newUser.admin} class="checkbox-warning checkbox" />
-					</label>
-				</div>
-				<div class="form-control max-w-40 flex-1">
-					<label class="label cursor-pointer">
-						<span class="label-text">Operator</span>
-						<input type="checkbox" bind:checked={newUser.operator} class="checkbox-info checkbox" />
-					</label>
-				</div>
-			</div>
-		</div>
-		<div class="modal-action">
-			<form method="dialog" class="space-x-3">
+			<div class="modal-action space-x-3">
 				<button
 					class="btn btn-success"
 					class:btn-disabled={!newUserVerification.name.success ||
@@ -552,8 +560,8 @@
 					}}>Register new user</button
 				>
 				<button class="btn">Cancel</button>
-			</form>
-		</div>
+			</div>
+		</form>
 	</div>
 </dialog>
 
