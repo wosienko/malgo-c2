@@ -11,10 +11,7 @@
 	let users = $state(
 		data.users.users.map((user) => ({
 			...user,
-			editing: false,
-			isEmailValid: emailSchema.safeParse(user.email),
-			isNameValid: fieldSchema.safeParse(user.name),
-			isSurnameValid: fieldSchema.safeParse(user.surname)
+			editing: false
 		}))
 	);
 
@@ -32,10 +29,7 @@
 			const usersPage: UsersWithRoles = await res.json();
 			users = usersPage.users.map((user) => ({
 				...user,
-				editing: false,
-				isEmailValid: emailSchema.safeParse(user.email),
-				isNameValid: fieldSchema.safeParse(user.name),
-				isSurnameValid: fieldSchema.safeParse(user.surname)
+				editing: false
 			}));
 			data.users.count = usersPage.count;
 			page = nextPage;
@@ -187,7 +181,7 @@
 			on:click={loadNextPage}>»</button
 		>
 	</div>
-	<div class="mt-1 flex-1">
+	<div class="mt-1 md:flex-1">
 		<div class="flex items-center justify-center space-x-3">
 			<span>Limit: {pageSize}</span>
 			<input
@@ -208,11 +202,11 @@
 <table class="table table-fixed overflow-x-auto text-center">
 	<thead>
 		<tr>
-			<th class="w-1/5">Name</th>
-			<th class="w-1/5">Surname</th>
-			<th class="w-1/5">Email</th>
-			<th>Admin</th>
-			<th>Operator</th>
+			<th class="md:w-1/5 lg:w-[23%]">Name</th>
+			<th class="md:w-1/5 lg:w-[23%]">Surname</th>
+			<th class="md:w-1/5 lg:w-[23%]">Email</th>
+			<th class="w-20 md:w-24">Admin</th>
+			<th class="w-20 md:w-24">Operator</th>
 			<th class="hidden md:block"></th>
 		</tr>
 	</thead>
@@ -239,57 +233,99 @@
 							class="checkbox-info checkbox checkbox-sm"
 						/>
 					</td>
-					<td class="hidden space-y-3 md:block">
-						<button
-							class="btn btn-sm inline-block w-14"
-							on:click={() => {
-								user.editing = true;
-								lastUserValues = { ...user };
-							}}>Edit</button
+					<td class="hidden md:block">
+						<div
+							class="dropdown dropdown-end"
+							class:dropdown-bottom={i <= 2 ||
+								i + 1 < (data.users.count > pageSize ? pageSize : data.users.count) - 2}
+							class:dropdown-top={i > 2 &&
+								i + 1 >= (data.users.count > pageSize ? pageSize : data.users.count) - 2}
 						>
-						<button
-							class="btn btn-error btn-sm w-14"
-							on:click={() => {
-								prepareForDeletion(user)();
-							}}>Delete</button
-						>
-						<button class="btn btn-sm">Change Password</button>
+							<div tabindex="-1" role="button" class="btn btn-neutral btn-sm mb-1">Hover</div>
+							<ul
+								tabindex="-1"
+								class="menu dropdown-content z-[1] w-52 space-y-1.5 rounded-box bg-base-100 p-2 shadow"
+							>
+								<li>
+									<button
+										class="btn btn-sm"
+										on:click={() => {
+											user.editing = true;
+											lastUserValues = { ...user };
+										}}>Edit</button
+									>
+								</li>
+								<li><button class="btn btn-sm">Change password</button></li>
+								<li>
+									<button
+										class="btn btn-error btn-sm"
+										on:click={() => {
+											prepareForDeletion(user)();
+										}}>Delete</button
+									>
+								</li>
+							</ul>
+						</div>
 					</td>
 				{:else}
+					{@const nameCheck = fieldSchema.safeParse(user.name)}
+					{@const surnameCheck = fieldSchema.safeParse(user.surname)}
+					{@const emailCheck = emailSchema.safeParse(user.email)}
 					<td>
+						{#if !nameCheck.success}
+							<p class="mb-1.5 text-xs text-error">
+								{nameCheck.error.errors[0].message.replace('String', '')}
+							</p>
+						{:else}
+							<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+						{/if}
 						<input
 							type="text"
 							id="name"
 							name="name"
 							autocomplete="off"
 							required
-							class="input input-sm input-bordered w-full"
+							class="input input-sm input-bordered mb-5 w-full"
 							bind:value={user.name}
-							class:input-error={!user.isNameValid.success}
+							class:input-error={!nameCheck.success}
 						/>
 					</td>
 					<td>
+						{#if !surnameCheck.success}
+							<p class="mb-1.5 text-xs text-error">
+								{surnameCheck.error.errors[0].message.replace('String', '')}
+							</p>
+						{:else}
+							<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+						{/if}
 						<input
 							type="text"
 							id="surname"
 							name="surname"
 							autocomplete="off"
 							required
-							class="input input-sm input-bordered w-full"
+							class="input input-sm input-bordered mb-5 w-full"
 							bind:value={user.surname}
-							class:input-error={!user.isSurnameValid.success}
+							class:input-error={!surnameCheck.success}
 						/>
 					</td>
 					<td class="w-1/5">
+						{#if !emailCheck.success}
+							<p class="mb-1.5 text-xs text-error">
+								{emailCheck.error.errors[0].message.replace('String', '')}
+							</p>
+						{:else}
+							<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+						{/if}
 						<input
 							type="email"
 							id="email"
 							name="email"
 							autocomplete="off"
 							required
-							class="input input-sm input-bordered w-full"
+							class="input input-sm input-bordered mb-5 w-full"
 							bind:value={user.email}
-							class:input-error={!user.isEmailValid.success}
+							class:input-error={!emailCheck.success}
 						/>
 					</td>
 					<td>
@@ -309,7 +345,10 @@
 					<td class="my-1.5 flex flex-col items-center justify-center space-y-3">
 						<button
 							class="btn btn-success btn-sm w-14"
-							class:btn-disabled={JSON.stringify(user) === JSON.stringify(lastUserValues)}
+							class:btn-disabled={JSON.stringify(user) === JSON.stringify(lastUserValues) ||
+								!nameCheck.success ||
+								!surnameCheck.success ||
+								!emailCheck.success}
 							on:click={() => {
 								updateUser(user);
 							}}>Save</button

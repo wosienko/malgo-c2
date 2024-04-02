@@ -78,7 +78,7 @@
 					class="btn"
 					on:click={() => {
 						clearTimeout(modalTimeout);
-						goto('/login');
+						goto('/admin/users');
 					}}>Go right now!</button
 				>
 			</form>
