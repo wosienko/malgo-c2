@@ -1,9 +1,31 @@
 {
-	"id": "ef2461f9-3ca1-4799-9b19-5e86c4582ac8",
+	"id": "aba0b2ff-0879-40ea-8503-b0a261134924",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "5",
 	"dialect": "pg",
 	"tables": {
+		"server_settings": {
+			"name": "server_settings",
+			"schema": "",
+			"columns": {
+				"key": {
+					"name": "key",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"value": {
+					"name": "value",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
 		"sessions": {
 			"name": "sessions",
 			"schema": "",
@@ -95,7 +117,7 @@
 					"tableTo": "users",
 					"columnsFrom": ["user_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
+					"onDelete": "cascade",
 					"onUpdate": "no action"
 				},
 				"user_roles_role_id_roles_id_fk": {
@@ -104,7 +126,7 @@
 					"tableTo": "roles",
 					"columnsFrom": ["role_id"],
 					"columnsTo": ["id"],
-					"onDelete": "no action",
+					"onDelete": "cascade",
 					"onUpdate": "no action"
 				}
 			},

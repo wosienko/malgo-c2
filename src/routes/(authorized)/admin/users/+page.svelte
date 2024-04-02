@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { UsersWithRoles, UserWithRoles } from '$lib/db/schema/users';
 	import type { ApiError } from '$lib';
-	import { emailSchema, fieldSchema } from '$lib/validationSchemas';
+	import { emailSchema, fieldSchema, passwordSchema } from '$lib/validationSchemas';
 	import type { ZodIssue } from 'zod';
 	import ZodIssues from '$lib/components/ZodIssues.svelte';
 	import ApiIssues from '$lib/components/ApiIssues.svelte';
+	import ChangeSuccessful from '$lib/components/ChangeSuccessful.svelte';
 
 	let { data } = $props();
 
@@ -22,6 +23,7 @@
 
 	let zodIssues: ZodIssue[] = $state([]);
 	let apiError: ApiError | undefined = $state();
+	let successMessage: string | undefined = $state();
 
 	const loadPage = (nextPage: number) => {
 		return async () => {
@@ -36,14 +38,14 @@
 		};
 	};
 
-	const loadNextPage = () => {
-		loadPage(page + 1)();
+	const loadNextPage = async () => {
+		await loadPage(page + 1)();
 	};
-	const reloadCurrentPage = () => {
-		loadPage(page)();
+	const reloadCurrentPage = async () => {
+		await loadPage(page)();
 	};
-	const loadPreviousPage = () => {
-		loadPage(page - 1)();
+	const loadPreviousPage = async () => {
+		await loadPage(page - 1)();
 	};
 
 	const updateUser = async (user: (typeof users)[0]) => {
@@ -63,6 +65,7 @@
 
 		if (res.ok) {
 			user.editing = false;
+			successMessage = 'User updated successfully!';
 		} else {
 			try {
 				let body: ApiError | ZodIssue[] = await res.json();
@@ -78,9 +81,9 @@
 		}
 	};
 
-	let userToDelete: (typeof users)[0] = $state((() => users[0])());
+	let userToAlter: (typeof users)[0] = $state((() => users[0])());
 
-	const deleteUser = async (user: (typeof users)[0]) => {
+	const deleteUser = async (user: (typeof users)[0]): Promise<boolean> => {
 		const res = await fetch(`/api/user/${user.id}`, {
 			method: 'DELETE'
 		});
@@ -97,6 +100,9 @@
 				isSurnameValid: fieldSchema.safeParse(user.surname)
 			}));
 			data.users.count = newUsers.count;
+
+			successMessage = 'User deleted successfully!';
+			return true;
 		} else {
 			try {
 				let body: ApiError | ZodIssue[] = await res.json();
@@ -109,15 +115,145 @@
 			} catch (e) {
 				console.error(e);
 			}
+			return false;
 		}
 	};
 
-	const prepareForDeletion = (user: typeof userToDelete) => {
+	const prepareForDeletion = (user: typeof userToAlter) => {
 		return () => {
-			userToDelete = user;
+			userToAlter = user;
 			const dialog = document.getElementById('confirm-deletion') as HTMLDialogElement;
 			dialog.showModal();
 		};
+	};
+
+	const cleanupDeletion = () => {
+		const dialog = document.getElementById('confirm-deletion') as HTMLDialogElement;
+		dialog.close();
+	};
+
+	let password = $state('');
+	let passwordConfirmation = $state('');
+
+	const isPasswordValid = $derived(passwordSchema.safeParse(password));
+	const isPasswordConfirmationValid = $derived(
+		passwordSchema
+			.refine((data) => data === password, { message: "Passwords don't match" })
+			.safeParse(passwordConfirmation)
+	);
+
+	const changePassword = async (user: (typeof users)[0]): Promise<boolean> => {
+		const res = await fetch(`/api/user/${user.id}/password`, {
+			method: 'PATCH',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				password: password,
+				passwordConfirmation: passwordConfirmation
+			})
+		});
+
+		if (res.ok) {
+			successMessage = 'Password changed successfully!';
+			return true;
+		} else {
+			try {
+				let body: ApiError | ZodIssue[] = await res.json();
+
+				if (Array.isArray(body)) {
+					zodIssues = body;
+				} else {
+					apiError = body;
+				}
+			} catch (e) {
+				console.error(e);
+			}
+			return false;
+		}
+	};
+
+	const prepareForPasswordChange = (user: typeof userToAlter) => {
+		return () => {
+			userToAlter = user;
+			const dialog = document.getElementById('password-change') as HTMLDialogElement;
+			dialog.showModal();
+		};
+	};
+
+	const cleanupPasswordChange = () => {
+		password = '';
+		passwordConfirmation = '';
+		const dialog = document.getElementById('password-change') as HTMLDialogElement;
+		dialog.close();
+	};
+
+	let newUser = $state({
+		name: '',
+		surname: '',
+		email: '',
+		password: '',
+		passwordConfirmation: '',
+		admin: false,
+		operator: false
+	});
+
+	let newUserVerification = $derived({
+		name: fieldSchema.safeParse(newUser.name),
+		surname: fieldSchema.safeParse(newUser.surname),
+		email: emailSchema.safeParse(newUser.email),
+		password: passwordSchema.safeParse(newUser.password),
+		passwordConfirmation: passwordSchema
+			.refine((data) => data === newUser.password, { message: "Passwords don't match" })
+			.safeParse(newUser.passwordConfirmation)
+	});
+
+	const registerNewUser = async (): Promise<boolean> => {
+		const res = await fetch('/api/user', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(newUser)
+		});
+
+		if (res.ok) {
+			successMessage = 'User registered successfully!';
+			return true;
+		} else {
+			try {
+				let body: ApiError | ZodIssue[] = await res.json();
+
+				if (Array.isArray(body)) {
+					zodIssues = body;
+				} else {
+					apiError = body;
+				}
+			} catch (e) {
+				console.error(e);
+			}
+			return false;
+		}
+	};
+
+	const prepareForRegistration = () => {
+		const dialog = document.getElementById('register-new-user') as HTMLDialogElement;
+		dialog.showModal();
+	};
+
+	const cleanupRegistration = async () => {
+		newUser = {
+			name: '',
+			surname: '',
+			email: '',
+			password: '',
+			passwordConfirmation: '',
+			admin: false,
+			operator: false
+		};
+		await reloadCurrentPage();
+		const dialog = document.getElementById('register-new-user') as HTMLDialogElement;
+		dialog.close();
 	};
 </script>
 
@@ -133,6 +269,7 @@
 		}}
 	/>
 {/if}
+
 {#if apiError}
 	<ApiIssues
 		issue={apiError}
@@ -142,21 +279,249 @@
 	/>
 {/if}
 
+{#if successMessage}
+	<ChangeSuccessful
+		message={successMessage}
+		on:close={() => {
+			successMessage = undefined;
+		}}
+	/>
+{/if}
+
 <dialog id="confirm-deletion" class="modal modal-bottom sm:modal-middle">
 	<div class="modal-box">
 		<h3 class="text-lg font-bold">Are you sure you want to delete?</h3>
 		<p class="py-4">
-			Account to be deleted: <span class="font-bold"
-				>{userToDelete.name} {userToDelete.surname}</span
-			>
+			Account to be deleted: <span class="font-bold">{userToAlter.name} {userToAlter.surname}</span>
 		</p>
 		<div class="modal-action">
-			<form method="dialog">
+			<form method="dialog" class="space-x-3">
 				<button
 					class="btn btn-error"
-					on:click={() => {
-						deleteUser(userToDelete);
+					on:click|preventDefault={async () => {
+						let result = await deleteUser(userToAlter);
+						if (result) cleanupDeletion();
 					}}>Delete</button
+				>
+				<button class="btn">Cancel</button>
+			</form>
+		</div>
+	</div>
+</dialog>
+
+<dialog id="password-change" class="modal modal-middle">
+	<div class="modal-box">
+		<h3 class="text-lg font-bold">Password change</h3>
+		<p class="py-4">
+			Password change for <span class="font-bold">{userToAlter.name} {userToAlter.surname}</span>
+		</p>
+		<div class="space-y-8">
+			<div class="flex items-center justify-between">
+				<label for="password">Password</label>
+				<div class="-mt-4 flex flex-col items-center">
+					{#if !isPasswordValid.success}
+						<p class="mb-1.5 text-xs text-error">
+							{isPasswordValid.error.errors[0].message.replace('String', '')}
+						</p>
+					{:else}
+						<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+					{/if}
+					<input
+						type="password"
+						id="password"
+						name="password"
+						autocomplete="off"
+						required
+						class="input input-bordered w-full max-w-xs"
+						bind:value={password}
+						class:input-error={!isPasswordValid.success}
+					/>
+				</div>
+			</div>
+			<div class="flex items-center justify-between">
+				<label for="passwordConfirmation">Confirm Password</label>
+				<div class="-mt-4 flex flex-col items-center">
+					{#if !isPasswordConfirmationValid.success}
+						<p class="mb-1.5 text-xs text-error">
+							{isPasswordConfirmationValid.error.errors[0].message.replace('String', '')}
+						</p>
+					{:else}
+						<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+					{/if}
+					<input
+						type="password"
+						id="passwordConfirmation"
+						name="passwordConfirmation"
+						autocomplete="off"
+						required
+						class="input input-bordered w-full max-w-xs"
+						bind:value={passwordConfirmation}
+						class:input-error={!isPasswordConfirmationValid.success}
+					/>
+				</div>
+			</div>
+		</div>
+		<div class="modal-action">
+			<form method="dialog" class="space-x-3">
+				<button
+					class="btn btn-warning"
+					class:btn-disabled={!isPasswordValid.success || !isPasswordConfirmationValid.success}
+					on:click={async () => {
+						let result = await changePassword(userToAlter);
+						if (result) cleanupPasswordChange();
+					}}>Change password</button
+				>
+				<button class="btn">Cancel</button>
+			</form>
+		</div>
+	</div>
+</dialog>
+
+<dialog id="register-new-user" class="modal modal-middle">
+	<div class="modal-box">
+		<h3 class="mb-3 text-lg font-bold">Register new user</h3>
+		<div class="space-y-8">
+			<div class="flex items-center justify-between">
+				<label for="name">Name</label>
+				<div class="-mt-4 flex flex-col items-center">
+					{#if !newUserVerification.name.success}
+						<p class="mb-1.5 text-xs text-error">
+							{newUserVerification.name.error.errors[0].message.replace('String', '')}
+						</p>
+					{:else}
+						<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+					{/if}
+					<input
+						type="text"
+						id="name"
+						name="name"
+						autocomplete="off"
+						required
+						class="input input-bordered w-full max-w-xs"
+						bind:value={newUser.name}
+						class:input-error={!newUserVerification.name.success}
+					/>
+				</div>
+			</div>
+			<div class="flex items-center justify-between">
+				<label for="surname">Surname</label>
+				<div class="-mt-4 flex flex-col items-center">
+					{#if !newUserVerification.surname.success}
+						<p class="mb-1.5 text-xs text-error">
+							{newUserVerification.surname.error.errors[0].message.replace('String', '')}
+						</p>
+					{:else}
+						<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+					{/if}
+					<input
+						type="text"
+						id="surname"
+						name="surname"
+						autocomplete="off"
+						required
+						class="input input-bordered w-full max-w-xs"
+						bind:value={newUser.surname}
+						class:input-error={!newUserVerification.surname.success}
+					/>
+				</div>
+			</div>
+			<div class="flex items-center justify-between">
+				<label for="email">Email</label>
+				<div class="-mt-4 flex flex-col items-center">
+					{#if !newUserVerification.email.success}
+						<p class="mb-1.5 text-xs text-error">
+							{newUserVerification.email.error.errors[0].message.replace('String', '')}
+						</p>
+					{:else}
+						<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+					{/if}
+					<input
+						type="email"
+						id="email"
+						name="email"
+						autocomplete="off"
+						required
+						class="input input-bordered w-full max-w-xs"
+						bind:value={newUser.email}
+						class:input-error={!newUserVerification.email.success}
+					/>
+				</div>
+			</div>
+			<div class="flex items-center justify-between">
+				<label for="password">Password</label>
+				<div class="-mt-4 flex flex-col items-center">
+					{#if !newUserVerification.password.success}
+						<p class="mb-1.5 text-xs text-error">
+							{newUserVerification.password.error.errors[0].message.replace('String', '')}
+						</p>
+					{:else}
+						<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+					{/if}
+					<input
+						type="password"
+						id="password"
+						name="password"
+						autocomplete="off"
+						required
+						class="input input-bordered w-full max-w-xs"
+						bind:value={newUser.password}
+						class:input-error={!newUserVerification.password.success}
+					/>
+				</div>
+			</div>
+			<div class="flex items-center justify-between">
+				<label for="passwordConfirmation">Confirm Password</label>
+				<div class="-mt-4 flex flex-col items-center">
+					{#if !newUserVerification.passwordConfirmation.success}
+						<p class="mb-1.5 text-xs text-error">
+							{newUserVerification.passwordConfirmation.error.errors[0].message.replace(
+								'String',
+								''
+							)}
+						</p>
+					{:else}
+						<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+					{/if}
+					<input
+						type="password"
+						id="passwordConfirmation"
+						name="passwordConfirmation"
+						autocomplete="off"
+						required
+						class="input input-bordered w-full max-w-xs"
+						bind:value={newUser.passwordConfirmation}
+						class:input-error={!newUserVerification.passwordConfirmation.success}
+					/>
+				</div>
+			</div>
+			<div class="flex w-full justify-around">
+				<div class="form-control max-w-40 flex-1">
+					<label class="label cursor-pointer">
+						<span class="label-text">Admin</span>
+						<input type="checkbox" bind:checked={newUser.admin} class="checkbox-warning checkbox" />
+					</label>
+				</div>
+				<div class="form-control max-w-40 flex-1">
+					<label class="label cursor-pointer">
+						<span class="label-text">Operator</span>
+						<input type="checkbox" bind:checked={newUser.operator} class="checkbox-info checkbox" />
+					</label>
+				</div>
+			</div>
+		</div>
+		<div class="modal-action">
+			<form method="dialog" class="space-x-3">
+				<button
+					class="btn btn-success"
+					class:btn-disabled={!newUserVerification.name.success ||
+						!newUserVerification.surname.success ||
+						!newUserVerification.email.success ||
+						!newUserVerification.password.success ||
+						!newUserVerification.passwordConfirmation.success}
+					on:click|preventDefault={async () => {
+						const result = await registerNewUser();
+						if (result) await cleanupRegistration();
+					}}>Register new user</button
 				>
 				<button class="btn">Cancel</button>
 			</form>
@@ -166,7 +531,7 @@
 
 <div class="mt-3 flex w-full justify-center space-x-3">
 	<div class="hidden flex-1 text-center md:block">
-		<a href="/admin/users/register" class="btn btn-sm -mt-1">Register new user</a>
+		<button class="btn btn-sm -mt-1" on:click={prepareForRegistration}>Register new user</button>
 	</div>
 	<div class="join -mt-1">
 		<button class="btn join-item btn-sm" class:btn-disabled={page === 1} on:click={loadPreviousPage}
@@ -222,7 +587,7 @@
 							type="checkbox"
 							checked={user.admin}
 							disabled
-							class="checkbox-info checkbox checkbox-sm"
+							class="checkbox-warning checkbox checkbox-sm"
 						/>
 					</td>
 					<td>
@@ -255,7 +620,14 @@
 										}}>Edit</button
 									>
 								</li>
-								<li><button class="btn btn-sm">Change password</button></li>
+								<li>
+									<button
+										class="btn btn-warning btn-sm"
+										on:click={() => {
+											prepareForPasswordChange(user)();
+										}}>Change password</button
+									>
+								</li>
 								<li>
 									<button
 										class="btn btn-error btn-sm"
@@ -332,7 +704,7 @@
 						<input
 							type="checkbox"
 							bind:checked={user.admin}
-							class="checkbox-info checkbox checkbox-sm"
+							class="checkbox-warning checkbox checkbox-sm"
 						/>
 					</td>
 					<td>

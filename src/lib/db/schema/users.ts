@@ -21,10 +21,10 @@ export const UserRoles = pgTable(
 	{
 		user_id: uuid('user_id')
 			.notNull()
-			.references(() => Users.id),
+			.references(() => Users.id, { onDelete: 'cascade' }),
 		role_id: serial('role_id')
 			.notNull()
-			.references(() => Roles.id)
+			.references(() => Roles.id, { onDelete: 'cascade' })
 	},
 	(table) => ({
 		pk: primaryKey({ columns: [table.user_id, table.role_id] })
