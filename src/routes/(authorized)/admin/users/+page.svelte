@@ -3,20 +3,39 @@
 	import type { ApiError } from '$lib';
 	import { emailSchema, fieldSchema, passwordSchema } from '$lib/validationSchemas';
 	import type { ZodIssue } from 'zod';
+	import { pushState } from '$app/navigation';
 	import ZodIssues from '$lib/components/ZodIssues.svelte';
 	import ApiIssues from '$lib/components/ApiIssues.svelte';
 	import ChangeSuccessful from '$lib/components/ChangeSuccessful.svelte';
 
 	let { data } = $props();
 
-	let users = $state(
+	type User = {
+		id: string;
+		name: string;
+		surname: string;
+		email: string;
+		admin: boolean;
+		operator: boolean;
+		editing: boolean;
+	};
+
+	let users: User[] = $state(
 		data.users.users.map((user) => ({
 			...user,
 			editing: false
 		}))
 	);
 
-	let lastUserValues: (typeof users)[0] = $state((() => users[0])());
+	let lastUserValues: User = $state({
+		id: '',
+		name: '',
+		surname: '',
+		email: '',
+		admin: false,
+		operator: false,
+		editing: false
+	});
 
 	let page = $state(data.page);
 	let pageSize = $state(data.pageSize);
@@ -28,6 +47,7 @@
 	const loadPage = (nextPage: number) => {
 		return async () => {
 			const res = await fetch(`/api/user?page=${nextPage}&pageSize=${pageSize}`);
+			pushState(`/admin/users?page=${nextPage}&pageSize=${pageSize}`, {});
 			const usersPage: UsersWithRoles = await res.json();
 			users = usersPage.users.map((user) => ({
 				...user,
@@ -48,7 +68,7 @@
 		await loadPage(page - 1)();
 	};
 
-	const updateUser = async (user: (typeof users)[0]) => {
+	const updateUser = async (user: User) => {
 		const res = await fetch(`/api/user/${user.id}`, {
 			method: 'PATCH',
 			headers: {
@@ -81,9 +101,17 @@
 		}
 	};
 
-	let userToAlter: (typeof users)[0] = $state((() => users[0])());
+	let userToAlter: User = $state({
+		id: '',
+		name: '',
+		surname: '',
+		email: '',
+		admin: false,
+		operator: false,
+		editing: false
+	});
 
-	const deleteUser = async (user: (typeof users)[0]): Promise<boolean> => {
+	const deleteUser = async (user: User): Promise<boolean> => {
 		const res = await fetch(`/api/user/${user.id}`, {
 			method: 'DELETE'
 		});
@@ -606,7 +634,7 @@
 							class:dropdown-top={i > 2 &&
 								i + 1 >= (data.users.count > pageSize ? pageSize : data.users.count) - 2}
 						>
-							<div tabindex="-1" role="button" class="btn btn-neutral btn-sm mb-1">Hover</div>
+							<div tabindex="-1" role="button" class="btn btn-neutral btn-sm mb-1">Options</div>
 							<ul
 								tabindex="-1"
 								class="menu dropdown-content z-[1] w-52 space-y-1.5 rounded-box bg-base-100 p-2 shadow"

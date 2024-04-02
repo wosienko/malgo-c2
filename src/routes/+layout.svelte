@@ -61,7 +61,7 @@
 						{/if}
 						<li>
 							<div class="dropdown dropdown-end dropdown-bottom dropdown-hover">
-								<span tabindex="-1" role="button">Options</span>
+								<span tabindex="-1" role="button">Hello, {data.name}!</span>
 								<ul
 									tabindex="-1"
 									class="menu dropdown-content z-[1] w-52 rounded-box bg-base-200 p-2 shadow"

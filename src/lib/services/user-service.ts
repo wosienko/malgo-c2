@@ -23,6 +23,16 @@ export const findIdForLoginAttempt = async (userLogin: LoginSchema): Promise<str
 	return validPassword ? existingUser.id : '';
 };
 
+export const getNameForId = async (userId: string): Promise<string> => {
+	const user = await db.query.Users.findFirst({
+		columns: {
+			name: true
+		},
+		where: eq(Users.id, userId)
+	});
+	return user ? user.name : '';
+};
+
 export const registerNewUser = async (
 	userRegister: RegisterSchema
 ): Promise<UuidSchema | undefined> => {
