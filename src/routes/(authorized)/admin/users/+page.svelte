@@ -634,7 +634,7 @@
 							class:dropdown-top={i > 2 &&
 								i + 1 >= (data.users.count > pageSize ? pageSize : data.users.count) - 2}
 						>
-							<div tabindex="-1" role="button" class="btn btn-neutral btn-sm mb-1">Hover</div>
+							<div tabindex="-1" role="button" class="btn btn-neutral btn-sm mb-1">Options</div>
 							<ul
 								tabindex="-1"
 								class="menu dropdown-content z-[1] w-52 space-y-1.5 rounded-box bg-base-100 p-2 shadow"
