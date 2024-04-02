@@ -3,7 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { invalidateSession } from '$lib/services/session-service';
 
 export const load: PageServerLoad = async () => {
-	// ...
+	// kept to enable the server route
 };
 
 export const actions: Actions = {

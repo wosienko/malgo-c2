@@ -1,4 +1,4 @@
-import { pgTable, serial, uuid, varchar } from 'drizzle-orm/pg-core';
+import { pgTable, primaryKey, serial, uuid, varchar } from 'drizzle-orm/pg-core';
 import { sql, relations } from 'drizzle-orm';
 
 export const Users = pgTable('users', {
@@ -16,15 +16,20 @@ export const Roles = pgTable('roles', {
 	name: varchar('name').unique().notNull()
 });
 
-export const UserRoles = pgTable('user_roles', {
-	id: uuid('id')
-		.primaryKey()
-		.default(sql`gen_random_uuid()`),
-	user_id: uuid('user_id')
-		.notNull()
-		.references(() => Users.id),
-	role_id: serial('role_id').notNull()
-});
+export const UserRoles = pgTable(
+	'user_roles',
+	{
+		user_id: uuid('user_id')
+			.notNull()
+			.references(() => Users.id, { onDelete: 'cascade' }),
+		role_id: serial('role_id')
+			.notNull()
+			.references(() => Roles.id, { onDelete: 'cascade' })
+	},
+	(table) => ({
+		pk: primaryKey({ columns: [table.user_id, table.role_id] })
+	})
+);
 
 export const userRelations = relations(Users, ({ many }) => ({
 	UserRoles: many(UserRoles)
@@ -44,3 +49,17 @@ export const userRolesRelations = relations(UserRoles, ({ one }) => ({
 		references: [Roles.id]
 	})
 }));
+
+export type UserWithRoles = {
+	id: string;
+	name: string;
+	surname: string;
+	email: string;
+	admin: boolean;
+	operator: boolean;
+};
+
+export type UsersWithRoles = {
+	users: UserWithRoles[];
+	count: number;
+};

@@ -14,9 +14,7 @@
 	let isOverflowing = $state(false);
 	let contentElement: Element | null = null;
 	const checkOverflow = () => {
-		isOverflowing =
-			contentElement!.scrollHeight > contentElement!.clientHeight ||
-			contentElement!.scrollWidth > contentElement!.clientWidth;
+		isOverflowing = contentElement!.scrollHeight > contentElement!.clientHeight;
 	};
 
 	onMount(() => {
@@ -47,7 +45,9 @@
 				{#if data.loggedIn}
 					<a class="kbd kbd-lg text-xl" href="/home">MALGO</a>
 					<ul class="menu menu-horizontal px-1">
-						<li><a href="/sessions">Sessions</a></li>
+						{#if data.isOperator}
+							<li><a href="/sessions">Sessions</a></li>
+						{/if}
 					</ul>
 				{:else}
 					<a class="kbd kbd-lg text-xl" href="/">MALGO</a>
@@ -56,25 +56,35 @@
 			<div class="flex-none">
 				<ul class="menu menu-horizontal px-1">
 					{#if data.loggedIn}
-						<li><a href="/settings">Settings</a></li>
+						{#if data.isAdmin}
+							<li><a href="/admin">Admin</a></li>
+						{/if}
 						<li>
-							<form method="post" action="/logout" use:enhance>
-								<button>Sign out</button>
-							</form>
+							<div class="dropdown dropdown-end dropdown-bottom dropdown-hover">
+								<span tabindex="-1" role="button">Options</span>
+								<ul
+									tabindex="-1"
+									class="menu dropdown-content z-[1] w-52 rounded-box bg-base-200 p-2 shadow"
+								>
+									<li><a href="/settings">Settings</a></li>
+									<li>
+										<form method="post" action="/logout" use:enhance>
+											<button class="w-40 text-left">Sign out</button>
+										</form>
+									</li>
+								</ul>
+							</div>
 						</li>
 					{:else}
 						<li><a href="/login">Login</a></li>
-						{#if !import.meta.env.PROD}
-							<li><a href="/register">Register</a></li>
-						{/if}
 					{/if}
 				</ul>
 			</div>
 		</div>
 	</header>
 
-	<main class="grow overflow-y-auto py-3">
-		<div class="flex w-full items-center justify-center" class:h-full={!isOverflowing}>
+	<main class="grow overflow-y-auto pt-3">
+		<div class="flex w-full flex-col items-center justify-center" class:h-full={!isOverflowing}>
 			<slot />
 		</div>
 	</main>
