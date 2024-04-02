@@ -26,7 +26,7 @@
 			>
 		{/each}
 	</div>
-	<div class="grow">
+	<div class="max-w-full grow overflow-x-auto">
 		<slot />
 	</div>
 </div>

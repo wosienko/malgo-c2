@@ -45,7 +45,7 @@
 			modalTimeout = setTimeout(() => {
 				dialog.close();
 				clearInterval(countdownInterval);
-				goto('/login');
+				goto('/admin/users');
 			}, 4000); // 3 seconds + 1 second for the last countdown
 		}
 	});
@@ -68,7 +68,7 @@
 	<div class="modal-box">
 		<h3 class="text-lg font-bold">User registered successfully!</h3>
 		<p class="py-4">
-			You will be redirected to login in <span class="countdown"
+			You will be redirected to user administration in <span class="countdown"
 				><span style="--value:{countdown};"></span></span
 			>
 		</p>
@@ -86,7 +86,7 @@
 	</div>
 </dialog>
 
-<form method="POST" class="flex flex-col space-y-4" use:enhance>
+<form method="POST" class="mb-1 flex flex-col space-y-4" use:enhance>
 	<div class="flex flex-col items-center space-y-2">
 		<label for="name">Name</label>
 		{#if !isNameValid.success}
@@ -188,8 +188,11 @@
 		/>
 	</div>
 	<div class="flex flex-col items-center">
-		<button class="btn btn-neutral w-full max-w-xs" type="submit" class:btn-disabled={!isFormValid}
-			>Register</button
-		>
+		<div class="flex w-full max-w-xs space-x-3">
+			<button class="btn btn-neutral flex-1" type="submit" class:btn-disabled={!isFormValid}
+				>Register</button
+			>
+			<a href="/admin/users" class="btn btn-neutral flex-1">Cancel</a>
+		</div>
 	</div>
 </form>

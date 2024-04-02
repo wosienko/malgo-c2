@@ -1,9 +1,10 @@
 import { db } from '$lib/db/db.server';
-import { eq } from 'drizzle-orm';
-import { Roles, UserRoles, Users } from '$lib/db/schema/users';
+import { eq, count } from 'drizzle-orm';
+import { Roles, UserRoles, Users, type UserWithRoles } from '$lib/db/schema/users';
 import { Argon2id } from 'oslo/password';
 import type { LoginSchema, RegisterSchema } from '$lib/validationSchemas';
 import { DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_PASSWORD } from '$env/static/private';
+import { ServerSettings } from '$lib/db/schema/server-settings';
 
 export const findIdForLoginAttempt = async (userLogin: LoginSchema): Promise<string> => {
 	let existingUser = await db.query.Users.findFirst({
@@ -55,8 +56,98 @@ export const registerNewUser = async (userRegister: RegisterSchema): Promise<boo
 	return true;
 };
 
+export const getUsersWithRoles = async (page: number, pageSize: number) => {
+	return db.query.Users.findMany({
+		columns: {
+			id: true,
+			name: true,
+			surname: true,
+			email: true
+		},
+		with: {
+			UserRoles: {
+				columns: {},
+				with: {
+					Role: {
+						columns: {
+							name: true
+						}
+					}
+				}
+			}
+		},
+		orderBy: Users.surname,
+		limit: pageSize,
+		offset: (page - 1) * pageSize
+	}).then((users) => {
+		return users.map((user) => {
+			const userWithRoles: UserWithRoles = {
+				id: user.id,
+				name: user.name,
+				surname: user.surname,
+				email: user.email,
+				admin: user.UserRoles.some((userRole) => userRole.Role.name === 'Admin'),
+				operator: user.UserRoles.some((userRole) => userRole.Role.name === 'Operator')
+			};
+			return userWithRoles;
+		});
+	});
+};
+
+export const getCountOfUsers = async (): Promise<number> => {
+	return db
+		.select({ count: count() })
+		.from(Users)
+		.then((result) => result[0].count);
+};
+
+export const updateUserData = async (
+	userId: string,
+	name?: string,
+	surname?: string,
+	email?: string
+) => {
+	try {
+		const updatedUser = await db
+			.update(Users)
+			.set({
+				name,
+				surname,
+				email
+			})
+			.where(eq(Users.id, userId))
+			.returning({ id: Users.id });
+		return updatedUser.length > 0 ? '' : 'User not found';
+	} catch (e) {
+		return 'Error updating user. Verify the data and try again';
+	}
+};
+
+export const deleteUser = async (userId: string) => {
+	try {
+		const deletedUser = await db
+			.delete(Users)
+			.where(eq(Users.id, userId))
+			.returning({ id: Users.id });
+		return deletedUser.length > 0 ? '' : 'User not found';
+	} catch (e) {
+		return 'Error deleting user. Verify the data and try again';
+	}
+};
+
 export const createDefaultAdminAndRoles = async (): Promise<void> => {
 	await db.transaction(async (tx) => {
+		const isAdminConfigCompleted = await tx.query.ServerSettings.findFirst({
+			columns: {
+				value: true
+			},
+			where: eq(ServerSettings.key, 'adminConfigCompleted')
+		});
+		if (isAdminConfigCompleted) {
+			console.log('Default admin and roles already created');
+			return;
+		}
+
 		const adminRoleId = await tx
 			.insert(Roles)
 			.values({ name: 'Admin' })
@@ -98,5 +189,10 @@ export const createDefaultAdminAndRoles = async (): Promise<void> => {
 				}
 			])
 			.onConflictDoNothing();
+
+		await tx.insert(ServerSettings).values({
+			key: 'adminConfigCompleted',
+			value: 'true'
+		});
 	});
 };

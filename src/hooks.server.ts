@@ -1,4 +1,4 @@
-import { type Handle, type HandleServerError, redirect } from '@sveltejs/kit';
+import { error, type Handle, type HandleServerError, redirect } from '@sveltejs/kit';
 import { createDefaultAdminAndRoles } from '$lib/services/user-service';
 import { deleteExpiredSessions, validateSession } from '$lib/services/session-service';
 import { isUserAdmin } from '$lib/services/roles-service';
@@ -13,6 +13,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 		if (nextRoute.startsWith('admin') && !(await isUserAdmin(event.locals.user!.id)))
 			return redirect(303, '/home');
+
+		if (nextRoute.startsWith('api/(admin)') && !(await isUserAdmin(event.locals.user!.id)))
+			return error(403, 'Forbidden');
 	}
 
 	if (event.route.id?.startsWith('/register')) {

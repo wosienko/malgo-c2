@@ -1,9 +1,31 @@
 {
-	"id": "ef2461f9-3ca1-4799-9b19-5e86c4582ac8",
-	"prevId": "00000000-0000-0000-0000-000000000000",
+	"id": "30bfb131-89f0-4d76-95d8-cc09e7a3656e",
+	"prevId": "ef2461f9-3ca1-4799-9b19-5e86c4582ac8",
 	"version": "5",
 	"dialect": "pg",
 	"tables": {
+		"server_settings": {
+			"name": "server_settings",
+			"schema": "",
+			"columns": {
+				"key": {
+					"name": "key",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true
+				},
+				"value": {
+					"name": "value",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
+		},
 		"sessions": {
 			"name": "sessions",
 			"schema": "",
