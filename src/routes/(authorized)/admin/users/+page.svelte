@@ -158,6 +158,10 @@
 			.refine((data) => data === passwordChange.password, { message: "Passwords don't match" })
 			.safeParse(passwordChange.passwordConfirmation)
 	});
+	let passwordChangeValid = $derived(
+		passwordChangeVerification.password.success &&
+		passwordChangeVerification.passwordConfirmation.success
+	);
 
 	let showPasswordChangeModal = $state(() => {});
 	const prepareForPasswordChange = (user: typeof userToAlter) => {
@@ -217,6 +221,14 @@
 			.refine((data) => data === newUser.password, { message: "Passwords don't match" })
 			.safeParse(newUser.passwordConfirmation)
 	});
+
+	let newUserValid = $derived(
+		newUserVerification.name.success &&
+		newUserVerification.surname.success &&
+		newUserVerification.email.success &&
+		newUserVerification.password.success &&
+		newUserVerification.passwordConfirmation.success
+	);
 
 	let showRegistrationModal = $state(() => {});
 	const prepareForRegistration = () => {
@@ -310,8 +322,7 @@
 	messageEmphasis={`${userToAlter.name} ${userToAlter.surname}`}
 	btnClass="btn-warning"
 	btnText="Change password"
-	btnDisabledCondition={!passwordChangeVerification.password.success ||
-		!passwordChangeVerification.passwordConfirmation.success}
+	btnDisabledCondition={!passwordChangeValid}
 	onclickCallback={() => changePassword(userToAlter)}
 	bind:showModal={showPasswordChangeModal}
 >
@@ -342,11 +353,7 @@
 	title="Register new user"
 	btnClass="btn-success"
 	btnText="Register new user"
-	btnDisabledCondition={!newUserVerification.name.success ||
-		!newUserVerification.surname.success ||
-		!newUserVerification.email.success ||
-		!newUserVerification.password.success ||
-		!newUserVerification.passwordConfirmation.success}
+	btnDisabledCondition={!newUserValid}
 	onclickCallback={registerNewUser}
 	bind:showModal={showRegistrationModal}
 >
@@ -529,6 +536,7 @@
 				{@const nameCheck = fieldSchema.safeParse(user.name)}
 				{@const surnameCheck = fieldSchema.safeParse(user.surname)}
 				{@const emailCheck = emailSchema.safeParse(user.email)}
+				{@const editingValid = nameCheck.success && surnameCheck.success && emailCheck.success}
 				<tr class="max-w-dvw hover">
 					<td>
 						<ValidatedInput
@@ -578,9 +586,7 @@
 						<button
 							class="btn btn-success btn-sm w-14"
 							class:btn-disabled={JSON.stringify(user) === JSON.stringify(lastUserValues) ||
-								!nameCheck.success ||
-								!surnameCheck.success ||
-								!emailCheck.success}
+								!editingValid}
 							on:click={() => {
 								updateUser(user);
 							}}>Save</button
