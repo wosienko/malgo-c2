@@ -9,7 +9,7 @@
 	import ChangeSuccessful from '$lib/components/toasts/ChangeSuccessful.svelte';
 	import ModalRunCancel from '$lib/components/modals/ModalRunCancel.svelte';
 	import ValidatedInput from '$lib/components/inputs/ValidatedInput.svelte';
-	import ValidatedInputWithLabel from '$lib/components/inputs/ValidatedInputWithLabel.svelte';
+	import ValidatedInputWithLabel from '$lib/components/inputs/ValidatedInputWithHorizontalLabel.svelte';
 
 	let { data } = $props();
 
