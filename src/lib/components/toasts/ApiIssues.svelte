@@ -20,6 +20,7 @@
 
 <div
 	class="alert toast alert-error toast-center toast-top mt-5 grid max-w-xs grid-flow-col"
+	in:fade
 	out:fade
 >
 	<div class="col-span-3 text-wrap">
