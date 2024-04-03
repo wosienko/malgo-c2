@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { emailSchema, passwordSchema } from '$lib/validationSchemas';
-	import ZodIssues from '$lib/components/ZodIssues.svelte';
+	import ZodIssues from '$lib/components/toasts/ZodIssues.svelte';
 
 	let { form } = $props();
 
