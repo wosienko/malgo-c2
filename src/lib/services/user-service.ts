@@ -4,7 +4,11 @@ import { Roles, UserRoles, Users, type UserWithRoles } from '$lib/db/schema/user
 import { Argon2id } from 'oslo/password';
 import { type LoginSchema, type RegisterSchema, type UuidSchema } from '$lib/validationSchemas';
 import { DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_PASSWORD } from '$env/static/private';
-import { ServerSettings } from '$lib/db/schema/server-settings';
+import {
+	getServerSetting,
+	ServerSettings,
+	setServerSetting
+} from '$lib/services/server-settings-service';
 
 export const findIdForLoginAttempt = async (userLogin: LoginSchema): Promise<string> => {
 	let existingUser = await db.query.Users.findFirst({
@@ -156,12 +160,7 @@ export const changePassword = async (userId: string, newPassword: string) => {
 
 export const createDefaultAdminAndRoles = async (): Promise<void> => {
 	await db.transaction(async (tx) => {
-		const isAdminConfigCompleted = await tx.query.ServerSettings.findFirst({
-			columns: {
-				value: true
-			},
-			where: eq(ServerSettings.key, 'adminConfigCompleted')
-		});
+		const isAdminConfigCompleted = await getServerSetting(ServerSettings.AdminConfigCompleted);
 		if (isAdminConfigCompleted) {
 			console.log('Default admin and roles already created');
 			return;
@@ -209,9 +208,6 @@ export const createDefaultAdminAndRoles = async (): Promise<void> => {
 			])
 			.onConflictDoNothing();
 
-		await tx.insert(ServerSettings).values({
-			key: 'adminConfigCompleted',
-			value: 'true'
-		});
+		await setServerSetting(ServerSettings.AdminConfigCompleted, 'true');
 	});
 };

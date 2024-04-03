@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { emailSchema, passwordSchema } from '$lib/validationSchemas';
-	import ZodIssues from '$lib/components/ZodIssues.svelte';
+	import ZodIssues from '$lib/components/toasts/ZodIssues.svelte';
+	import ValidatedInputWithVerticalLabel from '$lib/components/inputs/ValidatedInputWithVerticalLabel.svelte';
 
 	let { form } = $props();
 
@@ -34,46 +35,22 @@
 {/if}
 
 <form action="/login" method="POST" class="flex flex-col space-y-4" use:enhance>
-	<div class="flex flex-col items-center space-y-2">
-		<label for="email">Email</label>
-		{#if !isEmailValid.success}
-			<p class="text-xs text-error" style="margin: 0">
-				{isEmailValid.error.errors[0].message.replace('String', '')}
-			</p>
-		{:else}
-			<p class="text-xs text-transparent" style="margin: 0">For formatting sake</p>
-		{/if}
-		<input
-			type="email"
-			id="email"
-			name="email"
-			autocomplete="off"
-			required
-			class="input input-bordered w-full max-w-xs"
-			bind:value={email}
-			class:input-error={!isEmailValid.success}
-		/>
-	</div>
-	<div class="flex flex-col items-center space-y-2">
-		<label for="password">Password</label>
-		{#if !isPasswordValid.success}
-			<p class="text-xs text-error" style="margin: 0">
-				{isPasswordValid.error.errors[0].message.replace('String', '')}
-			</p>
-		{:else}
-			<p class="text-xs text-transparent" style="margin: 0">For formatting sake</p>
-		{/if}
-		<input
-			type="password"
-			id="password"
-			name="password"
-			autocomplete="off"
-			required
-			class="input input-bordered w-full max-w-xs"
-			bind:value={password}
-			class:input-error={!isPasswordValid.success}
-		/>
-	</div>
+	<ValidatedInputWithVerticalLabel
+		label="Email"
+		id="email"
+		name="email"
+		type="email"
+		bind:value={email}
+		validation={isEmailValid}
+	/>
+	<ValidatedInputWithVerticalLabel
+		label="Password"
+		id="password"
+		name="password"
+		type="password"
+		bind:value={password}
+		validation={isPasswordValid}
+	/>
 	<div class="flex flex-col items-center">
 		<button class="btn btn-neutral w-full max-w-xs" type="submit" class:btn-disabled={!isFormValid}
 			>Login</button
