@@ -34,6 +34,8 @@
 		const dialog = document.getElementById(id) as HTMLDialogElement;
 		dialog.close();
 	};
+
+	let waitingForResponse = $state(false);
 </script>
 
 <dialog {id} class="modal modal-bottom sm:modal-middle">
@@ -50,17 +52,27 @@
 		{/if}
 		<form method="dialog">
 			<slot />
-			<div class="modal-action space-x-3">
-				<button
-					class={`btn ${btnClass}`}
-					class:btn-disabled={btnDisabledCondition}
-					on:click|preventDefault={async () => {
-						let result = await onclickCallback();
-						if (result) cleanupClose();
-					}}>{btnText}</button
-				>
-				<button class="btn">Cancel</button>
-			</div>
+			{#if waitingForResponse}
+				<div class="mt-6 h-12 w-full text-center">
+					<span class="loading loading-spinner loading-lg text-info"></span>
+				</div>
+			{:else}
+				<div class="modal-action space-x-3">
+					<button
+						class={`btn ${btnClass}`}
+						class:btn-disabled={btnDisabledCondition}
+						on:click|preventDefault={async () => {
+							waitingForResponse = true;
+							let result = await onclickCallback();
+							waitingForResponse = false;
+							if (result) cleanupClose();
+						}}
+					>
+						{btnText}
+					</button>
+					<button class="btn" class:btn-disabled={waitingForResponse}>Cancel</button>
+				</div>
+			{/if}
 		</form>
 	</div>
 </dialog>

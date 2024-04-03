@@ -13,6 +13,8 @@
 
 	let { data } = $props();
 
+	let loading = $state(false);
+
 	type User = {
 		id: string;
 		name: string;
@@ -73,6 +75,7 @@
 	};
 
 	const updateUser = async (user: User) => {
+		loading = true;
 		const res = await fetch(`/api/user/${user.id}`, {
 			method: 'PATCH',
 			headers: {
@@ -86,6 +89,7 @@
 				operator: user.operator
 			})
 		});
+		loading = false;
 
 		if (res.ok) {
 			user.editing = false;
@@ -160,7 +164,7 @@
 	});
 	let passwordChangeValid = $derived(
 		passwordChangeVerification.password.success &&
-		passwordChangeVerification.passwordConfirmation.success
+			passwordChangeVerification.passwordConfirmation.success
 	);
 
 	let showPasswordChangeModal = $state(() => {});
@@ -224,10 +228,10 @@
 
 	let newUserValid = $derived(
 		newUserVerification.name.success &&
-		newUserVerification.surname.success &&
-		newUserVerification.email.success &&
-		newUserVerification.password.success &&
-		newUserVerification.passwordConfirmation.success
+			newUserVerification.surname.success &&
+			newUserVerification.email.success &&
+			newUserVerification.password.success &&
+			newUserVerification.passwordConfirmation.success
 	);
 
 	let showRegistrationModal = $state(() => {});
@@ -583,22 +587,28 @@
 						/>
 					</td>
 					<td class="my-1.5 flex flex-col items-center justify-center space-y-3">
-						<button
-							class="btn btn-success btn-sm w-14"
-							class:btn-disabled={JSON.stringify(user) === JSON.stringify(lastUserValues) ||
-								!editingValid}
-							on:click={() => {
-								updateUser(user);
-							}}>Save</button
-						>
-						<button
-							class="btn btn-sm"
-							on:click={() => {
-								// so that the input fields are reset. In runes mode, cannot use `user = lastUserValues`
-								users[i] = lastUserValues;
-								users[i].editing = false;
-							}}>Cancel</button
-						>
+						{#if loading}
+							<div class="my-4 h-11">
+								<span class="loading loading-spinner loading-lg text-info"></span>
+							</div>
+						{:else}
+							<button
+								class="btn btn-success btn-sm w-14"
+								class:btn-disabled={JSON.stringify(user) === JSON.stringify(lastUserValues) ||
+									!editingValid}
+								on:click={() => {
+									updateUser(user);
+								}}>Save</button
+							>
+							<button
+								class="btn btn-sm"
+								on:click={() => {
+									// so that the input fields are reset. In runes mode, cannot use `user = lastUserValues`
+									users[i] = lastUserValues;
+									users[i].editing = false;
+								}}>Cancel</button
+							>
+						{/if}
 					</td>
 				</tr>
 			{/if}
