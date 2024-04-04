@@ -460,8 +460,8 @@
 <table class="table table-fixed overflow-x-auto text-center">
 	<thead>
 		<tr>
-			<th class="md:w-1/5 lg:w-[23%] hidden md:table-cell">Name</th>
-			<th class="md:w-1/5 lg:w-[23%] hidden md:table-cell">Surname</th>
+			<th class="hidden md:table-cell md:w-1/5 lg:w-[23%]">Name</th>
+			<th class="hidden md:table-cell md:w-1/5 lg:w-[23%]">Surname</th>
 			<th class="md:w-1/5 lg:w-[23%]">Email</th>
 			<th class="w-20 md:w-24">Admin</th>
 			<th class="w-20 md:w-24">Operator</th>
@@ -472,8 +472,8 @@
 		{#each users as user, i}
 			{#if !user.editing}
 				<tr class="max-w-dvw hover">
-					<td class="no-scrollbar overflow-x-auto hidden md:table-cell">{user.name}</td>
-					<td class="no-scrollbar overflow-x-auto hidden md:table-cell">{user.surname}</td>
+					<td class="no-scrollbar hidden overflow-x-auto md:table-cell">{user.name}</td>
+					<td class="no-scrollbar hidden overflow-x-auto md:table-cell">{user.surname}</td>
 					<td class="no-scrollbar overflow-x-auto">{user.email}</td>
 					<td>
 						<input
@@ -542,38 +542,38 @@
 				<tr class="max-w-dvw hover">
 					<td class="hidden md:table-cell">
 						<div class="md:-mt-2">
-						<ValidatedInput
-							type="text"
-							id="name"
-							name="name"
-							bind:value={user.name}
-							validation={nameCheck}
-							classes="input-sm mb-5 w-full"
-						/>
+							<ValidatedInput
+								type="text"
+								id="name"
+								name="name"
+								bind:value={user.name}
+								validation={nameCheck}
+								classes="input-sm mb-5 w-full"
+							/>
 						</div>
 					</td>
 					<td class="hidden md:table-cell">
 						<div class="md:-mt-2">
-						<ValidatedInput
-							type="text"
-							id="surname"
-							name="surname"
-							bind:value={user.surname}
-							validation={surnameCheck}
-							classes="input-sm mb-5 w-full"
-						/>
+							<ValidatedInput
+								type="text"
+								id="surname"
+								name="surname"
+								bind:value={user.surname}
+								validation={surnameCheck}
+								classes="input-sm mb-5 w-full"
+							/>
 						</div>
 					</td>
 					<td>
 						<div class="md:-mt-2">
-						<ValidatedInput
-							type="email"
-							id="email"
-							name="email"
-							bind:value={user.email}
-							validation={emailCheck}
-							classes="input-sm mb-5 w-full"
-						/>
+							<ValidatedInput
+								type="email"
+								id="email"
+								name="email"
+								bind:value={user.email}
+								validation={emailCheck}
+								classes="input-sm mb-5 w-full"
+							/>
 						</div>
 					</td>
 					<td>
