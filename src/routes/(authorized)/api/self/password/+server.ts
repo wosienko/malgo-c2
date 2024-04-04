@@ -1,7 +1,7 @@
 import type { RequestHandler } from './$types';
 import { type PasswordChangeSchema, passwordChangeSchema } from '$lib/validationSchemas';
 import { json } from '@sveltejs/kit';
-import { changePassword } from '$lib/services/user-service';
+import { changePassword, validatePasswordForId } from '$lib/services/user-service';
 
 export const PATCH: RequestHandler = async ({ locals, request }) => {
 	const userId = locals.user!.id;
@@ -11,6 +11,11 @@ export const PATCH: RequestHandler = async ({ locals, request }) => {
 	const passwordChange = passwordChangeSchema.safeParse(body);
 	if (!passwordChange.success) {
 		return json(passwordChange.error.issues, { status: 400 });
+	}
+
+	const isPasswordValid = await validatePasswordForId(userId, passwordChange.data.currentPassword);
+	if (!isPasswordValid) {
+		return json({ message: 'Invalid password' }, { status: 400 });
 	}
 
 	const result = await changePassword(userId, passwordChange.data.newPassword);

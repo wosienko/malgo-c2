@@ -3,7 +3,7 @@ import { eq, count } from 'drizzle-orm';
 import { Roles, UserRoles, Users } from '$lib/db/schema/users';
 import type { User, UserWithRoles } from '$lib';
 import { Argon2id } from 'oslo/password';
-import { type LoginSchema, type RegisterSchema, type UuidSchema } from '$lib/validationSchemas';
+import { type RegisterSchema, type UuidSchema } from '$lib/validationSchemas';
 import { DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_PASSWORD } from '$env/static/private';
 import {
 	getServerSetting,
@@ -11,20 +11,38 @@ import {
 	setServerSetting
 } from '$lib/services/server-settings-service';
 
-export const findIdForLoginAttempt = async (userLogin: LoginSchema): Promise<string> => {
+export const validatePasswordForEmail = async (
+	email: string,
+	password: string
+): Promise<string> => {
 	let existingUser = await db.query.Users.findFirst({
 		columns: {
 			id: true,
-			email: true,
 			password: true
 		},
-		where: eq(Users.email, userLogin.email)
+		where: eq(Users.email, email)
 	});
 
 	// if user does not exist, create a blank user object to hamper timing attacks
-	if (!existingUser) existingUser = { id: '', email: '', password: await new Argon2id().hash('') };
+	if (!existingUser) existingUser = { id: '', password: await new Argon2id().hash('') };
 
-	const validPassword = await new Argon2id().verify(existingUser.password, userLogin.password);
+	const validPassword = await new Argon2id().verify(existingUser.password, password);
+	return validPassword ? existingUser.id : '';
+};
+
+export const validatePasswordForId = async (id: string, password: string): Promise<string> => {
+	let existingUser = await db.query.Users.findFirst({
+		columns: {
+			id: true,
+			password: true
+		},
+		where: eq(Users.id, id)
+	});
+
+	// if user does not exist, create a blank user object to hamper timing attacks
+	if (!existingUser) existingUser = { id: '', password: await new Argon2id().hash('') };
+
+	const validPassword = await new Argon2id().verify(existingUser.password, password);
 	return validPassword ? existingUser.id : '';
 };
 

@@ -2,7 +2,7 @@ import type { Actions } from './$types';
 import { loginSchema } from '$lib/validationSchemas';
 import { fail, redirect } from '@sveltejs/kit';
 import type { ZodIssue } from 'zod';
-import { findIdForLoginAttempt } from '$lib/services/user-service';
+import { validatePasswordForEmail } from '$lib/services/user-service';
 import { createSession } from '$lib/services/session-service';
 
 export const actions = {
@@ -17,7 +17,7 @@ export const actions = {
 			});
 		}
 
-		const userId = await findIdForLoginAttempt(result.data);
+		const userId = await validatePasswordForEmail(result.data.email, result.data.password);
 		if (userId === '') {
 			const issue: ZodIssue = {
 				code: 'custom',
