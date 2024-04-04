@@ -457,13 +457,11 @@
 	</div>
 </div>
 
-<p class="my-3 w-full text-center md:hidden">Users may be edited on larger screens!</p>
-
 <table class="table table-fixed overflow-x-auto text-center">
 	<thead>
 		<tr>
-			<th class="md:w-1/5 lg:w-[23%]">Name</th>
-			<th class="md:w-1/5 lg:w-[23%]">Surname</th>
+			<th class="md:w-1/5 lg:w-[23%] hidden md:table-cell">Name</th>
+			<th class="md:w-1/5 lg:w-[23%] hidden md:table-cell">Surname</th>
 			<th class="md:w-1/5 lg:w-[23%]">Email</th>
 			<th class="w-20 md:w-24">Admin</th>
 			<th class="w-20 md:w-24">Operator</th>
@@ -474,8 +472,8 @@
 		{#each users as user, i}
 			{#if !user.editing}
 				<tr class="max-w-dvw hover">
-					<td class="no-scrollbar overflow-x-auto">{user.name}</td>
-					<td class="no-scrollbar overflow-x-auto">{user.surname}</td>
+					<td class="no-scrollbar overflow-x-auto hidden md:table-cell">{user.name}</td>
+					<td class="no-scrollbar overflow-x-auto hidden md:table-cell">{user.surname}</td>
 					<td class="no-scrollbar overflow-x-auto">{user.email}</td>
 					<td>
 						<input
@@ -493,7 +491,7 @@
 							class="checkbox-info checkbox checkbox-sm"
 						/>
 					</td>
-					<td class="hidden md:block">
+					<td>
 						<!-- Dropdown accounting for hiding under the dropdown for last elements -->
 						<div
 							class="dropdown dropdown-end"
@@ -542,7 +540,8 @@
 				{@const emailCheck = emailSchema.safeParse(user.email)}
 				{@const editingValid = nameCheck.success && surnameCheck.success && emailCheck.success}
 				<tr class="max-w-dvw hover">
-					<td>
+					<td class="hidden md:table-cell">
+						<div class="md:-mt-2">
 						<ValidatedInput
 							type="text"
 							id="name"
@@ -551,8 +550,10 @@
 							validation={nameCheck}
 							classes="input-sm mb-5 w-full"
 						/>
+						</div>
 					</td>
-					<td>
+					<td class="hidden md:table-cell">
+						<div class="md:-mt-2">
 						<ValidatedInput
 							type="text"
 							id="surname"
@@ -561,8 +562,10 @@
 							validation={surnameCheck}
 							classes="input-sm mb-5 w-full"
 						/>
+						</div>
 					</td>
-					<td class="w-1/5">
+					<td>
+						<div class="md:-mt-2">
 						<ValidatedInput
 							type="email"
 							id="email"
@@ -571,6 +574,7 @@
 							validation={emailCheck}
 							classes="input-sm mb-5 w-full"
 						/>
+						</div>
 					</td>
 					<td>
 						<input

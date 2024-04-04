@@ -27,7 +27,8 @@
 		{validation.error.errors[0].message.replace('String', '')}
 	</p>
 {:else}
-	<p class="mb-1.5 text-xs text-transparent">For formatting sake</p>
+	<!--for formatting sake-->
+	<p class="mb-1.5 text-xs text-transparent">a</p>
 {/if}
 <input
 	{type}
