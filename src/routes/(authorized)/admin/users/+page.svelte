@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { UsersWithRoles, UserWithRoles } from '$lib';
+	import type { UsersWithRoles } from '$lib';
 	import type { ApiError } from '$lib';
 	import { emailSchema, fieldSchema, passwordSchema } from '$lib/validationSchemas';
 	import type { ZodIssue } from 'zod';
@@ -322,6 +322,12 @@
 	btnDisabledCondition={!passwordChangeValid}
 	onclickCallback={() => changePassword(userToAlter)}
 	bind:showModal={showPasswordChangeModal}
+	onHideModal={() => {
+		passwordChange = {
+			password: '',
+			passwordConfirmation: ''
+		};
+	}}
 >
 	<div class="space-y-8">
 		<ValidatedInputWithLabel
@@ -353,6 +359,17 @@
 	btnDisabledCondition={!newUserValid}
 	onclickCallback={registerNewUser}
 	bind:showModal={showRegistrationModal}
+	onHideModal={() => {
+		newUser = {
+			name: '',
+			surname: '',
+			email: '',
+			password: '',
+			passwordConfirmation: '',
+			admin: false,
+			operator: false
+		};
+	}}
 >
 	<div class="space-y-8">
 		<ValidatedInputWithLabel

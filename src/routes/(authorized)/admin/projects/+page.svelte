@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { ZodIssue } from 'zod';
-	import type { ApiError, Projects, UsersWithRoles } from '$lib';
+	import type { ApiError, Projects } from '$lib';
 	import ZodIssues from '$lib/components/toasts/ZodIssues.svelte';
 	import ApiIssues from '$lib/components/toasts/ApiIssues.svelte';
 	import ChangeSuccessful from '$lib/components/toasts/ChangeSuccessful.svelte';
 	import { pushState } from '$app/navigation';
-	import { dateSchema, fieldSchema, type ProjectSchema } from '$lib/validationSchemas';
+	import { dateSchema, fieldSchema } from '$lib/validationSchemas';
 	import ValidatedInput from '$lib/components/inputs/ValidatedInput.svelte';
 	import ModalRunCancel from '$lib/components/modals/ModalRunCancel.svelte';
 	import ValidatedInputWithLabel from '$lib/components/inputs/ValidatedInputWithHorizontalLabel.svelte';
@@ -71,7 +71,7 @@
 		await loadPage(page - 1)();
 	};
 
-	let newProject: ProjectSchema = $state({
+	let newProject = $state({
 		name: '',
 		startDate: '',
 		endDate: ''
@@ -318,6 +318,12 @@
 	btnDisabledCondition={!isAnythingDifferentInCheckedUsers}
 	onclickCallback={assignOperators}
 	bind:showModal={showOperatorAssignmentModal}
+	onHideModal={() => {
+		checkedUsers = checkedUsers.map((user) => ({
+			...user,
+			checked: false
+		}));
+	}}
 >
 	<div class="grid w-full grid-cols-2">
 		{#each checkedUsers as user}
@@ -339,6 +345,13 @@
 	btnDisabledCondition={!newProjectValid}
 	onclickCallback={createNewProject}
 	bind:showModal={showProjectCreationModal}
+	onHideModal={() => {
+		newProject = {
+			name: '',
+			startDate: '',
+			endDate: ''
+		};
+	}}
 >
 	<div class="space-y-8">
 		<ValidatedInputWithLabel

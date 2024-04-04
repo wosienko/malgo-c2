@@ -9,6 +9,7 @@
 		btnText: string;
 		onclickCallback: () => Promise<boolean>;
 		showModal: () => void;
+		onHideModal?: () => void;
 	};
 
 	let {
@@ -21,7 +22,8 @@
 		btnText,
 		onclickCallback,
 		// eslint-disable-next-line no-undef
-		showModal = $bindable()
+		showModal = $bindable(),
+		onHideModal = () => {}
 	}: ModalProps = $props();
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -70,7 +72,9 @@
 					>
 						{btnText}
 					</button>
-					<button class="btn" class:btn-disabled={waitingForResponse}>Cancel</button>
+					<button class="btn" class:btn-disabled={waitingForResponse} on:click={onHideModal}
+						>Cancel</button
+					>
 				</div>
 			{/if}
 		</form>
