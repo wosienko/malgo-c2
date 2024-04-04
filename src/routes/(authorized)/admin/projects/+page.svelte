@@ -370,7 +370,7 @@
 			name="startDate"
 			bind:value={newProject.startDate}
 			validation={newProjectVerification.startDate}
-			classes="w-52"
+			classes="w-48"
 		/>
 		<ValidatedInputWithLabel
 			label="End date"
@@ -379,7 +379,7 @@
 			name="endDate"
 			bind:value={newProject.endDate}
 			validation={newProjectVerification.endDate}
-			classes="w-52"
+			classes="w-48"
 		/>
 	</div>
 </ModalRunCancel>
@@ -482,7 +482,16 @@
 			{:else}
 				{@const nameCheck = fieldSchema.safeParse(project.name)}
 				{@const startDateCheck = dateSchema.safeParse(project.startDate)}
-				{@const endDateCheck = dateSchema.safeParse(project.endDate)}
+				{@const endDateCheck = dateSchema
+					.refine(
+						() => {
+							return project.startDate < project.endDate;
+						},
+						{
+							message: 'End date must be after start date'
+						}
+					)
+					.safeParse(project.endDate)}
 				{@const editingValid = nameCheck.success && startDateCheck.success && endDateCheck.success}
 				<tr class="max-w-dvw hover">
 					<td>
@@ -506,7 +515,7 @@
 								name="endDate"
 								bind:value={project.startDate}
 								validation={startDateCheck}
-								classes="w-52 input-sm mb-5"
+								classes="w-48 input-sm mb-5"
 							/>
 						</div>
 					</td>
@@ -518,8 +527,8 @@
 								id="end-date"
 								name="endDate"
 								bind:value={project.endDate}
-								validation={startDateCheck}
-								classes="w-52 input-sm mb-5"
+								validation={endDateCheck}
+								classes="w-48 input-sm mb-5"
 							/>
 						</div>
 					</td>
