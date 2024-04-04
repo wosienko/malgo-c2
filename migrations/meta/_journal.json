@@ -15,6 +15,13 @@
 			"when": 1712096459383,
 			"tag": "0001_wakeful_ricochet",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "5",
+			"when": 1712256422585,
+			"tag": "0002_careful_sumo",
+			"breakpoints": true
 		}
 	]
 }

@@ -8,6 +8,10 @@ const uuidSchema = z.string().uuid();
 
 type UuidSchema = z.infer<typeof uuidSchema>;
 
+const dateSchema = z.coerce.date();
+
+type DateSchema = z.infer<typeof dateSchema>;
+
 const loginSchema = z.object({
 	email: emailSchema,
 	password: passwordSchema
@@ -82,24 +86,49 @@ const passwordChangeSchema = z
 
 type PasswordChangeSchema = z.infer<typeof passwordChangeSchema>;
 
+const projectSchema = z
+	.object({
+		name: fieldSchema,
+		startDate: dateSchema,
+		endDate: dateSchema
+	})
+	.refine((data) => data.endDate > data.startDate, {
+		message: 'End date must be after start date',
+		path: ['End Date']
+	});
+
+type ProjectSchema = z.infer<typeof projectSchema>;
+
+const userProjectSchema = z.object({
+	users: z.array(uuidSchema)
+});
+
+type UserProjectSchema = z.infer<typeof userProjectSchema>;
+
 export {
 	fieldSchema,
 	emailSchema,
 	passwordSchema,
 	uuidSchema,
+	dateSchema,
 	loginSchema,
 	registerSchema,
 	updateUserSchema,
 	adminPasswordChangeSchema,
 	adminRegisterSchema,
-	passwordChangeSchema
+	passwordChangeSchema,
+	projectSchema,
+	userProjectSchema
 };
 export type {
 	UuidSchema,
+	DateSchema,
 	LoginSchema,
 	RegisterSchema,
 	UpdateUserSchema,
 	AdminPasswordChangeSchema,
 	AdminRegisterSchema,
-	PasswordChangeSchema
+	PasswordChangeSchema,
+	ProjectSchema,
+	UserProjectSchema
 };

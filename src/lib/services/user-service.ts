@@ -46,16 +46,6 @@ export const validatePasswordForId = async (id: string, password: string): Promi
 	return validPassword ? existingUser.id : '';
 };
 
-export const getNameForId = async (userId: string): Promise<string> => {
-	const user = await db.query.Users.findFirst({
-		columns: {
-			name: true
-		},
-		where: eq(Users.id, userId)
-	});
-	return user ? user.name : '';
-};
-
 export const getBasicInformationForId = async (userId: string): Promise<User | undefined> => {
 	return db.query.Users.findFirst({
 		columns: {

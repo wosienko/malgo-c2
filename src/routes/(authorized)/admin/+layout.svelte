@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
 	import { afterNavigate } from '$app/navigation';
-	const ALL_TABS = ['/admin/users'] as const;
+	const ALL_TABS = ['/admin/users', '/admin/projects'] as const;
 
 	let currentUrl = $state(get(page).url.pathname);
 

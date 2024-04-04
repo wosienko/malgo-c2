@@ -124,14 +124,7 @@
 		});
 
 		if (res.ok) {
-			let newUsers = await fetch(`/api/user?page=${page}&pageSize=${pageSize}`).then((res) =>
-				res.json()
-			);
-			users = newUsers.users.map((user: UserWithRoles) => ({
-				...user,
-				editing: false
-			}));
-			data.users.count = newUsers.count;
+			await reloadCurrentPage();
 
 			successMessage = 'User deleted successfully!';
 			return true;
@@ -465,7 +458,7 @@
 			<th class="md:w-1/5 lg:w-[23%]">Email</th>
 			<th class="w-20 md:w-24">Admin</th>
 			<th class="w-20 md:w-24">Operator</th>
-			<th class="hidden md:block"></th>
+			<th class="w-28 md:w-auto"></th>
 		</tr>
 	</thead>
 	<tbody>

@@ -14,12 +14,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 		if (nextRoute.startsWith('admin') && !(await isUserAdmin(event.locals.user!.id)))
 			return redirect(303, '/home');
 
-		if (nextRoute.startsWith('api/(admin)') && !(await isUserAdmin(event.locals.user!.id)))
+		// API routes
+		if (nextRoute.includes('/(admin)') && !(await isUserAdmin(event.locals.user!.id)))
 			return error(403, 'Forbidden');
-	}
-
-	if (event.route.id?.startsWith('/register')) {
-		if (import.meta.env.PROD) return redirect(303, '/');
 	}
 
 	return resolve(event);
