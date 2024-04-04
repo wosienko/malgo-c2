@@ -1,6 +1,7 @@
 import { db } from '$lib/db/db.server';
 import { eq, count } from 'drizzle-orm';
-import { Roles, UserRoles, Users, type UserWithRoles } from '$lib/db/schema/users';
+import { Roles, UserRoles, Users } from '$lib/db/schema/users';
+import type { User, UserWithRoles } from '$lib';
 import { Argon2id } from 'oslo/password';
 import { type LoginSchema, type RegisterSchema, type UuidSchema } from '$lib/validationSchemas';
 import { DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_PASSWORD } from '$env/static/private';
@@ -35,6 +36,18 @@ export const getNameForId = async (userId: string): Promise<string> => {
 		where: eq(Users.id, userId)
 	});
 	return user ? user.name : '';
+};
+
+export const getBasicInformationForId = async (userId: string): Promise<User | undefined> => {
+	return db.query.Users.findFirst({
+		columns: {
+			id: true,
+			name: true,
+			surname: true,
+			email: true
+		},
+		where: eq(Users.id, userId)
+	});
 };
 
 export const registerNewUser = async (

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { UsersWithRoles, UserWithRoles } from '$lib/db/schema/users';
+	import type { UsersWithRoles, UserWithRoles } from '$lib';
 	import type { ApiError } from '$lib';
 	import { emailSchema, fieldSchema, passwordSchema } from '$lib/validationSchemas';
 	import type { ZodIssue } from 'zod';

@@ -49,17 +49,3 @@ export const userRolesRelations = relations(UserRoles, ({ one }) => ({
 		references: [Roles.id]
 	})
 }));
-
-export type UserWithRoles = {
-	id: string;
-	name: string;
-	surname: string;
-	email: string;
-	admin: boolean;
-	operator: boolean;
-};
-
-export type UsersWithRoles = {
-	users: UserWithRoles[];
-	count: number;
-};

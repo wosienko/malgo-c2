@@ -69,6 +69,19 @@ const adminRegisterSchema = z
 
 type AdminRegisterSchema = z.infer<typeof adminRegisterSchema>;
 
+const passwordChangeSchema = z
+	.object({
+		currentPassword: passwordSchema,
+		newPassword: passwordSchema,
+		newPasswordConfirmation: passwordSchema
+	})
+	.refine((data) => data.newPassword === data.newPasswordConfirmation, {
+		message: "New passwords don't match",
+		path: ['New Password Confirmation']
+	});
+
+type PasswordChangeSchema = z.infer<typeof passwordChangeSchema>;
+
 export {
 	fieldSchema,
 	emailSchema,
@@ -78,7 +91,8 @@ export {
 	registerSchema,
 	updateUserSchema,
 	adminPasswordChangeSchema,
-	adminRegisterSchema
+	adminRegisterSchema,
+	passwordChangeSchema
 };
 export type {
 	UuidSchema,
@@ -86,5 +100,6 @@ export type {
 	RegisterSchema,
 	UpdateUserSchema,
 	AdminPasswordChangeSchema,
-	AdminRegisterSchema
+	AdminRegisterSchema,
+	PasswordChangeSchema
 };
