@@ -15,6 +15,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>MALGO - Admin</title>
+</svelte:head>
+
 <div class="flex h-full w-full flex-col">
 	<div role="tablist" class="tabs tabs-bordered tabs-md">
 		{#each ALL_TABS as tab}

@@ -266,10 +266,6 @@
 	};
 </script>
 
-<svelte:head>
-	<title>MALGO - Admin</title>
-</svelte:head>
-
 {#if zodIssues.length > 0}
 	<ZodIssues
 		issues={zodIssues}
