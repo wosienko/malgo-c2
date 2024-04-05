@@ -2,7 +2,6 @@
 	"name": "malgo",
 	"version": "0.0.1",
 	"devDependencies": {
-		"@lucia-auth/adapter-drizzle": "^1.0.7",
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/kit": "^2.0.0",
@@ -20,7 +19,6 @@
 		"eslint-plugin-svelte": "^2.36.0-next.4",
 		"husky": "^9.0.11",
 		"lucia": "^3.1.1",
-		"oslo": "^1.2.0",
 		"pg": "^8.11.3",
 		"postcss": "^8.4.38",
 		"prettier": "^3.1.1",
@@ -44,7 +42,6 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
-		"prepare": "husky",
 		"generate": "bunx drizzle-kit generate:pg --config drizzle.config.ts",
 		"migrate": "bunx drizzle-kit push:pg --config drizzle.config.ts",
 		"studio": "bunx drizzle-kit studio --config drizzle.config.ts"
@@ -63,6 +60,8 @@
 	"dependencies": {
 		"drizzle-orm": "^0.30.6",
 		"postgres": "^3.4.4",
+		"oslo": "^1.2.0",
+		"@lucia-auth/adapter-drizzle": "^1.0.7",
 		"zod": "^3.22.4"
 	}
 }
