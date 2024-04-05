@@ -1,6 +1,6 @@
 import { Projects, UserProjects } from '$lib/db/schema/projects';
 import { db } from '$lib/db/db.server';
-import { and, count, eq } from 'drizzle-orm';
+import { and, desc, count, eq } from 'drizzle-orm';
 import type { UuidSchema } from '$lib/validationSchemas';
 import { Roles, UserRoles } from '$lib/db/schema/users';
 
@@ -12,7 +12,7 @@ export const getProjects = async (page: number, pageSize: number) => {
 			startDate: true,
 			endDate: true
 		},
-		orderBy: Projects.startDate,
+		orderBy: [desc(Projects.startDate)],
 		limit: pageSize,
 		offset: (page - 1) * pageSize
 	});
