@@ -1,27 +1,34 @@
 {
-	"version": "5",
-	"dialect": "pg",
-	"entries": [
-		{
-			"idx": 0,
-			"version": "5",
-			"when": 1712095160969,
-			"tag": "0000_awesome_nightmare",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "5",
-			"when": 1712096459383,
-			"tag": "0001_wakeful_ricochet",
-			"breakpoints": true
-		},
-		{
-			"idx": 2,
-			"version": "5",
-			"when": 1712256422585,
-			"tag": "0002_careful_sumo",
-			"breakpoints": true
-		}
-	]
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1712095160969,
+      "tag": "0000_awesome_nightmare",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1712096459383,
+      "tag": "0001_wakeful_ricochet",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1712256422585,
+      "tag": "0002_careful_sumo",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1712483908667,
+      "tag": "0003_tired_doctor_strange",
+      "breakpoints": true
+    }
+  ]
 }

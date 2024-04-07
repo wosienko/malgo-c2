@@ -49,7 +49,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const newProjectId = await createProject(
 		validation.data.name,
 		validation.data.startDate,
-		validation.data.endDate
+		validation.data.endDate,
+		validation.data.description
 	);
 	if (!newProjectId) {
 		return json(

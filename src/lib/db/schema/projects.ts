@@ -8,7 +8,8 @@ export const Projects = pgTable('projects', {
 		.default(sql`gen_random_uuid()`),
 	name: varchar('name').notNull().unique(),
 	startDate: date('start_date').notNull(),
-	endDate: date('end_date').notNull()
+	endDate: date('end_date').notNull(),
+	description: varchar('description').default(sql`''`)
 });
 
 export const UserProjects = pgTable(

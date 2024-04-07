@@ -10,7 +10,8 @@ export const getProjects = async (page: number, pageSize: number) => {
 			id: true,
 			name: true,
 			startDate: true,
-			endDate: true
+			endDate: true,
+			description: true
 		},
 		orderBy: [desc(Projects.startDate)],
 		limit: pageSize,
@@ -25,7 +26,7 @@ export const getCountOfProjects = async (): Promise<number> => {
 		.then((result) => result[0].count);
 };
 
-export const createProject = async (name: string, startDate: Date, endDate: Date) => {
+export const createProject = async (name: string, startDate: Date, endDate: Date, description: string) => {
 	let result: UuidSchema | undefined = undefined;
 	try {
 		result = await db
@@ -33,7 +34,8 @@ export const createProject = async (name: string, startDate: Date, endDate: Date
 			.values({
 				name: name,
 				startDate: startDate.toDateString(),
-				endDate: endDate.toDateString()
+				endDate: endDate.toDateString(),
+				description: description
 			})
 			.returning({ id: Projects.id })
 			.then((result) => {
@@ -52,7 +54,8 @@ export const updateProjectData = async (
 	projectId: string,
 	name: string,
 	startDate: Date,
-	endDate: Date
+	endDate: Date,
+	description: string
 ) => {
 	try {
 		const updatedProjectId = await db
@@ -60,7 +63,8 @@ export const updateProjectData = async (
 			.set({
 				name: name,
 				startDate: startDate.toDateString(),
-				endDate: endDate.toDateString()
+				endDate: endDate.toDateString(),
+				description: description
 			})
 			.where(eq(Projects.id, projectId))
 			.returning({ id: Projects.id });

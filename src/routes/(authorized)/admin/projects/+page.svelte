@@ -26,6 +26,7 @@
 		name: string;
 		startDate: string;
 		endDate: string;
+		description: string;
 		editing: boolean;
 	};
 
@@ -34,6 +35,7 @@
 		name: '',
 		startDate: '',
 		endDate: '',
+		description: '',
 		editing: true
 	});
 
@@ -74,7 +76,8 @@
 	let newProject = $state({
 		name: '',
 		startDate: '',
-		endDate: ''
+		endDate: '',
+		description: ''
 	});
 
 	const newProjectVerification = $derived({
@@ -137,7 +140,8 @@
 			body: JSON.stringify({
 				name: project.name,
 				startDate: project.startDate,
-				endDate: project.endDate
+				endDate: project.endDate,
+				description: project.description
 			})
 		});
 		loading = false;
@@ -377,6 +381,12 @@
 			validation={newProjectVerification.endDate}
 			classes="w-48"
 		/>
+		<div class="flex items-center justify-between">
+			<label for="new-project-description">Project description</label>
+			<div class="flex flex-col items-center w-[45%]">
+				<textarea id="new-project-description" bind:value={newProject.description} class="mt-1.5 textarea resize-none textarea-bordered textarea-xs w-full max-w-xs" ></textarea>
+			</div>
+		</div>
 	</div>
 </ModalRunCancel>
 
@@ -419,6 +429,7 @@
 			<th>Name</th>
 			<th class="hidden md:table-cell">Start date</th>
 			<th class="hidden md:table-cell">End date</th>
+			<th class="hidden md:table-cell">Description</th>
 			<th class="w-28 md:w-auto"></th>
 		</tr>
 	</thead>
@@ -432,6 +443,9 @@
 					>
 					<td class="no-scrollbar hidden overflow-x-auto md:table-cell"
 						>{formatDate(project.endDate)}</td
+					>
+					<td class="no-scrollbar hidden overflow-x-auto md:table-cell whitespace-pre-line"
+					>{project.description}</td
 					>
 					<td>
 						<!-- Dropdown accounting for hiding under the dropdown for last elements -->
@@ -461,7 +475,6 @@
 										class="btn btn-warning btn-sm"
 										on:click={() => {
 											prepareForOperatorAssignment(project)();
-											//showOperatorAssignmentModal();
 										}}>Assign operators</button
 									>
 								</li>
@@ -505,10 +518,10 @@
 					<td class="hidden md:table-cell">
 						<div class="md:-mt-2">
 							<ValidatedInput
-								label="End date"
+								label="Start date"
 								type="date"
-								id="end-date"
-								name="endDate"
+								id="start-date"
+								name="startDate"
 								bind:value={project.startDate}
 								validation={startDateCheck}
 								classes="w-48 input-sm mb-5"
@@ -526,6 +539,11 @@
 								validation={endDateCheck}
 								classes="w-48 input-sm mb-5"
 							/>
+						</div>
+					</td>
+					<td class="hidden md:table-cell">
+						<div class="md:-mt-2">
+							<textarea bind:value={project.description} class="mt-1.5 textarea resize-none textarea-bordered textarea-xs w-full max-w-xs" ></textarea>
 						</div>
 					</td>
 					<td class="my-1.5 flex flex-col items-center justify-center space-y-3">

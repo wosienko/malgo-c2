@@ -35,7 +35,8 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		projectId.data,
 		result.data.name,
 		result.data.startDate,
-		result.data.endDate
+		result.data.endDate,
+		result.data.description
 	);
 	if (errorMessage) {
 		return json({ message: errorMessage }, { status: 400 });
