@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
-import { getProjectsForOperator } from '$lib/services/project-service';
+import { getAllProjectsForOperator, getProjectsForOperator } from '$lib/services/project-service';
 import { isUserOperator } from '$lib/services/roles-service';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
@@ -19,6 +19,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const page = Number(url.searchParams.get('page')) || 1;
 	const pageSize = Number(url.searchParams.get('pageSize')) || 10;
 
+	const all = url.searchParams.get('all') === 'true';
+
 	if (page < 1 || pageSize < 1) {
 		return json(
 			{
@@ -29,8 +31,8 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			}
 		);
 	}
-
-	const projects = await getProjectsForOperator(userId, page, pageSize);
-
-	return json(projects);
+	if (all) {
+		return json(await getAllProjectsForOperator(userId, page, pageSize));
+	}
+	return json(await getProjectsForOperator(userId, page, pageSize));
 };

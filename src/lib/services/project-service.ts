@@ -29,6 +29,23 @@ export const getCountOfProjects = async (): Promise<number> => {
 		.then((result) => result[0].count);
 };
 
+export const getCountOfProjectsForOperator = async (operatorId: string): Promise<number> => {
+	const projectsWithOperator = db
+		.select({ project_id: UserProjects.project_id })
+		.from(UserProjects)
+		.where(eq(UserProjects.user_id, operatorId))
+		.as('operator_projects');
+
+	return db
+		.select({ count: count() })
+		.from(projectsWithOperator)
+		.innerJoin(Projects, eq(Projects.id, projectsWithOperator.project_id))
+		.where(
+			sql`(${Projects.startDate} <= CURRENT_DATE AND ${Projects.endDate} >= CURRENT_DATE) OR (${Projects.endDate} + INTERVAL '14 days') >= CURRENT_DATE`
+		)
+		.then((result) => result[0].count);
+};
+
 export const getProjectsForOperator = async (
 	operatorId: string,
 	page: number,
@@ -53,6 +70,35 @@ export const getProjectsForOperator = async (
 		.where(
 			sql`(${Projects.startDate} <= CURRENT_DATE AND ${Projects.endDate} >= CURRENT_DATE) OR (${Projects.endDate} + INTERVAL '14 days') >= CURRENT_DATE`
 		)
+		.orderBy(
+			sql`CASE WHEN ${Projects.endDate} >= CURRENT_DATE THEN 0 ELSE 1 END`,
+			desc(Projects.startDate)
+		)
+		.limit(pageSize)
+		.offset((page - 1) * pageSize);
+};
+
+export const getAllProjectsForOperator = async (
+	operatorId: string,
+	page: number,
+	pageSize: number
+) => {
+	const projectsWithOperator = db
+		.select({ project_id: UserProjects.project_id })
+		.from(UserProjects)
+		.where(eq(UserProjects.user_id, operatorId))
+		.as('operator_projects');
+
+	return db
+		.select({
+			id: Projects.id,
+			name: Projects.name,
+			startDate: Projects.startDate,
+			endDate: Projects.endDate,
+			description: Projects.description
+		})
+		.from(projectsWithOperator)
+		.innerJoin(Projects, eq(Projects.id, projectsWithOperator.project_id))
 		.orderBy(
 			sql`CASE WHEN ${Projects.endDate} >= CURRENT_DATE THEN 0 ELSE 1 END`,
 			desc(Projects.startDate)
