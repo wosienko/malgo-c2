@@ -46,7 +46,7 @@
 					<a class="kbd kbd-lg text-xl" href="/home">MALGO</a>
 					<ul class="menu menu-horizontal px-1">
 						{#if data.isOperator}
-							<li><a href="/projects">Projects</a></li>
+							<li><a href="/projects" data-sveltekit-preload-data>Projects</a></li>
 						{/if}
 					</ul>
 				{:else}
@@ -66,7 +66,7 @@
 									tabindex="-1"
 									class="menu dropdown-content z-[1] w-52 rounded-box bg-base-200 p-2 shadow"
 								>
-									<li><a href="/settings">Settings</a></li>
+									<li><a href="/settings" data-sveltekit-preload-data>Settings</a></li>
 									<li>
 										<form method="post" action="/logout" use:enhance>
 											<button class="w-40 text-left">Sign out</button>

@@ -26,7 +26,8 @@
 				role="tab"
 				class="tab pb-9 hover:opacity-50"
 				class:tab-active={currentUrl === tab}
-				href={tab}>{capitalize(tab.replace('/admin/', ''))}</a
+				href={tab}
+				data-sveltekit-preload-data>{capitalize(tab.replace('/admin/', ''))}</a
 			>
 		{/each}
 	</div>
