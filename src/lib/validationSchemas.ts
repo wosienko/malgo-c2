@@ -91,7 +91,7 @@ const projectSchema = z
 		name: fieldSchema,
 		startDate: dateSchema,
 		endDate: dateSchema,
-		description: z.string()
+		description: z.string().trim()
 	})
 	.refine((data) => data.endDate > data.startDate, {
 		message: 'End date must be after start date',
