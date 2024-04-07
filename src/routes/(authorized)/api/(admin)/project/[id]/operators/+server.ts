@@ -2,21 +2,8 @@ import type { RequestHandler } from './$types';
 import { userProjectSchema, uuidSchema } from '$lib/validationSchemas';
 import { json } from '@sveltejs/kit';
 import { assignOperatorsToProject, getOperatorsForProject } from '$lib/services/project-service';
-import { isUserAdmin } from '$lib/services/roles-service';
 
-export const GET: RequestHandler = async ({ params, locals }) => {
-	const userId = locals.user!.id;
-	if (!(await isUserAdmin(userId))) {
-		return json(
-			{
-				message: 'You are not authorized to update a project'
-			},
-			{
-				status: 403
-			}
-		);
-	}
-
+export const GET: RequestHandler = async ({ params }) => {
 	const { id } = params;
 
 	const projectId = uuidSchema.safeParse(id);
@@ -27,19 +14,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	return json(await getOperatorsForProject(projectId.data));
 };
 
-export const PUT: RequestHandler = async ({ params, request, locals }) => {
-	const userId = locals.user!.id;
-	if (!(await isUserAdmin(userId))) {
-		return json(
-			{
-				message: 'You are not authorized to update a project'
-			},
-			{
-				status: 403
-			}
-		);
-	}
-
+export const PUT: RequestHandler = async ({ params, request }) => {
 	const { id } = params;
 
 	const projectId = uuidSchema.safeParse(id);

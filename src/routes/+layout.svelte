@@ -46,7 +46,7 @@
 					<a class="kbd kbd-lg text-xl" href="/home">MALGO</a>
 					<ul class="menu menu-horizontal px-1">
 						{#if data.isOperator}
-							<li><a href="/sessions">Sessions</a></li>
+							<li><a href="/projects">Projects</a></li>
 						{/if}
 					</ul>
 				{:else}
@@ -91,7 +91,7 @@
 
 	<footer id="footer" class="footer footer-center flex-none bg-base-300 p-4 text-base-content">
 		<aside>
-			<p>Copyright © {new Date().getFullYear()} - All right reserved</p>
+			<p>PW © {new Date().getFullYear()} - All rights reserved</p>
 			<p>Version: {version}</p>
 			<label class="swap swap-rotate fixed bottom-3 right-3 z-50 m-2">
 				<!-- this hidden checkbox controls the state -->

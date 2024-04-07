@@ -2,7 +2,6 @@ import type { RequestHandler } from './$types';
 import { json } from '@sveltejs/kit';
 import { createProject, getCountOfProjects, getProjects } from '$lib/services/project-service';
 import { projectSchema } from '$lib/validationSchemas';
-import { isUserAdmin } from '$lib/services/roles-service';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const page = Number(url.searchParams.get('page')) || 1;
@@ -26,19 +25,7 @@ export const GET: RequestHandler = async ({ url }) => {
 };
 
 // Admin only
-export const POST: RequestHandler = async ({ request, locals }) => {
-	const userId = locals.user!.id;
-	if (!(await isUserAdmin(userId))) {
-		return json(
-			{
-				message: 'You are not authorized to create a project'
-			},
-			{
-				status: 403
-			}
-		);
-	}
-
+export const POST: RequestHandler = async ({ request }) => {
 	const body = await request.json();
 
 	const validation = projectSchema.safeParse(body);
