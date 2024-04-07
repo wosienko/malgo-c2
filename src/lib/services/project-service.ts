@@ -1,6 +1,6 @@
 import { Projects, UserProjects } from '$lib/db/schema/projects';
 import { db } from '$lib/db/db.server';
-import { and, desc, count, eq } from 'drizzle-orm';
+import { and, desc, count, eq, sql } from 'drizzle-orm';
 import type { UuidSchema } from '$lib/validationSchemas';
 import { Roles, UserRoles } from '$lib/db/schema/users';
 
@@ -13,7 +13,10 @@ export const getProjects = async (page: number, pageSize: number) => {
 			endDate: true,
 			description: true
 		},
-		orderBy: [desc(Projects.startDate)],
+		orderBy: [
+			sql`CASE WHEN ${Projects.endDate} > CURRENT_DATE THEN 0 ELSE 1 END`,
+			desc(Projects.startDate)
+		],
 		limit: pageSize,
 		offset: (page - 1) * pageSize
 	});
@@ -24,6 +27,38 @@ export const getCountOfProjects = async (): Promise<number> => {
 		.select({ count: count() })
 		.from(Projects)
 		.then((result) => result[0].count);
+};
+
+export const getProjectsForOperator = async (
+	operatorId: string,
+	page: number,
+	pageSize: number
+) => {
+	const projectsWithOperator = db
+		.select({ project_id: UserProjects.project_id })
+		.from(UserProjects)
+		.where(eq(UserProjects.user_id, operatorId))
+		.as('operator_projects');
+
+	return db
+		.select({
+			id: Projects.id,
+			name: Projects.name,
+			startDate: Projects.startDate,
+			endDate: Projects.endDate,
+			description: Projects.description
+		})
+		.from(projectsWithOperator)
+		.innerJoin(Projects, eq(Projects.id, projectsWithOperator.project_id))
+		.where(
+			sql`(${Projects.startDate} <= CURRENT_DATE AND ${Projects.endDate} >= CURRENT_DATE) OR (${Projects.endDate} + INTERVAL '14 days') >= CURRENT_DATE`
+		)
+		.orderBy(
+			sql`CASE WHEN ${Projects.endDate} >= CURRENT_DATE THEN 0 ELSE 1 END`,
+			desc(Projects.startDate)
+		)
+		.limit(pageSize)
+		.offset((page - 1) * pageSize);
 };
 
 export const createProject = async (
