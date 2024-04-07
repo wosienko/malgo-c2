@@ -383,8 +383,12 @@
 		/>
 		<div class="flex items-center justify-between">
 			<label for="new-project-description">Project description</label>
-			<div class="flex flex-col items-center w-[45%]">
-				<textarea id="new-project-description" bind:value={newProject.description} class="mt-1.5 textarea resize-none textarea-bordered textarea-xs w-full max-w-xs" ></textarea>
+			<div class="flex w-[45%] flex-col items-center">
+				<textarea
+					id="new-project-description"
+					bind:value={newProject.description}
+					class="textarea textarea-bordered textarea-xs mt-1.5 w-full max-w-xs resize-none"
+				></textarea>
 			</div>
 		</div>
 	</div>
@@ -444,8 +448,8 @@
 					<td class="no-scrollbar hidden overflow-x-auto md:table-cell"
 						>{formatDate(project.endDate)}</td
 					>
-					<td class="no-scrollbar hidden overflow-x-auto md:table-cell whitespace-pre-line"
-					>{project.description}</td
+					<td class="no-scrollbar hidden overflow-x-auto whitespace-pre-line md:table-cell"
+						>{project.description}</td
 					>
 					<td>
 						<!-- Dropdown accounting for hiding under the dropdown for last elements -->
@@ -543,7 +547,10 @@
 					</td>
 					<td class="hidden md:table-cell">
 						<div class="md:-mt-2">
-							<textarea bind:value={project.description} class="mt-1.5 textarea resize-none textarea-bordered textarea-xs w-full max-w-xs" ></textarea>
+							<textarea
+								bind:value={project.description}
+								class="textarea textarea-bordered textarea-xs mt-1.5 w-full max-w-xs resize-none"
+							></textarea>
 						</div>
 					</td>
 					<td class="my-1.5 flex flex-col items-center justify-center space-y-3">

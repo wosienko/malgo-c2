@@ -26,7 +26,12 @@ export const getCountOfProjects = async (): Promise<number> => {
 		.then((result) => result[0].count);
 };
 
-export const createProject = async (name: string, startDate: Date, endDate: Date, description: string) => {
+export const createProject = async (
+	name: string,
+	startDate: Date,
+	endDate: Date,
+	description: string
+) => {
 	let result: UuidSchema | undefined = undefined;
 	try {
 		result = await db
