@@ -110,6 +110,16 @@ export const getAllProjectsForOperator = async (
 		.offset((page - 1) * pageSize);
 };
 
+export const isUserAllowedToQueryProject = async (userId: string, projectId: string) => {
+	return db
+		.select({ id: UserProjects.project_id })
+		.from(UserProjects)
+		.where(and(eq(UserProjects.user_id, userId), eq(UserProjects.project_id, projectId)))
+		.then((result) => {
+			return result.length > 0;
+		});
+};
+
 export const createProject = async (
 	name: string,
 	startDate: Date,
