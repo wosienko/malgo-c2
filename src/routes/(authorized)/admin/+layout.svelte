@@ -19,7 +19,7 @@
 	<title>MALGO - Admin</title>
 </svelte:head>
 
-<div class="flex h-full w-full flex-col">
+<div class="flex h-full w-full flex-col pt-3">
 	<div role="tablist" class="tabs tabs-bordered tabs-md">
 		{#each ALL_TABS as tab}
 			<a

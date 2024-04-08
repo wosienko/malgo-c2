@@ -83,7 +83,7 @@
 		</div>
 	</header>
 
-	<main class="grow overflow-y-auto pt-3">
+	<main class="grow overflow-y-auto">
 		<div class="flex w-full flex-col items-center justify-center" class:h-full={!isOverflowing}>
 			<slot />
 		</div>

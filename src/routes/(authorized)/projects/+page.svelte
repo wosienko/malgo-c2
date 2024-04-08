@@ -44,7 +44,7 @@
 	});
 </script>
 
-<div class="flex h-full w-full flex-col items-center">
+<div class="flex h-full w-full flex-col items-center pt-3">
 	<button class="btn btn-primary" on:click={toggleAllProjects}>Toggle view of all projects</button>
 	{#if allView}
 		<div class="mt-3 flex justify-center space-x-3">
@@ -94,7 +94,10 @@
 		{:then projects}
 			{#each projects as project}
 				{@const status = currentStatus(project.startDate, project.endDate)}
-				<a href={`/projects/${project.id}`} class="card m-4 w-80 border-2 border-neutral bg-base-100 hover:bg-base-200 shadow-xl">
+				<a
+					href={`/projects/${project.id}`}
+					class="card m-4 w-80 border-2 border-neutral bg-base-100 shadow-xl hover:bg-base-200"
+				>
 					<div class="card-body">
 						<h2 class="card-title">
 							{project.name}
