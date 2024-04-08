@@ -94,16 +94,16 @@
 		{:then projects}
 			{#each projects as project}
 				{@const status = currentStatus(project.startDate, project.endDate)}
-				<div class="card m-4 w-80 border-2 border-neutral bg-base-100 shadow-xl">
+				<a href={`/projects/${project.id}`} class="card m-4 w-80 border-2 border-neutral bg-base-100 hover:bg-base-200 shadow-xl">
 					<div class="card-body">
 						<h2 class="card-title">
 							{project.name}
 							{#if status === 'UPCOMING'}
-								<span class="badge badge-warning">UPCOMING</span>
+								<span class="badge badge-warning">{status}</span>
 							{:else if status === 'ONGOING'}
-								<span class="badge badge-primary">ONGOING</span>
+								<span class="badge badge-primary">{status}</span>
 							{:else}
-								<span class="badge badge-secondary">FINISHED</span>
+								<span class="badge badge-secondary">{status}</span>
 							{/if}
 						</h2>
 						<p class="whitespace-pre-line">{project.description}</p>
@@ -112,7 +112,7 @@
 							<div class="badge badge-outline">{project.endDate}</div>
 						</div>
 					</div>
-				</div>
+				</a>
 			{/each}
 		{/await}
 	</div>
