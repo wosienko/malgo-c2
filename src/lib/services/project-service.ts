@@ -22,6 +22,12 @@ export const getProjects = async (page: number, pageSize: number) => {
 	});
 };
 
+export const getProjectById = async (projectId: string) => {
+	return db.query.Projects.findFirst({
+		where: eq(Projects.id, projectId)
+	});
+};
+
 export const getCountOfProjects = async (): Promise<number> => {
 	return db
 		.select({ count: count() })
