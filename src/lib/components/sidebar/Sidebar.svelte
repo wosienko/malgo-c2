@@ -1,6 +1,6 @@
 <div class="drawer h-full lg:drawer-open">
 	<input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
-	<div class="drawer-content flex flex-col items-center justify-center">
+	<div class="drawer-content flex flex-col items-center">
 		<slot name="content" />
 		<label
 			for="my-drawer-2"
