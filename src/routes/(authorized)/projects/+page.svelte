@@ -39,6 +39,12 @@
 		}
 	};
 
+	const formatDate = (date: string): string => {
+		const d = new Date(date);
+		// format DD.MM.YYYY
+		return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear()}`;
+	};
+
 	onMount(async () => {
 		count = await data.count;
 	});
@@ -111,8 +117,8 @@
 						</h2>
 						<p class="whitespace-pre-line">{project.description}</p>
 						<div class="card-actions justify-between">
-							<div class="badge badge-outline">{project.startDate}</div>
-							<div class="badge badge-outline">{project.endDate}</div>
+							<div class="badge badge-outline">{formatDate(project.startDate)}</div>
+							<div class="badge badge-outline">{formatDate(project.endDate)}</div>
 						</div>
 					</div>
 				</a>
