@@ -1,12 +1,13 @@
 <script lang="ts">
 	type Props = {
 		href: string;
+		active: boolean;
 	};
 
-	let { href }: Props = $props();
+	let { href, active = false }: Props = $props();
 </script>
 
-<li>
+<li class={active ? 'bg-neutral text-neutral-content rounded-md': ''}>
 	<a {href}>
 		<slot />
 	</a>
