@@ -22,9 +22,9 @@
 	const loadPage = (page: number) => {
 		allPage = page;
 		pushState(`/projects?all=${allView}&page=${allPage}&pageSize=${allLimit}`, {});
-		data.projects = fetch(
-			`/api/projects?legacy=${allView}&page=${allPage}&pageSize=${allLimit}`
-		).then((res) => res.json());
+		data.projects = fetch(`/api/projects?all=${allView}&page=${allPage}&pageSize=${allLimit}`).then(
+			(res) => res.json()
+		);
 	};
 
 	const toggleAllProjects = () => {
@@ -32,7 +32,7 @@
 		pushState(`/projects?all=${allView}&page=${allPage}&pageSize=${allLimit}`, {});
 		if (allView) {
 			data.projects = fetch(
-				`/api/projects?legacy=${allView}&page=${allPage}&pageSize=${allLimit}`
+				`/api/projects?all=${allView}&page=${allPage}&pageSize=${allLimit}`
 			).then((res) => res.json());
 		} else {
 			data.projects = fetch(`/api/projects?page=1&pageSize=999`).then((res) => res.json());

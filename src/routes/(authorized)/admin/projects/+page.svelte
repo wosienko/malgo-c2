@@ -196,17 +196,7 @@
 
 	let checkedUsers = $state([]);
 
-	let currentlyAssignedOperators: string[] = $state([]);
-
-	const isAnythingDifferentInCheckedUsers = $derived.by(() => {
-		const hasAnyCurrentUserBeenUnassigned = checkedUsers.some(
-			(user) => user.checked && !currentlyAssignedOperators.includes(user.id)
-		);
-		const hasAnyCurrentUserBeenAssigned = checkedUsers.some(
-			(user) => !user.checked && currentlyAssignedOperators.includes(user.id)
-		);
-		return hasAnyCurrentUserBeenUnassigned || hasAnyCurrentUserBeenAssigned;
-	});
+	const isAnyUserChanged = $derived(checkedUsers.some((user) => user.changed));
 
 	const getAssignedOperators = async (project: Project) => {
 		const res = await fetch(`/api/project/${project.id}/operators`);
@@ -214,9 +204,9 @@
 
 		checkedUsers = (await data.users).map((user) => ({
 			...user,
-			checked: users.some((u) => u === user.id)
+			checked: users.some((u) => u === user.id),
+			changed: false
 		}));
-		currentlyAssignedOperators = users.map((user) => user.id);
 	};
 
 	let showOperatorAssignmentModal = $state(() => {});
@@ -243,7 +233,8 @@
 			successMessage = 'Operators assigned successfully!';
 			checkedUsers = checkedUsers.map((user) => ({
 				...user,
-				checked: false
+				checked: false,
+				changed: false
 			}));
 			return true;
 		} else {
@@ -327,7 +318,7 @@
 	messageEmphasis={`${projectToAlter.name}`}
 	btnClass="btn-warning"
 	btnText="Assign operators"
-	btnDisabledCondition={!isAnythingDifferentInCheckedUsers}
+	btnDisabledCondition={!isAnyUserChanged}
 	onclickCallback={assignOperators}
 	bind:showModal={showOperatorAssignmentModal}
 	onHideModal={() => {
@@ -342,7 +333,14 @@
 			<div class="form-control">
 				<label class="label cursor-pointer">
 					<span class="label-text">{user.name} {user.surname}</span>
-					<input type="checkbox" bind:checked={user.checked} class="checkbox-info checkbox" />
+					<input
+						type="checkbox"
+						bind:checked={user.checked}
+						on:click={() => {
+							user.changed = !user.changed;
+						}}
+						class="checkbox-info checkbox"
+					/>
 				</label>
 			</div>
 		{/each}

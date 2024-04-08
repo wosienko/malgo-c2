@@ -40,9 +40,6 @@ export const getCountOfProjectsForOperator = async (operatorId: string): Promise
 		.select({ count: count() })
 		.from(projectsWithOperator)
 		.innerJoin(Projects, eq(Projects.id, projectsWithOperator.project_id))
-		.where(
-			sql`(${Projects.startDate} <= CURRENT_DATE AND ${Projects.endDate} >= CURRENT_DATE) OR (${Projects.endDate} + INTERVAL '14 days') >= CURRENT_DATE`
-		)
 		.then((result) => result[0].count);
 };
 
