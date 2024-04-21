@@ -21,7 +21,6 @@
 		btnDisabledCondition = false,
 		btnText,
 		onclickCallback,
-		// eslint-disable-next-line no-undef
 		showModal = $bindable(),
 		onHideModal = () => {}
 	}: ModalProps = $props();
