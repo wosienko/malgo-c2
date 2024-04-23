@@ -1,9 +1,10 @@
 <script lang="ts">
 	import Sidebar from '$lib/components/sidebar/Sidebar.svelte';
 	import SidebarEntry from '$lib/components/sidebar/SidebarEntry.svelte';
-	import { page } from '$app/stores';
+	import { navigating, page } from '$app/stores';
+	import { browser } from '$app/environment';
 	import { get } from 'svelte/store';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 
 	let { data } = $props();
@@ -33,18 +34,53 @@
 		return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
 	};
 
+	const drawerResize = () => {
+		// set height to the height of the window
+		let headerHeight = document.getElementById('header')!.getBoundingClientRect();
+		let footerHeight = document.getElementById('footer')!.getBoundingClientRect();
+		let projectHeaderHeight = document.getElementById('project-header')!.getBoundingClientRect();
+		let target1 = document.querySelector('.drawer-content') as HTMLElement;
+		let target2 = document.querySelector('.drawer-side') as HTMLElement;
+
+		let width = window.innerWidth > 0 ? window.innerWidth : screen.width;
+
+		target1.style.height = `calc(100dvh - ${headerHeight.height + footerHeight.height + projectHeaderHeight.height}px)`;
+
+		if (width < 1024) {
+			target2.style.height = `100dvh`;
+		} else {
+			target2.style.height = `calc(100dvh - ${headerHeight.height + footerHeight.height + projectHeaderHeight.height}px)`;
+		}
+	};
+
+	let unsubscribe: () => void;
+
 	onMount(async () => {
 		sessions = await data.sessions;
+
+		drawerResize();
+		window.addEventListener('resize', drawerResize);
+		unsubscribe = navigating.subscribe(drawerResize);
+	});
+
+	onDestroy(() => {
+		if (browser) {
+			window.removeEventListener('resize', drawerResize);
+			unsubscribe();
+		}
 	});
 </script>
 
-<div class="flex h-full w-full flex-col">
-	<div class="flex w-full justify-around border-b-2 border-base-300 bg-base-200 py-2">
+<div class="flex w-full grow flex-col">
+	<div
+		id="project-header"
+		class="flex w-full justify-around border-b-2 border-base-300 bg-base-200 py-2"
+	>
 		<span class="mt-1">{formatDate(data.project.startDate)}</span>
 		<a href={`/projects/${data.project.id}`} class="btn btn-ghost btn-sm">{data.project.name}</a>
 		<span class="mt-1">{formatDate(data.project.endDate)}</span>
 	</div>
-	<div class="max-w-full grow overflow-y-auto">
+	<div id="sidebar-wrap" class="max-w-full">
 		<Sidebar>
 			<svelte:fragment slot="content"><slot /></svelte:fragment>
 			<svelte:fragment slot="menu">
