@@ -102,7 +102,7 @@
 				{@const status = currentStatus(project.startDate, project.endDate)}
 				<a
 					href={`/projects/${project.id}`}
-					class="card m-4 w-80 border-2 border-neutral bg-base-100 shadow-xl hover:bg-base-200"
+					class="card m-4 w-80 border-2 border-neutral bg-base-100 shadow-xl transition hover:-translate-y-1 hover:bg-base-200"
 				>
 					<div class="card-body">
 						<h2 class="card-title">
