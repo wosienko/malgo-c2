@@ -7,7 +7,7 @@
 	let { href, active = false }: Props = $props();
 </script>
 
-<li class={active ? 'rounded-md bg-neutral text-neutral-content' : ''}>
+<li class={active ? 'rounded-lg bg-neutral text-neutral-content' : ''}>
 	<a {href}>
 		<slot />
 	</a>
