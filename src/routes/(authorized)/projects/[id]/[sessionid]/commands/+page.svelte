@@ -88,4 +88,6 @@
 		</table>
 	</div>
 </div>
-<p>last command</p>
+<div class="hidden h-1/3 w-full md:block">
+	<p>last command</p>
+</div>

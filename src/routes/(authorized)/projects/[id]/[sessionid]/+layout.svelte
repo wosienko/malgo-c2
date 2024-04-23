@@ -5,12 +5,14 @@
 
 	const ALL_TABS = ['/commands', '/modules', '/history', '/settings'] as const;
 
-	const { id, sessionid } = get(page).params;
+	let { id, sessionid } = $state(get(page).params);
 
 	let currentUrl = $state(get(page).url.pathname);
 
 	afterNavigate(() => {
 		currentUrl = get(page).url.pathname;
+		id = get(page).params.id;
+		sessionid = get(page).params.sessionid;
 	});
 
 	const capitalize = (s: string) => {
