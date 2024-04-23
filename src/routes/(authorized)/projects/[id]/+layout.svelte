@@ -9,8 +9,6 @@
 
 	let { data } = $props();
 
-	let sessions = $state([]);
-
 	let currentUrl = $state(get(page).url.pathname);
 	afterNavigate(() => {
 		currentUrl = get(page).url.pathname;
@@ -56,8 +54,6 @@
 	let unsubscribe: () => void;
 
 	onMount(async () => {
-		sessions = await data.sessions;
-
 		drawerResize();
 		window.addEventListener('resize', drawerResize);
 		unsubscribe = navigating.subscribe(drawerResize);
@@ -84,7 +80,7 @@
 		<Sidebar>
 			<svelte:fragment slot="content"><slot /></svelte:fragment>
 			<svelte:fragment slot="menu">
-				{#if sessions.length === 0}
+				{#await data.sessions}
 					<li>
 						<div class="flex w-full flex-col">
 							<div class="skeleton h-8 w-full"></div>
@@ -92,7 +88,14 @@
 							<div class="skeleton h-4 w-full"></div>
 						</div>
 					</li>
-				{:else}
+					{:then sessions}
+					{#if sessions.length === 0}
+						<li>
+							<div class="flex w-full flex-col">
+								<div class="text-center text-lg text-info">No sessions found</div>
+							</div>
+						</li>
+					{:else}
 					{#each sessions as session}
 						{@const isSelected = currentUrl.includes(`/projects/${data.project.id}/${session.id}`)}
 						<SidebarEntry
@@ -121,6 +124,7 @@
 						</SidebarEntry>
 					{/each}
 				{/if}
+					{/await}
 			</svelte:fragment>
 		</Sidebar>
 	</div>
