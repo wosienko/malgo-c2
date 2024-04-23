@@ -6,9 +6,9 @@
 	import { get } from 'svelte/store';
 	import { onDestroy, onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
-	import Session from '$lib/components/custom/Session.svelte';
-	import SessionLoading from '$lib/components/custom/SessionLoading.svelte';
-	import SessionNotFound from '$lib/components/custom/SessionNotFound.svelte';
+	import Session from '$lib/components/custom/session/Session.svelte';
+	import SessionLoading from '$lib/components/custom/session/SessionLoading.svelte';
+	import SessionNotFound from '$lib/components/custom/session/SessionNotFound.svelte';
 
 	let { data } = $props();
 
