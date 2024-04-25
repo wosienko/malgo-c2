@@ -9,9 +9,6 @@ export const C2ResultChunks = pgTable(
 			.notNull()
 			.references(() => C2Commands.id, { onDelete: 'cascade' }),
 		resultChunk: text('result_chunk').notNull().default(''),
-		chunkSize: integer('chunk_size')
-			.notNull()
-			.default(sql`length(result_chunk)`),
 		chunkOffset: integer('chunk_offset').notNull(),
 		createdAt: timestamp('created_at', {
 			withTimezone: true,

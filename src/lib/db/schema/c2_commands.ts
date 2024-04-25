@@ -31,9 +31,6 @@ export const C2Commands = pgTable('c2_commands', {
 	type: C2CommandTypeEnum('type').notNull().default('command'),
 	status: C2CommandStatusEnum('status').notNull().default('created'),
 	command: text('command').notNull(),
-	commandSize: integer('command_size')
-		.notNull()
-		.default(sql`length(command)`),
 	resultSize: integer('result_size').notNull().default(0),
 	createdAt: timestamp('created_at', {
 		withTimezone: true,
