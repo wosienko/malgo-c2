@@ -14,78 +14,90 @@
 				<tr>
 					<th class="w-auto">Key</th>
 					<th class="w-auto">Value</th>
-					<th class="w-24"></th>
+					<th class="w-24">
+						<button class="btn btn-sm">Add</button>
+					</th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
 					<td>key</td>
 					<td>value</td>
-					<td>
+					<td class="flex flex-col items-center justify-center space-y-2">
 						<button class="btn btn-sm">Edit</button>
+						<button class="btn btn-error btn-sm">Del</button>
 					</td>
 				</tr>
 				<tr>
 					<td>key</td>
 					<td>value</td>
-					<td>
+					<td class="flex flex-col items-center justify-center space-y-2">
 						<button class="btn btn-sm">Edit</button>
+						<button class="btn btn-error btn-sm">Del</button>
 					</td>
 				</tr>
 				<tr>
 					<td>key</td>
 					<td>value</td>
-					<td>
+					<td class="flex flex-col items-center justify-center space-y-2">
 						<button class="btn btn-sm">Edit</button>
+						<button class="btn btn-error btn-sm">Del</button>
 					</td>
 				</tr>
 				<tr>
 					<td>key</td>
 					<td>value</td>
-					<td>
+					<td class="flex flex-col items-center justify-center space-y-2">
 						<button class="btn btn-sm">Edit</button>
+						<button class="btn btn-error btn-sm">Del</button>
 					</td>
 				</tr>
 				<tr>
 					<td>key</td>
 					<td>value</td>
-					<td>
+					<td class="flex flex-col items-center justify-center space-y-2">
 						<button class="btn btn-sm">Edit</button>
+						<button class="btn btn-error btn-sm">Del</button>
 					</td>
 				</tr>
 				<tr>
 					<td>key</td>
 					<td>value</td>
-					<td>
+					<td class="flex flex-col items-center justify-center space-y-2">
 						<button class="btn btn-sm">Edit</button>
+						<button class="btn btn-error btn-sm">Del</button>
 					</td>
 				</tr>
 				<tr>
 					<td>key</td>
 					<td>value</td>
-					<td>
+					<td class="flex flex-col items-center justify-center space-y-2">
 						<button class="btn btn-sm">Edit</button>
+						<button class="btn btn-error btn-sm">Del</button>
 					</td>
 				</tr>
 				<tr>
 					<td>key</td>
 					<td>value</td>
-					<td>
+					<td class="flex flex-col items-center justify-center space-y-2">
 						<button class="btn btn-sm">Edit</button>
+						<button class="btn btn-error btn-sm">Del</button>
 					</td>
 				</tr>
 				<tr>
 					<td>key</td>
 					<td>value</td>
-					<td>
+					<td class="flex flex-col items-center justify-center space-y-2">
 						<button class="btn btn-sm">Edit</button>
+						<button class="btn btn-error btn-sm">Del</button>
 					</td>
 				</tr>
 				<tr>
 					<td>key</td>
 					<td>value</td>
-					<td>
+					<td class="flex flex-col items-center justify-center space-y-2">
 						<button class="btn btn-sm">Edit</button>
+						<button class="btn btn-error btn-sm">Del</button>
 					</td>
 				</tr>
 			</tbody>
