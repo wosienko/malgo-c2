@@ -10,16 +10,7 @@
 		classes?: string;
 	};
 
-	let {
-		id,
-		name,
-		type,
-		// eslint-disable-next-line no-undef
-		value = $bindable(),
-		// eslint-disable-next-line no-undef
-		validation,
-		classes = ''
-	}: InputProps = $props();
+	let { id, name, type, value = $bindable(), validation, classes = '' }: InputProps = $props();
 </script>
 
 {#if !validation.success}

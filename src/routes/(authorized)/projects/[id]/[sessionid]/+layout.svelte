@@ -2,12 +2,17 @@
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
 	import { afterNavigate } from '$app/navigation';
-	const ALL_TABS = ['/admin/users', '/admin/projects'] as const;
+
+	const ALL_TABS = ['/commands', '/modules', '/history', '/settings'] as const;
+
+	let { id, sessionid } = $state(get(page).params);
 
 	let currentUrl = $state(get(page).url.pathname);
 
 	afterNavigate(() => {
 		currentUrl = get(page).url.pathname;
+		id = get(page).params.id;
+		sessionid = get(page).params.sessionid;
 	});
 
 	const capitalize = (s: string) => {
@@ -15,19 +20,15 @@
 	};
 </script>
 
-<svelte:head>
-	<title>MALGO - Admin</title>
-</svelte:head>
-
 <div class="flex h-full w-full flex-col pt-3">
-	<div role="tablist" class="tabs tabs-bordered tabs-md">
+	<div role="tablist" class="tabs tabs-bordered tabs-md w-full">
 		{#each ALL_TABS as tab}
 			<a
 				role="tab"
 				class="tab pb-9 hover:opacity-50"
-				class:tab-active={currentUrl === tab}
-				href={tab}
-				data-sveltekit-preload-data>{capitalize(tab.replace('/admin/', ''))}</a
+				class:tab-active={currentUrl.endsWith(tab)}
+				href={`/projects/${id}/${sessionid}${tab}`}
+				>{capitalize(tab.replace('/', '').replace('-', ' '))}</a
 			>
 		{/each}
 	</div>

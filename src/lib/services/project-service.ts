@@ -22,6 +22,12 @@ export const getProjects = async (page: number, pageSize: number) => {
 	});
 };
 
+export const getProjectById = async (projectId: string) => {
+	return db.query.Projects.findFirst({
+		where: eq(Projects.id, projectId)
+	});
+};
+
 export const getCountOfProjects = async (): Promise<number> => {
 	return db
 		.select({ count: count() })
@@ -102,6 +108,16 @@ export const getAllProjectsForOperator = async (
 		)
 		.limit(pageSize)
 		.offset((page - 1) * pageSize);
+};
+
+export const isUserAllowedToQueryProject = async (userId: string, projectId: string) => {
+	return db
+		.select({ id: UserProjects.project_id })
+		.from(UserProjects)
+		.where(and(eq(UserProjects.user_id, userId), eq(UserProjects.project_id, projectId)))
+		.then((result) => {
+			return result.length > 0;
+		});
 };
 
 export const createProject = async (

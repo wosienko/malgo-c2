@@ -12,7 +12,6 @@
 		classes?: string;
 	};
 
-	// eslint-disable-next-line no-undef
 	let { id, label, name, type, value = $bindable(), validation, classes = '' }: Props = $props();
 </script>
 

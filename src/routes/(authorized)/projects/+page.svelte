@@ -39,12 +39,18 @@
 		}
 	};
 
+	const formatDate = (date: string): string => {
+		const d = new Date(date);
+		// format DD.MM.YYYY
+		return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear()}`;
+	};
+
 	onMount(async () => {
 		count = await data.count;
 	});
 </script>
 
-<div class="flex h-full w-full flex-col items-center">
+<div class="flex h-full w-full flex-col items-center pt-3">
 	<button class="btn btn-primary" on:click={toggleAllProjects}>Toggle view of all projects</button>
 	{#if allView}
 		<div class="mt-3 flex justify-center space-x-3">
@@ -94,25 +100,28 @@
 		{:then projects}
 			{#each projects as project}
 				{@const status = currentStatus(project.startDate, project.endDate)}
-				<div class="card m-4 w-80 border-2 border-neutral bg-base-100 shadow-xl">
+				<a
+					href={`/projects/${project.id}`}
+					class="card m-4 w-80 border-2 border-neutral bg-base-100 shadow-xl transition hover:-translate-y-1 hover:bg-base-200"
+				>
 					<div class="card-body">
 						<h2 class="card-title">
 							{project.name}
 							{#if status === 'UPCOMING'}
-								<span class="badge badge-warning">UPCOMING</span>
+								<span class="badge badge-warning">{status}</span>
 							{:else if status === 'ONGOING'}
-								<span class="badge badge-primary">ONGOING</span>
+								<span class="badge badge-primary">{status}</span>
 							{:else}
-								<span class="badge badge-secondary">FINISHED</span>
+								<span class="badge badge-secondary">{status}</span>
 							{/if}
 						</h2>
 						<p class="whitespace-pre-line">{project.description}</p>
 						<div class="card-actions justify-between">
-							<div class="badge badge-outline">{project.startDate}</div>
-							<div class="badge badge-outline">{project.endDate}</div>
+							<div class="badge badge-outline">{formatDate(project.startDate)}</div>
+							<div class="badge badge-outline">{formatDate(project.endDate)}</div>
 						</div>
 					</div>
-				</div>
+				</a>
 			{/each}
 		{/await}
 	</div>
