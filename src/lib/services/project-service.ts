@@ -49,6 +49,13 @@ export const getCountOfProjectsForOperator = async (operatorId: string): Promise
 		.then((result) => result[0].count);
 };
 
+/**
+ * Get projects for operator - future projects, current projects,
+ * and projects that ended in the last 14 days
+ * @param operatorId
+ * @param page
+ * @param pageSize
+ */
 export const getProjectsForOperator = async (
 	operatorId: string,
 	page: number,
