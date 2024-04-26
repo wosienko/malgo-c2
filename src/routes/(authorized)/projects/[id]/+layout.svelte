@@ -9,6 +9,7 @@
 	import Session from '$lib/components/custom/session/Session.svelte';
 	import SessionLoading from '$lib/components/custom/session/SessionLoading.svelte';
 	import SessionNotFound from '$lib/components/custom/session/SessionNotFound.svelte';
+	import { createWebsocketStore, type WebsocketStore } from '$lib/stores/Websocket';
 
 	let { data } = $props();
 
@@ -46,16 +47,23 @@
 
 	let unsubscribe: () => void;
 
+	let websocketStore: WebsocketStore;
+
 	onMount(async () => {
 		drawerResize();
 		window.addEventListener('resize', drawerResize);
 		unsubscribe = navigating.subscribe(drawerResize);
+
+		websocketStore = createWebsocketStore();
+		await websocketStore.subscribeToProject(get(page).params.id);
 	});
 
-	onDestroy(() => {
+	onDestroy(async () => {
 		if (browser) {
 			window.removeEventListener('resize', drawerResize);
 			unsubscribe();
+
+			await websocketStore.unsubscribeFromProject();
 		}
 	});
 </script>
