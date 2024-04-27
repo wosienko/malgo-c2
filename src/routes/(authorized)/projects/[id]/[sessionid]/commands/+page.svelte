@@ -27,6 +27,7 @@
 	const handleNewCommand = (event: MessageEvent) => {
 		try {
 			newestCommand = JSON.parse(event.data);
+			newestCommand!.created_at = formatDateAndTime(newestCommand!.created_at);
 		} catch (error) {
 			console.error('Error parsing websocket message', error);
 		}
@@ -55,6 +56,12 @@
 			websocketStore.ws?.removeEventListener('message', handleNewCommand);
 		}
 	});
+
+	const formatDateAndTime = (date: string): string => {
+		const d = new Date(date);
+		// format DD.MM.YYYY HH:MM:SS
+		return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
+	};
 </script>
 
 <div class="flex h-1/2 w-full justify-around border-b-2 border-neutral pb-6">
