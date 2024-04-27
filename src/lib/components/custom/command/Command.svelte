@@ -14,7 +14,7 @@
 <div class="mx-3 rounded-2xl border-2 border-neutral bg-base-100 p-4 shadow-xl">
 	<div>
 		<div class="mb-3 flex justify-between">
-			<h2 class="card-title">
+			<h2 class="card-title flex-col items-center justify-center md:flex-row">
 				<span class="badge badge-primary">{command.type.toUpperCase()}</span>
 				<span class="badge badge-secondary">{command.status.toUpperCase()}</span>
 			</h2>
