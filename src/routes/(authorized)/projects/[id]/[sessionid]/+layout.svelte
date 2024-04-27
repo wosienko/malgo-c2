@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
-	import { afterNavigate, onNavigate } from '$app/navigation';
+	import { afterNavigate } from '$app/navigation';
 	import { onDestroy, onMount } from 'svelte';
 	import { createWebsocketStore, type WebsocketStore } from '$lib/stores/Websocket';
 	import { browser } from '$app/environment';
@@ -29,7 +29,7 @@
 		await websocketStore.subscribeToSession(get(page).params.sessionid);
 	});
 
-	onNavigate(async () => {
+	afterNavigate(async () => {
 		if (browser && get(page).params.id !== '') {
 			await websocketStore.unsubscribeFromSession();
 			await websocketStore.subscribeToSession(get(page).params.sessionid);

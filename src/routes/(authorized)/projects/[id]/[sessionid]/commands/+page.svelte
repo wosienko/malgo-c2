@@ -6,16 +6,14 @@
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
 	import { browser } from '$app/environment';
+	import CommandLoading from '$lib/components/custom/command/CommandLoading.svelte';
+	import { afterNavigate } from '$app/navigation';
 
-	let newestCommand: CommandType = $state({
-		id: '',
-		type: 'cmd',
-		status: 'aaa',
-		operator: 'bajo jajo',
-		command: 'string',
-		result: 'nic',
-		created_at: 'today'
-	});
+	let { data } = $props();
+
+	// undefined - no commands yet
+	// null - loading
+	let newestCommand: CommandType | undefined | null = $state(null);
 
 	let commandToBeSent = $state('');
 
@@ -35,9 +33,21 @@
 	};
 
 	onMount(async () => {
+		newestCommand = await data.command;
+
 		websocketStore = createWebsocketStore();
 
 		websocketStore.ws?.addEventListener('message', handleNewCommand);
+	});
+
+	afterNavigate(async () => {
+		newestCommand = null;
+		console.log('sessionid: ', get(page).params.sessionid);
+		newestCommand = await fetch(
+			`/api/projects/${get(page).params.id}/sessions/${get(page).params.sessionid}/command`
+		)
+			.then((res) => res.json())
+			.catch(() => undefined);
 	});
 
 	onDestroy(() => {
@@ -157,5 +167,11 @@
 	</div>
 </div>
 <div class="h-1/2 w-full overflow-y-auto py-3">
-	<Command command={newestCommand} />
+	{#if newestCommand === null}
+		<CommandLoading />
+	{:else if newestCommand}
+		<Command command={newestCommand} />
+	{:else}
+		<p class="text-center">No commands yet</p>
+	{/if}
 </div>
