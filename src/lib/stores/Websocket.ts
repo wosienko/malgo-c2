@@ -85,6 +85,13 @@ export const createWebsocketStore = () => {
 			}
 			consciousExit = true;
 			ws.close();
+		},
+		sendCommand: (sessionId: string, command: string) => {
+			if (ws === null || ws.readyState !== WebSocket.OPEN) {
+				console.error('WebSocket not connected');
+				return;
+			}
+			ws.send(JSON.stringify({ type: 'command', sessionId, command }));
 		}
 	};
 };
