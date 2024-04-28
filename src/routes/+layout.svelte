@@ -19,6 +19,7 @@
 	};
 
 	let logoutTimeout: ReturnType<typeof setTimeout> | null = null;
+	const logoutTimeoutTime = 60 * 60 * 1000;
 
 	onMount(() => {
 		// load light mode from local storage
@@ -42,7 +43,7 @@
 					// submit form
 					form.submit();
 				},
-				60 * 60 * 1000
+				logoutTimeoutTime
 			);
 		}
 
@@ -65,7 +66,7 @@
 					// submit form
 					form.submit();
 				},
-				60 * 60 * 1000
+				logoutTimeoutTime
 			);
 		}
 	});
