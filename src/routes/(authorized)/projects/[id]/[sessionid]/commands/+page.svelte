@@ -26,7 +26,9 @@
 
 	const handleNewCommand = (event: MessageEvent) => {
 		try {
-			newestCommand = JSON.parse(event.data);
+			const data = JSON.parse(event.data);
+			if (data.message_type !== 'new-command') return;
+			newestCommand = data;
 			newestCommand!.created_at = formatDateAndTime(newestCommand!.created_at);
 		} catch (error) {
 			console.error('Error parsing websocket message', error);
