@@ -55,28 +55,24 @@ export const createWebsocketStore = () => {
 				await new Promise((resolve) => setTimeout(resolve, 100));
 			}
 			ws.send(JSON.stringify({ type: 'subscribeProject', projectId }));
-			console.log('Subscribed to project', projectId);
 		},
 		unsubscribeFromProject: async () => {
 			while (ws === null || ws.readyState !== WebSocket.OPEN) {
 				await new Promise((resolve) => setTimeout(resolve, 100));
 			}
 			ws.send(JSON.stringify({ type: 'unsubscribeProject' }));
-			console.log('Unsubscribed from project');
 		},
 		subscribeToSession: async (sessionId: string) => {
 			while (ws === null || ws.readyState !== WebSocket.OPEN) {
 				await new Promise((resolve) => setTimeout(resolve, 100));
 			}
 			ws.send(JSON.stringify({ type: 'subscribeSession', sessionId }));
-			console.log('Subscribed to session', sessionId);
 		},
 		unsubscribeFromSession: async () => {
 			while (ws === null || ws.readyState !== WebSocket.OPEN) {
 				await new Promise((resolve) => setTimeout(resolve, 100));
 			}
 			ws.send(JSON.stringify({ type: 'unsubscribeSession' }));
-			console.log('Unsubscribed from session');
 		},
 		disconnect: () => {
 			if (ws === null) {

@@ -27,6 +27,9 @@
 	onMount(async () => {
 		websocketStore = createWebsocketStore();
 		await websocketStore.subscribeToSession(get(page).params.sessionid);
+		websocketStore.ws?.addEventListener('close', async () => {
+			await websocketStore.subscribeToSession(get(page).params.sessionid);
+		});
 	});
 
 	afterNavigate(async () => {
@@ -38,6 +41,9 @@
 
 	onDestroy(async () => {
 		if (browser) {
+			websocketStore.ws?.removeEventListener('close', async () => {
+				await websocketStore.subscribeToSession(get(page).params.sessionid);
+			});
 			await websocketStore.unsubscribeFromSession();
 		}
 	});

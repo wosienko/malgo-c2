@@ -57,6 +57,9 @@
 
 		websocketStore = createWebsocketStore();
 		await websocketStore.subscribeToProject(get(page).params.id);
+		websocketStore.ws?.addEventListener('close', async () => {
+			await websocketStore.subscribeToProject(get(page).params.id);
+		});
 	});
 
 	onDestroy(async () => {
@@ -64,6 +67,9 @@
 			window.removeEventListener('resize', drawerResize);
 			unsubscribe();
 
+			websocketStore.ws?.removeEventListener('close', async () => {
+				await websocketStore.subscribeToProject(get(page).params.id);
+			});
 			await websocketStore.unsubscribeFromProject();
 		}
 	});

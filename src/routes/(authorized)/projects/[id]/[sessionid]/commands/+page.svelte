@@ -45,7 +45,6 @@
 
 	afterNavigate(async () => {
 		newestCommand = null;
-		console.log('sessionid: ', get(page).params.sessionid);
 		newestCommand = await fetch(
 			`/api/projects/${get(page).params.id}/sessions/${get(page).params.sessionid}/command`
 		)
