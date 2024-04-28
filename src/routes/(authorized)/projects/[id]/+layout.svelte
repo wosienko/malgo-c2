@@ -105,6 +105,7 @@
 								active={isSelected}
 							>
 								<Session
+									id={session.id}
 									name={session.name}
 									createdAt={session.createdAt}
 									heartbeatAt={session.heartbeatAt}

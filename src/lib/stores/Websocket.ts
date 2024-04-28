@@ -54,7 +54,7 @@ const sendPing = () => {
 	}
 	ws.send(JSON.stringify({ type: 'ping' }));
 	pingTimeout = setTimeout(sendPing, 30000);
-}
+};
 
 export const createWebsocketStore = () => {
 	// Immediately try to connect upon store creation
