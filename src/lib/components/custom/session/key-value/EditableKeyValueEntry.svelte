@@ -115,7 +115,9 @@
 		<td class="flex flex-col space-y-2">
 			<button
 				class="btn btn-success btn-sm"
-				class:btn-disabled={!keyCheck.success || !valueCheck.success}
+				class:btn-disabled={!keyCheck.success ||
+					!valueCheck.success ||
+					(editableKey === key && editableValue === value)}
 				on:click={finishEditing}>Save</button
 			>
 			<button class="btn btn-sm" on:click={cancelEditing}>Cancel</button>

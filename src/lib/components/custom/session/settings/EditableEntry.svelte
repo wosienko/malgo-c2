@@ -89,7 +89,7 @@
 		<td class="flex flex-col items-center space-y-3">
 			<button
 				class="btn btn-success btn-sm max-w-16"
-				class:btn-disabled={!valueCheck.success}
+				class:btn-disabled={!valueCheck.success || editableValue === value}
 				on:click={finishEditing}>Save</button
 			>
 			<button class="btn btn-sm max-w-16" on:click={cancelEditing}>Cancel</button>
