@@ -48,9 +48,11 @@
 
 	const loadPage = (nextPage: number) => {
 		return async () => {
-			const res = await fetch(`/api/project?page=${nextPage}&pageSize=${pageSize}`);
+			data.projects = fetch(`/api/project?page=${nextPage}&pageSize=${pageSize}`).then((res) =>
+				res.json()
+			);
 			pushState(`/admin/projects?page=${nextPage}&pageSize=${pageSize}`, {});
-			const projectsPage: Projects = await res.json();
+			const projectsPage: Projects = await data.projects;
 			projects = projectsPage.projects.map((project) => ({
 				...project,
 				editing: false
@@ -448,7 +450,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		{#if projects.length === 0}
+		{#await data.projects}
 			<tr>
 				<td><div class="skeleton h-6 w-full"></div> </td>
 				<td class="hidden md:table-cell">
@@ -466,146 +468,148 @@
 					</div>
 				</td>
 			</tr>
-		{:else}
-			{#each projects as project, i}
-				{#if !project.editing}
-					<tr class="max-w-dvw hover">
-						<td class="no-scrollbar overflow-x-auto">{project.name}</td>
-						<td class="no-scrollbar hidden overflow-x-auto md:table-cell"
-							>{formatDate(project.startDate)}</td
+		{:catch error}
+			<tr>
+				<td colspan="5" class="text-center">Failed to load projects: {error}</td>
+			</tr>
+		{/await}
+		{#each projects as project, i}
+			{#if !project.editing}
+				<tr class="max-w-dvw hover">
+					<td class="no-scrollbar overflow-x-auto">{project.name}</td>
+					<td class="no-scrollbar hidden overflow-x-auto md:table-cell"
+						>{formatDate(project.startDate)}</td
+					>
+					<td class="no-scrollbar hidden overflow-x-auto md:table-cell"
+						>{formatDate(project.endDate)}</td
+					>
+					<td class="no-scrollbar hidden overflow-x-auto whitespace-pre-line md:table-cell"
+						>{project.description}</td
+					>
+					<td>
+						<!-- Dropdown accounting for hiding under the dropdown for last elements -->
+						<div
+							class="dropdown dropdown-end"
+							class:dropdown-bottom={i <= 2 || i + 1 < (count > pageSize ? pageSize : count) - 2}
+							class:dropdown-top={i > 2 && i + 1 >= (count > pageSize ? pageSize : count) - 2}
 						>
-						<td class="no-scrollbar hidden overflow-x-auto md:table-cell"
-							>{formatDate(project.endDate)}</td
-						>
-						<td class="no-scrollbar hidden overflow-x-auto whitespace-pre-line md:table-cell"
-							>{project.description}</td
-						>
-						<td>
-							<!-- Dropdown accounting for hiding under the dropdown for last elements -->
-							<div
-								class="dropdown dropdown-end"
-								class:dropdown-bottom={i <= 2 || i + 1 < (count > pageSize ? pageSize : count) - 2}
-								class:dropdown-top={i > 2 && i + 1 >= (count > pageSize ? pageSize : count) - 2}
+							<div tabindex="-1" role="button" class="btn btn-neutral btn-sm mb-1">Options</div>
+							<ul
+								tabindex="-1"
+								class="menu dropdown-content z-[1] w-52 space-y-1.5 rounded-box bg-base-100 p-2 shadow"
 							>
-								<div tabindex="-1" role="button" class="btn btn-neutral btn-sm mb-1">Options</div>
-								<ul
-									tabindex="-1"
-									class="menu dropdown-content z-[1] w-52 space-y-1.5 rounded-box bg-base-100 p-2 shadow"
-								>
-									<li>
-										<button
-											class="btn btn-sm"
-											on:click={() => {
-												project.editing = true;
-												lastProjectValues = { ...project };
-											}}>Edit</button
-										>
-									</li>
-									<li>
-										<button
-											class="btn btn-warning btn-sm"
-											on:click={() => {
-												prepareForOperatorAssignment(project)();
-											}}>Assign operators</button
-										>
-									</li>
-									<li>
-										<button
-											class="btn btn-error btn-sm"
-											on:click={() => prepareForDeletion(project)()}>Delete</button
-										>
-									</li>
-								</ul>
+								<li>
+									<button
+										class="btn btn-sm"
+										on:click={() => {
+											project.editing = true;
+											lastProjectValues = { ...project };
+										}}>Edit</button
+									>
+								</li>
+								<li>
+									<button
+										class="btn btn-warning btn-sm"
+										on:click={() => {
+											prepareForOperatorAssignment(project)();
+										}}>Assign operators</button
+									>
+								</li>
+								<li>
+									<button
+										class="btn btn-error btn-sm"
+										on:click={() => prepareForDeletion(project)()}>Delete</button
+									>
+								</li>
+							</ul>
+						</div>
+					</td>
+				</tr>
+			{:else}
+				{@const nameCheck = fieldSchema.safeParse(project.name)}
+				{@const startDateCheck = dateSchema.safeParse(project.startDate)}
+				{@const endDateCheck = dateSchema
+					.refine(
+						() => {
+							return project.startDate < project.endDate;
+						},
+						{
+							message: 'End date must be after start date'
+						}
+					)
+					.safeParse(project.endDate)}
+				{@const editingValid = nameCheck.success && startDateCheck.success && endDateCheck.success}
+				<tr class="max-w-dvw hover">
+					<td>
+						<div class="md:-mt-2">
+							<ValidatedInput
+								type="text"
+								id="name"
+								name="name"
+								bind:value={project.name}
+								validation={nameCheck}
+								classes="input-sm mb-5 w-full"
+							/>
+						</div>
+					</td>
+					<td class="hidden md:table-cell">
+						<div class="md:-mt-2">
+							<ValidatedInput
+								label="Start date"
+								type="date"
+								id="start-date"
+								name="startDate"
+								bind:value={project.startDate}
+								validation={startDateCheck}
+								classes="input-sm mb-5"
+							/>
+						</div>
+					</td>
+					<td class="hidden md:table-cell">
+						<div class="md:-mt-2">
+							<ValidatedInput
+								label="End date"
+								type="date"
+								id="end-date"
+								name="endDate"
+								bind:value={project.endDate}
+								validation={endDateCheck}
+								classes="input-sm mb-5"
+							/>
+						</div>
+					</td>
+					<td class="hidden md:table-cell">
+						<div class="md:-mt-2">
+							<textarea
+								bind:value={project.description}
+								class="textarea textarea-bordered textarea-xs mt-1.5 w-full max-w-xs resize-none"
+							></textarea>
+						</div>
+					</td>
+					<td class="my-1.5 flex flex-col items-center justify-center space-y-3">
+						{#if loading}
+							<div class="my-4 h-11">
+								<span class="loading loading-spinner loading-lg text-info"></span>
 							</div>
-						</td>
-					</tr>
-				{:else}
-					{@const nameCheck = fieldSchema.safeParse(project.name)}
-					{@const startDateCheck = dateSchema.safeParse(project.startDate)}
-					{@const endDateCheck = dateSchema
-						.refine(
-							() => {
-								return project.startDate < project.endDate;
-							},
-							{
-								message: 'End date must be after start date'
-							}
-						)
-						.safeParse(project.endDate)}
-					{@const editingValid =
-						nameCheck.success && startDateCheck.success && endDateCheck.success}
-					<tr class="max-w-dvw hover">
-						<td>
-							<div class="md:-mt-2">
-								<ValidatedInput
-									type="text"
-									id="name"
-									name="name"
-									bind:value={project.name}
-									validation={nameCheck}
-									classes="input-sm mb-5 w-full"
-								/>
-							</div>
-						</td>
-						<td class="hidden md:table-cell">
-							<div class="md:-mt-2">
-								<ValidatedInput
-									label="Start date"
-									type="date"
-									id="start-date"
-									name="startDate"
-									bind:value={project.startDate}
-									validation={startDateCheck}
-									classes="input-sm mb-5"
-								/>
-							</div>
-						</td>
-						<td class="hidden md:table-cell">
-							<div class="md:-mt-2">
-								<ValidatedInput
-									label="End date"
-									type="date"
-									id="end-date"
-									name="endDate"
-									bind:value={project.endDate}
-									validation={endDateCheck}
-									classes="input-sm mb-5"
-								/>
-							</div>
-						</td>
-						<td class="hidden md:table-cell">
-							<div class="md:-mt-2">
-								<textarea
-									bind:value={project.description}
-									class="textarea textarea-bordered textarea-xs mt-1.5 w-full max-w-xs resize-none"
-								></textarea>
-							</div>
-						</td>
-						<td class="my-1.5 flex flex-col items-center justify-center space-y-3">
-							{#if loading}
-								<div class="my-4 h-11">
-									<span class="loading loading-spinner loading-lg text-info"></span>
-								</div>
-							{:else}
-								<button
-									class="btn btn-success btn-sm w-14"
-									class:btn-disabled={JSON.stringify(project) ===
-										JSON.stringify(lastProjectValues) || !editingValid}
-									on:click={() => updateProject(project)}>Save</button
-								>
-								<button
-									class="btn btn-sm"
-									on:click={() => {
-										// so that the input fields are reset. In runes mode, cannot use `project = lastProjectValues`
-										projects[i] = lastProjectValues;
-										projects[i].editing = false;
-									}}>Cancel</button
-								>
-							{/if}
-						</td>
-					</tr>
-				{/if}
-			{/each}
-		{/if}
+						{:else}
+							<button
+								class="btn btn-success btn-sm w-14"
+								class:btn-disabled={JSON.stringify(project) === JSON.stringify(lastProjectValues) ||
+									!editingValid}
+								on:click={() => updateProject(project)}>Save</button
+							>
+							<button
+								class="btn btn-sm"
+								on:click={() => {
+									// so that the input fields are reset. In runes mode, cannot use `project = lastProjectValues`
+									projects[i] = lastProjectValues;
+									projects[i].editing = false;
+								}}>Cancel</button
+							>
+						{/if}
+					</td>
+				</tr>
+			{/if}
+		{/each}
 	</tbody>
 </table>

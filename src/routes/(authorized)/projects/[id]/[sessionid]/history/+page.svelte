@@ -84,7 +84,7 @@
 			>
 		{/await}
 	</div>
-	<div class="mt-1 md:flex-1">
+	<div class="mt-1">
 		<div class="flex items-center justify-center space-x-3">
 			<span>Limit: {pageLimit}</span>
 			<input
