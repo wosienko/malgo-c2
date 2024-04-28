@@ -11,8 +11,10 @@
 	let allLimit = $state(Number(get(page).url.searchParams.get('limit')) || 6);
 
 	const currentStatus = (startDate: string, endDate: string) => {
-		const start = new Date(startDate).setHours(0, 0, 0, 0);
-		const end = new Date(endDate).setHours(23, 59, 59, 999);
+		const start = new Date(startDate);
+		start.setHours(0, 0, 0, 0);
+		const end = new Date(endDate);
+		end.setHours(23, 59, 59, 999);
 		const now = new Date();
 		if (start > now) return 'UPCOMING';
 		if (start <= now && end >= now) return 'ONGOING';
