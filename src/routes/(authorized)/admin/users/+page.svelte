@@ -49,9 +49,11 @@
 
 	const loadPage = (nextPage: number) => {
 		return async () => {
-			const res = await fetch(`/api/user?page=${nextPage}&pageSize=${pageSize}`);
+			data.users = fetch(`/api/user?page=${nextPage}&pageSize=${pageSize}`).then((res) =>
+				res.json()
+			);
 			pushState(`/admin/users?page=${nextPage}&pageSize=${pageSize}`, {});
-			const usersPage: UsersWithRoles = await res.json();
+			const usersPage: UsersWithRoles = await data.users;
 			users = usersPage.users.map((user) => ({
 				...user,
 				editing: false
@@ -480,7 +482,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		{#if users.length === 0}
+		{#await data.users}
 			<tr>
 				<td><div class="skeleton h-6 w-full"></div> </td>
 				<td class="hidden md:table-cell">
@@ -501,153 +503,158 @@
 					</div>
 				</td>
 			</tr>
-		{:else}
-			{#each users as user, i}
-				{#if !user.editing}
-					<tr class="max-w-dvw hover">
-						<td class="no-scrollbar hidden overflow-x-auto md:table-cell">{user.name}</td>
-						<td class="no-scrollbar hidden overflow-x-auto md:table-cell">{user.surname}</td>
-						<td class="no-scrollbar overflow-x-auto">{user.email}</td>
-						<td>
-							<input
-								type="checkbox"
-								checked={user.admin}
-								disabled
-								class="checkbox-warning checkbox checkbox-sm"
-							/>
-						</td>
-						<td>
-							<input
-								type="checkbox"
-								checked={user.operator}
-								disabled
-								class="checkbox-info checkbox checkbox-sm"
-							/>
-						</td>
-						<td>
-							<!-- Dropdown accounting for hiding under the dropdown for last elements -->
-							<div
-								class="dropdown dropdown-end"
-								class:dropdown-bottom={i <= 2 || i + 1 < (count > pageSize ? pageSize : count) - 2}
-								class:dropdown-top={i > 2 && i + 1 >= (count > pageSize ? pageSize : count) - 2}
+		{:catch error}
+			<tr>
+				<td colspan="6" class="text-center">
+					Error loading users: {error}
+				</td>
+			</tr>
+		{/await}
+		{#each users as user, i}
+			{#if !user.editing}
+				<tr class="max-w-dvw hover">
+					<td class="no-scrollbar hidden overflow-x-auto md:table-cell">{user.name}</td>
+					<td class="no-scrollbar hidden overflow-x-auto md:table-cell">{user.surname}</td>
+					<td class="no-scrollbar overflow-x-auto">{user.email}</td>
+					<td>
+						<input
+							type="checkbox"
+							checked={user.admin}
+							disabled
+							class="checkbox-warning checkbox checkbox-sm"
+						/>
+					</td>
+					<td>
+						<input
+							type="checkbox"
+							checked={user.operator}
+							disabled
+							class="checkbox-info checkbox checkbox-sm"
+						/>
+					</td>
+					<td>
+						<!-- Dropdown accounting for hiding under the dropdown for last elements -->
+						<div
+							class="dropdown dropdown-end"
+							class:dropdown-bottom={i <= 2 || i + 1 < (count > pageSize ? pageSize : count) - 2}
+							class:dropdown-top={i > 2 && i + 1 >= (count > pageSize ? pageSize : count) - 2}
+						>
+							<div tabindex="-1" role="button" class="btn btn-neutral btn-sm mb-1">Options</div>
+							<ul
+								tabindex="-1"
+								class="menu dropdown-content z-[1] w-52 space-y-1.5 rounded-box bg-base-100 p-2 shadow"
 							>
-								<div tabindex="-1" role="button" class="btn btn-neutral btn-sm mb-1">Options</div>
-								<ul
-									tabindex="-1"
-									class="menu dropdown-content z-[1] w-52 space-y-1.5 rounded-box bg-base-100 p-2 shadow"
-								>
-									<li>
-										<button
-											class="btn btn-sm"
-											on:click={() => {
-												user.editing = true;
-												lastUserValues = { ...user };
-											}}>Edit</button
-										>
-									</li>
-									<li>
-										<button
-											class="btn btn-warning btn-sm"
-											on:click={() => {
-												prepareForPasswordChange(user)();
-											}}>Change password</button
-										>
-									</li>
-									<li>
-										<button
-											class="btn btn-error btn-sm"
-											on:click={() => {
-												prepareForDeletion(user)();
-											}}>Delete</button
-										>
-									</li>
-								</ul>
-							</div>
-						</td>
-					</tr>
-				{:else}
-					{@const nameCheck = fieldSchema.safeParse(user.name)}
-					{@const surnameCheck = fieldSchema.safeParse(user.surname)}
-					{@const emailCheck = emailSchema.safeParse(user.email)}
-					{@const editingValid = nameCheck.success && surnameCheck.success && emailCheck.success}
-					<tr class="max-w-dvw hover">
-						<td class="hidden md:table-cell">
-							<div class="md:-mt-2">
-								<ValidatedInput
-									type="text"
-									id="name"
-									name="name"
-									bind:value={user.name}
-									validation={nameCheck}
-									classes="input-sm mb-5 w-full"
-								/>
-							</div>
-						</td>
-						<td class="hidden md:table-cell">
-							<div class="md:-mt-2">
-								<ValidatedInput
-									type="text"
-									id="surname"
-									name="surname"
-									bind:value={user.surname}
-									validation={surnameCheck}
-									classes="input-sm mb-5 w-full"
-								/>
-							</div>
-						</td>
-						<td>
-							<div class="md:-mt-2">
-								<ValidatedInput
-									type="email"
-									id="email"
-									name="email"
-									bind:value={user.email}
-									validation={emailCheck}
-									classes="input-sm mb-5 w-full"
-								/>
-							</div>
-						</td>
-						<td>
-							<input
-								type="checkbox"
-								bind:checked={user.admin}
-								class="checkbox-warning checkbox checkbox-sm"
+								<li>
+									<button
+										class="btn btn-sm"
+										on:click={() => {
+											user.editing = true;
+											lastUserValues = { ...user };
+										}}>Edit</button
+									>
+								</li>
+								<li>
+									<button
+										class="btn btn-warning btn-sm"
+										on:click={() => {
+											prepareForPasswordChange(user)();
+										}}>Change password</button
+									>
+								</li>
+								<li>
+									<button
+										class="btn btn-error btn-sm"
+										on:click={() => {
+											prepareForDeletion(user)();
+										}}>Delete</button
+									>
+								</li>
+							</ul>
+						</div>
+					</td>
+				</tr>
+			{:else}
+				{@const nameCheck = fieldSchema.safeParse(user.name)}
+				{@const surnameCheck = fieldSchema.safeParse(user.surname)}
+				{@const emailCheck = emailSchema.safeParse(user.email)}
+				{@const editingValid = nameCheck.success && surnameCheck.success && emailCheck.success}
+				<tr class="max-w-dvw hover">
+					<td class="hidden md:table-cell">
+						<div class="md:-mt-2">
+							<ValidatedInput
+								type="text"
+								id="name"
+								name="name"
+								bind:value={user.name}
+								validation={nameCheck}
+								classes="input-sm mb-5 w-full"
 							/>
-						</td>
-						<td>
-							<input
-								type="checkbox"
-								bind:checked={user.operator}
-								class="checkbox-info checkbox checkbox-sm"
+						</div>
+					</td>
+					<td class="hidden md:table-cell">
+						<div class="md:-mt-2">
+							<ValidatedInput
+								type="text"
+								id="surname"
+								name="surname"
+								bind:value={user.surname}
+								validation={surnameCheck}
+								classes="input-sm mb-5 w-full"
 							/>
-						</td>
-						<td class="my-1.5 flex flex-col items-center justify-center space-y-3">
-							{#if loading}
-								<div class="my-4 h-11">
-									<span class="loading loading-spinner loading-lg text-info"></span>
-								</div>
-							{:else}
-								<button
-									class="btn btn-success btn-sm w-14"
-									class:btn-disabled={JSON.stringify(user) === JSON.stringify(lastUserValues) ||
-										!editingValid}
-									on:click={() => {
-										updateUser(user);
-									}}>Save</button
-								>
-								<button
-									class="btn btn-sm"
-									on:click={() => {
-										// so that the input fields are reset. In runes mode, cannot use `user = lastUserValues`
-										users[i] = lastUserValues;
-										users[i].editing = false;
-									}}>Cancel</button
-								>
-							{/if}
-						</td>
-					</tr>
-				{/if}
-			{/each}
-		{/if}
+						</div>
+					</td>
+					<td>
+						<div class="md:-mt-2">
+							<ValidatedInput
+								type="email"
+								id="email"
+								name="email"
+								bind:value={user.email}
+								validation={emailCheck}
+								classes="input-sm mb-5 w-full"
+							/>
+						</div>
+					</td>
+					<td>
+						<input
+							type="checkbox"
+							bind:checked={user.admin}
+							class="checkbox-warning checkbox checkbox-sm"
+						/>
+					</td>
+					<td>
+						<input
+							type="checkbox"
+							bind:checked={user.operator}
+							class="checkbox-info checkbox checkbox-sm"
+						/>
+					</td>
+					<td class="my-1.5 flex flex-col items-center justify-center space-y-3">
+						{#if loading}
+							<div class="my-4 h-11">
+								<span class="loading loading-spinner loading-lg text-info"></span>
+							</div>
+						{:else}
+							<button
+								class="btn btn-success btn-sm w-14"
+								class:btn-disabled={JSON.stringify(user) === JSON.stringify(lastUserValues) ||
+									!editingValid}
+								on:click={() => {
+									updateUser(user);
+								}}>Save</button
+							>
+							<button
+								class="btn btn-sm"
+								on:click={() => {
+									// so that the input fields are reset. In runes mode, cannot use `user = lastUserValues`
+									users[i] = lastUserValues;
+									users[i].editing = false;
+								}}>Cancel</button
+							>
+						{/if}
+					</td>
+				</tr>
+			{/if}
+		{/each}
 	</tbody>
 </table>
