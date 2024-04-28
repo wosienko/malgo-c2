@@ -4,6 +4,7 @@
 	import { navigating } from '$app/stores';
 	import { enhance } from '$app/forms';
 	import { version } from '$lib';
+	import { onNavigate } from '$app/navigation';
 
 	let { data } = $props();
 
@@ -16,6 +17,8 @@
 	const checkOverflow = () => {
 		isOverflowing = contentElement!.scrollHeight > contentElement!.clientHeight;
 	};
+
+	let logoutTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	onMount(() => {
 		// load light mode from local storage
@@ -30,11 +33,41 @@
 		window.addEventListener('resize', checkOverflow);
 		let unsubscribe = navigating.subscribe(checkOverflow);
 
+		// logout after 60 minutes of inactivity
+		if (data.loggedIn) {
+			logoutTimeout = setTimeout(
+				() => {
+					// get form element
+					const form = document.getElementById('logout-form') as HTMLFormElement;
+					// submit form
+					form.submit();
+				},
+				60 * 60 * 1000
+			);
+		}
+
 		// cleanup. We can't use onDestroy because onDestroy runs on server side
 		return () => {
 			window.removeEventListener('resize', checkOverflow);
+			if (logoutTimeout) clearTimeout(logoutTimeout);
 			unsubscribe();
 		};
+	});
+
+	onNavigate(() => {
+		if (data.loggedIn) {
+			// reset logout timeout
+			if (logoutTimeout) clearTimeout(logoutTimeout!);
+			logoutTimeout = setTimeout(
+				() => {
+					// get form element
+					const form = document.getElementById('logout-form') as HTMLFormElement;
+					// submit form
+					form.submit();
+				},
+				60 * 60 * 1000
+			);
+		}
 	});
 </script>
 
@@ -68,7 +101,7 @@
 								>
 									<li><a href="/settings" data-sveltekit-preload-data>Settings</a></li>
 									<li>
-										<form method="post" action="/logout" use:enhance>
+										<form id="logout-form" method="post" action="/logout" use:enhance>
 											<button class="w-40 text-left">Sign out</button>
 										</form>
 									</li>
