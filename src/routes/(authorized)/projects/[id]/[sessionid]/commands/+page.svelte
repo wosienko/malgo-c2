@@ -8,6 +8,7 @@
 	import { browser } from '$app/environment';
 	import CommandLoading from '$lib/components/custom/command/CommandLoading.svelte';
 	import { afterNavigate } from '$app/navigation';
+	import KeyValueTable from '$lib/components/custom/session/key-value/KeyValueTable.svelte';
 
 	let { data } = $props();
 
@@ -63,6 +64,14 @@
 		// format DD.MM.YYYY HH:MM:SS
 		return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
 	};
+
+	const convertObjectToMap = (obj: Record<string, string>): Map<string, string> => {
+		const map = new Map<string, string>();
+		for (const [key, value] of Object.entries(obj)) {
+			map.set(key, value);
+		}
+		return map;
+	};
 </script>
 
 <div class="flex h-1/2 w-full justify-around border-b-2 border-neutral pb-6">
@@ -79,99 +88,11 @@
 		>
 	</div>
 	<div class="m-3 hidden h-full flex-1 overflow-auto md:block">
-		<table class="table table-fixed">
-			<thead>
-				<tr>
-					<th class="w-auto">Key</th>
-					<th class="w-auto">Value</th>
-					<th class="w-24">
-						<button class="btn btn-sm">Add</button>
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>key</td>
-					<td>value</td>
-					<td class="flex flex-col items-center justify-center space-y-2">
-						<button class="btn btn-sm">Edit</button>
-						<button class="btn btn-error btn-sm">Del</button>
-					</td>
-				</tr>
-				<tr>
-					<td>key</td>
-					<td>value</td>
-					<td class="flex flex-col items-center justify-center space-y-2">
-						<button class="btn btn-sm">Edit</button>
-						<button class="btn btn-error btn-sm">Del</button>
-					</td>
-				</tr>
-				<tr>
-					<td>key</td>
-					<td>value</td>
-					<td class="flex flex-col items-center justify-center space-y-2">
-						<button class="btn btn-sm">Edit</button>
-						<button class="btn btn-error btn-sm">Del</button>
-					</td>
-				</tr>
-				<tr>
-					<td>key</td>
-					<td>value</td>
-					<td class="flex flex-col items-center justify-center space-y-2">
-						<button class="btn btn-sm">Edit</button>
-						<button class="btn btn-error btn-sm">Del</button>
-					</td>
-				</tr>
-				<tr>
-					<td>key</td>
-					<td>value</td>
-					<td class="flex flex-col items-center justify-center space-y-2">
-						<button class="btn btn-sm">Edit</button>
-						<button class="btn btn-error btn-sm">Del</button>
-					</td>
-				</tr>
-				<tr>
-					<td>key</td>
-					<td>value</td>
-					<td class="flex flex-col items-center justify-center space-y-2">
-						<button class="btn btn-sm">Edit</button>
-						<button class="btn btn-error btn-sm">Del</button>
-					</td>
-				</tr>
-				<tr>
-					<td>key</td>
-					<td>value</td>
-					<td class="flex flex-col items-center justify-center space-y-2">
-						<button class="btn btn-sm">Edit</button>
-						<button class="btn btn-error btn-sm">Del</button>
-					</td>
-				</tr>
-				<tr>
-					<td>key</td>
-					<td>value</td>
-					<td class="flex flex-col items-center justify-center space-y-2">
-						<button class="btn btn-sm">Edit</button>
-						<button class="btn btn-error btn-sm">Del</button>
-					</td>
-				</tr>
-				<tr>
-					<td>key</td>
-					<td>value</td>
-					<td class="flex flex-col items-center justify-center space-y-2">
-						<button class="btn btn-sm">Edit</button>
-						<button class="btn btn-error btn-sm">Del</button>
-					</td>
-				</tr>
-				<tr>
-					<td>key</td>
-					<td>value</td>
-					<td class="flex flex-col items-center justify-center space-y-2">
-						<button class="btn btn-sm">Edit</button>
-						<button class="btn btn-error btn-sm">Del</button>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		{#await data.keyValue}
+			<KeyValueTable values={new Map()} />
+		{:then keyValue}
+			<KeyValueTable values={convertObjectToMap(keyValue)} />
+		{/await}
 	</div>
 </div>
 <div class="h-1/2 w-full overflow-y-auto py-3">

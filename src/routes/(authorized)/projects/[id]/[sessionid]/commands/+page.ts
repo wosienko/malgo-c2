@@ -20,6 +20,9 @@ export const load: PageLoad = async ({ params, fetch }) => {
 			.then((r) => r.json())
 			.catch(() => {
 				return undefined;
-			})
+			}),
+		keyValue: fetch(`/api/projects/${projectId.data}/sessions/${sessionId.data}/key-value`).then(
+			(r) => r.json()
+		)
 	};
 };

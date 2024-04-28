@@ -37,6 +37,17 @@ export const getLatestCommandForSession = async (
 	};
 };
 
+export const getKeyValuesForSession = async (sessionId: string) => {
+	const result = await db.query.C2Sessions.findFirst({
+		columns: {
+			data: true
+		},
+		where: eq(C2Sessions.id, sessionId)
+	});
+
+	return result ? result.data : {};
+};
+
 const formatDateAndTime = (d: Date): string => {
 	// format DD.MM.YYYY HH:MM:SS
 	return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
