@@ -39,7 +39,7 @@
 				</tr>
 				<tr>
 					<td class="text-left">Last result update:</td>
-					<td class="text-right">08.04.2024 12:15:36</td>
+					<td class="text-right">{command.last_result_update ?? 'No result'}</td>
 				</tr>
 			</tbody>
 		</table>

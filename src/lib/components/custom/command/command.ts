@@ -6,4 +6,5 @@ export type Command = {
 	command: string;
 	result: string;
 	created_at: string;
+	last_result_update: string;
 };
