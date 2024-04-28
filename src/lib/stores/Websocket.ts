@@ -5,6 +5,8 @@ let reconnectInterval = 2000; // Interval in milliseconds
 
 let consciousExit = false;
 
+let pingTimeout: ReturnType<typeof setTimeout> | null = null;
+
 // Function to initiate a WebSocket connection
 const connect = () => {
 	if (ws !== null && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
@@ -17,10 +19,15 @@ const connect = () => {
 		console.log('WebSocket connected');
 		// Reset reconnect interval on successful connection
 		reconnectInterval = 2000;
+		sendPing();
 	};
 
 	ws.onclose = () => {
 		console.log('WebSocket disconnected');
+		if (pingTimeout !== null) {
+			clearTimeout(pingTimeout);
+			pingTimeout = null;
+		}
 		if (consciousExit) {
 			consciousExit = false;
 			return;
@@ -40,6 +47,14 @@ const connect = () => {
 		ws!.close();
 	};
 };
+
+const sendPing = () => {
+	if (ws === null || ws.readyState !== WebSocket.OPEN) {
+		return;
+	}
+	ws.send(JSON.stringify({ type: 'ping' }));
+	pingTimeout = setTimeout(sendPing, 30000);
+}
 
 export const createWebsocketStore = () => {
 	// Immediately try to connect upon store creation
