@@ -16,6 +16,7 @@
 	let project = data.project!;
 
 	let currentUrl = $state(get(page).url.pathname);
+	let currentSuffix = $derived(currentUrl.split('/')[4] ?? 'commands');
 	afterNavigate(() => {
 		currentUrl = get(page).url.pathname;
 	});
@@ -94,7 +95,7 @@
 						{#each sessions as session}
 							{@const isSelected = currentUrl.includes(`/projects/${project.id}/${session.id}`)}
 							<SidebarEntry
-								href={`/projects/${project.id}/${session.id}/commands`}
+								href={`/projects/${project.id}/${session.id}/${currentSuffix}`}
 								active={isSelected}
 							>
 								<Session
