@@ -9,6 +9,7 @@
 	import CommandLoading from '$lib/components/custom/command/CommandLoading.svelte';
 	import { afterNavigate } from '$app/navigation';
 	import KeyValueTable from '$lib/components/custom/session/key-value/KeyValueTable.svelte';
+	import KeyValueLoading from '$lib/components/custom/session/key-value/KeyValueLoading.svelte';
 
 	let { data } = $props();
 
@@ -89,7 +90,7 @@
 	</div>
 	<div class="m-3 hidden h-full flex-1 overflow-auto md:block">
 		{#await data.keyValue}
-			<KeyValueTable values={new Map()} />
+			<KeyValueLoading />
 		{:then keyValue}
 			<KeyValueTable values={convertObjectToMap(keyValue)} />
 		{/await}
