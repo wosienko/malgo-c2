@@ -25,3 +25,9 @@ type CommandSentToOperator struct {
 	Operator    string `json:"operator"`
 	CreatedAt   string `json:"created_at"`
 }
+
+type CommandStatusSentToOperator struct {
+	MessageType string `json:"message_type"`
+	ID          string `json:"id"`
+	Status      string `json:"status"`
+}
