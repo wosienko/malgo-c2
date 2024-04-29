@@ -38,9 +38,6 @@
 		if (dataFromWs.message_type === 'session-heartbeat') {
 			if (dataFromWs.session_id !== id) return;
 			heartbeatAt = dataFromWs.heartbeat;
-			console.log('heartbeat ', heartbeatAt);
-			console.log('olderThanInSeconds ', olderThanInSeconds(heartbeatAt, 3600));
-			console.log('formatDateAndTime ', formatDateAndTime(heartbeatAt));
 		}
 	};
 
