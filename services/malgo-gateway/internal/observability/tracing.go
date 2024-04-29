@@ -11,7 +11,7 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
 )
 
-const TracingServiceName = "c2-websocket"
+const TracingServiceName = "c2-gateway"
 
 func ConfigureTraceProvider() *tracesdk.TracerProvider {
 	jaegerEndpoint := os.Getenv("JAEGER_ENDPOINT")
