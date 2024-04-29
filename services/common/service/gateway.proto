@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package gateway;
 
+option go_package = "github.com/VipWW/malgo-c2/services/common/services/gateway";
+
 service GatewayService {
   rpc RegisterNewSession(RegisterNewSessionRequest) returns (EmptyResponse) {}
   rpc SessionHeartbeat(SessionHeartbeatRequest) returns (EmptyResponse) {}
