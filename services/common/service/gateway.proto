@@ -5,14 +5,15 @@ package gateway;
 option go_package = "github.com/VipWW/malgo-c2/services/common/services/gateway";
 
 service GatewayService {
-  rpc RegisterNewSession(RegisterNewSessionRequest) returns (EmptyResponse) {}
-  rpc SessionHeartbeat(SessionHeartbeatRequest) returns (EmptyResponse) {}
-  rpc CommandInfo(CommandInfoRequest) returns (CommandInfoResponse) {}
-  rpc CommandDetailsChunk(CommandDetailsChunkRequest) returns (CommandDetailsChunkResponse) {}
+  rpc RegisterNewSession(RegisterNewSessionRequest) returns (EmptyResponse) {} // Synchronous
+  rpc SessionHeartbeat(SessionHeartbeatRequest) returns (EmptyResponse) {} // Asynchronous
+  rpc CommandInfo(CommandInfoRequest) returns (CommandInfoResponse) {} // Synchronous
+  rpc CommandDetailsChunk(CommandDetailsChunkRequest) returns (CommandDetailsChunkResponse) {} // Synchronous
 }
 
 message RegisterNewSessionRequest {
     string session_id = 1;
+    string project_id = 2;
 }
 
 message SessionHeartbeatRequest {

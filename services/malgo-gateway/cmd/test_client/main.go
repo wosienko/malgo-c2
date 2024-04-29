@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	gateway "github.com/VipWW/malgo-c2/services/common/service"
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -18,11 +20,19 @@ func main() {
 		}
 	}()
 
-	_, err = client.SessionHeartbeat(context.Background(), &gateway.SessionHeartbeatRequest{
-		SessionId: "d946c4b4-77df-4dc8-abbc-3935156f54d6",
+	//_, err = client.SessionHeartbeat(context.Background(), &gateway.SessionHeartbeatRequest{
+	//	SessionId: "d946c4b4-77df-4dc8-abbc-3935156f54d6",
+	//})
+	//if err != nil {
+	//	fmt.Printf("error: %v\n", err)
+	//}
+
+	_, err = client.RegisterNewSession(context.Background(), &gateway.RegisterNewSessionRequest{
+		SessionId: uuid.NewString(),
+		ProjectId: "4e960188-b535-40bf-99ff-567b8144e028",
 	})
 	if err != nil {
-		panic(err)
+		fmt.Printf("error: %v\n", err)
 	}
 }
 

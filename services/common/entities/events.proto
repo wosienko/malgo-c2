@@ -22,6 +22,14 @@ message CommandCreated {
 }
 
 // Session-related messages
+message SessionRegistered {
+    Header header = 1;
+    string session_id = 2;
+    string project_id = 3;
+    string name = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp heartbeat_at = 6;
+}
 // Key-value-related messages
 message SessionKeyValueModified {
     Header header = 1;
