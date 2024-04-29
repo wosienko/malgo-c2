@@ -10,7 +10,6 @@ import (
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/db"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages/commands"
-	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages/events"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/observability"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/rpc"
 	"github.com/jmoiron/sqlx"
@@ -56,28 +55,25 @@ func New(
 	commandRepo := db.NewCommandRepository(dbConn)
 	sessionRepo := db.NewSessionRepository(dbConn)
 
-	//eventBus := events.NewBusWithConfig(redisPublisher, events.NewBusConfig(watermillLogger))
-	//commandBus := commands.NewBusWithConfig(redisPublisher, commands.NewBusConfig(watermillLogger))
+	commandBus := commands.NewBusWithConfig(redisPublisher, commands.NewBusConfig(watermillLogger))
 
-	eventHandler := events.NewHandler()
 	commandHandler := commands.NewHandler(
 		commandRepo,
 		sessionRepo,
 	)
 
-	eventProcessorConfig := events.NewProcessorConfig(redisClient, watermillLogger)
 	commandProcessorConfig := commands.NewProcessorConfig(redisClient, watermillLogger)
 
 	watermillRouter := messages.NewWatermillRouter(
-		eventProcessorConfig,
-		eventHandler,
 		commandProcessorConfig,
 		commandHandler,
 		watermillLogger,
 	)
 
 	s := grpc.NewServer()
-	gateway.RegisterGatewayServiceServer(s, &rpc.GrpcServer{})
+	gateway.RegisterGatewayServiceServer(s, rpc.NewGrpcServer(
+		commandBus,
+	))
 
 	return Service{
 		db:              dbConn,

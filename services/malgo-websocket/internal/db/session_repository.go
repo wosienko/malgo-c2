@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	externalEntities "github.com/VipWW/malgo-c2/services/common/entities"
 	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/entities"
@@ -40,9 +39,6 @@ func (s *SessionRepository) AddKeyValue(ctx context.Context, value entities.Sess
 			if err == nil {
 				fmt.Printf("Key already exists\n")
 				return nil
-			}
-			if !errors.Is(err, sql.ErrNoRows) {
-				return fmt.Errorf("could not check if key exists: %w", err)
 			}
 
 			_, err = tx.ExecContext(

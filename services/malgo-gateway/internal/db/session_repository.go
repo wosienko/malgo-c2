@@ -1,7 +1,16 @@
 package db
 
 import (
+	"context"
+	"database/sql"
+	"fmt"
+	"github.com/VipWW/malgo-c2/services/common/entities"
+	"github.com/VipWW/malgo-c2/services/common/log"
+	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages/events"
+	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages/outbox"
 	"github.com/jmoiron/sqlx"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"time"
 )
 
 type SessionRepository struct {
@@ -13,4 +22,44 @@ func NewSessionRepository(db *sqlx.DB) *SessionRepository {
 		panic("db is nil")
 	}
 	return &SessionRepository{db: db}
+}
+
+func (r *SessionRepository) UpdateSessionHeartbeat(ctx context.Context, sessionId string) error {
+	return updateInTx(
+		ctx,
+		r.db,
+		sql.LevelSerializable,
+		func(ctx context.Context, tx *sqlx.Tx) error {
+			row := tx.QueryRowContext(
+				ctx,
+				`UPDATE c2_sessions
+    				SET heartbeat_at = NOW()
+    				WHERE id = $1
+    				RETURNING heartbeat_at
+					`,
+				sessionId,
+			)
+			var heartbeatAt time.Time
+			err := row.Scan(&heartbeatAt)
+			if err != nil {
+				log.FromContext(ctx).Warnf("session not found: %s", sessionId)
+			}
+
+			outboxPublisher, err := outbox.NewPublisherForDb(ctx, tx)
+			if err != nil {
+				return fmt.Errorf("could not create event bus: %w", err)
+			}
+
+			err = events.NewBus(outboxPublisher).Publish(ctx, &entities.SessionHeartbeatUpdated{
+				Header:      entities.NewHeader(),
+				SessionId:   sessionId,
+				HeartbeatAt: timestamppb.New(heartbeatAt),
+			})
+			if err != nil {
+				return fmt.Errorf("could not publish event: %w", err)
+			}
+
+			return nil
+		},
+	)
 }

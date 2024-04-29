@@ -43,3 +43,10 @@ message SessionNameModified {
     string name = 3;
     string project_id = 4;
 }
+
+// Session heartbeat-related messages
+message SessionHeartbeatUpdated {
+    Header header = 1;
+    string session_id = 2;
+    google.protobuf.Timestamp heartbeat_at = 3;
+}

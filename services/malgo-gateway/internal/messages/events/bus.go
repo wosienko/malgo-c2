@@ -15,14 +15,3 @@ func NewBus(pub message.Publisher) *cqrs.EventBus {
 	}
 	return eventBus
 }
-
-func NewBusWithConfig(pub message.Publisher, config cqrs.EventBusConfig) *cqrs.EventBus {
-	eventBus, err := cqrs.NewEventBusWithConfig(
-		pub,
-		config,
-	)
-	if err != nil {
-		panic(err)
-	}
-	return eventBus
-}

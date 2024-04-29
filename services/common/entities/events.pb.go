@@ -349,6 +349,70 @@ func (x *SessionNameModified) GetProjectId() string {
 	return ""
 }
 
+// Session heartbeat-related messages
+type SessionHeartbeatUpdated struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Header      *Header                `protobuf:"bytes,1,opt,name=header,proto3" json:"header,omitempty"`
+	SessionId   string                 `protobuf:"bytes,2,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	HeartbeatAt *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=heartbeat_at,json=heartbeatAt,proto3" json:"heartbeat_at,omitempty"`
+}
+
+func (x *SessionHeartbeatUpdated) Reset() {
+	*x = SessionHeartbeatUpdated{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_common_entities_events_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SessionHeartbeatUpdated) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SessionHeartbeatUpdated) ProtoMessage() {}
+
+func (x *SessionHeartbeatUpdated) ProtoReflect() protoreflect.Message {
+	mi := &file_common_entities_events_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SessionHeartbeatUpdated.ProtoReflect.Descriptor instead.
+func (*SessionHeartbeatUpdated) Descriptor() ([]byte, []int) {
+	return file_common_entities_events_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *SessionHeartbeatUpdated) GetHeader() *Header {
+	if x != nil {
+		return x.Header
+	}
+	return nil
+}
+
+func (x *SessionHeartbeatUpdated) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
+func (x *SessionHeartbeatUpdated) GetHeartbeatAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.HeartbeatAt
+	}
+	return nil
+}
+
 var File_common_entities_events_proto protoreflect.FileDescriptor
 
 var file_common_entities_events_proto_rawDesc = []byte{
@@ -406,10 +470,21 @@ var file_common_entities_events_proto_rawDesc = []byte{
 	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d,
 	0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x18,
 	0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64,
-	0x42, 0x34, 0x5a, 0x32, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x56,
-	0x69, 0x70, 0x57, 0x57, 0x2f, 0x6d, 0x61, 0x6c, 0x67, 0x6f, 0x2d, 0x63, 0x32, 0x2f, 0x73, 0x65,
-	0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2f, 0x65, 0x6e,
-	0x74, 0x69, 0x74, 0x69, 0x65, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x22, 0xa1, 0x01, 0x0a, 0x17, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x48, 0x65, 0x61, 0x72,
+	0x74, 0x62, 0x65, 0x61, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x12, 0x28, 0x0a, 0x06,
+	0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x65,
+	0x6e, 0x74, 0x69, 0x74, 0x69, 0x65, 0x73, 0x2e, 0x48, 0x65, 0x61, 0x64, 0x65, 0x72, 0x52, 0x06,
+	0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x12, 0x1d, 0x0a, 0x0a, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x73, 0x65, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x3d, 0x0a, 0x0c, 0x68, 0x65, 0x61, 0x72, 0x74, 0x62, 0x65,
+	0x61, 0x74, 0x5f, 0x61, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69,
+	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0b, 0x68, 0x65, 0x61, 0x72, 0x74, 0x62, 0x65,
+	0x61, 0x74, 0x41, 0x74, 0x42, 0x34, 0x5a, 0x32, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x56, 0x69, 0x70, 0x57, 0x57, 0x2f, 0x6d, 0x61, 0x6c, 0x67, 0x6f, 0x2d, 0x63,
+	0x32, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
+	0x6e, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x69, 0x65, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -424,26 +499,29 @@ func file_common_entities_events_proto_rawDescGZIP() []byte {
 	return file_common_entities_events_proto_rawDescData
 }
 
-var file_common_entities_events_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_common_entities_events_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_common_entities_events_proto_goTypes = []interface{}{
 	(*CommandCreated)(nil),          // 0: entities.CommandCreated
 	(*SessionKeyValueModified)(nil), // 1: entities.SessionKeyValueModified
 	(*SessionKeyValueDeleted)(nil),  // 2: entities.SessionKeyValueDeleted
 	(*SessionNameModified)(nil),     // 3: entities.SessionNameModified
-	(*Header)(nil),                  // 4: entities.Header
-	(*timestamppb.Timestamp)(nil),   // 5: google.protobuf.Timestamp
+	(*SessionHeartbeatUpdated)(nil), // 4: entities.SessionHeartbeatUpdated
+	(*Header)(nil),                  // 5: entities.Header
+	(*timestamppb.Timestamp)(nil),   // 6: google.protobuf.Timestamp
 }
 var file_common_entities_events_proto_depIdxs = []int32{
-	4, // 0: entities.CommandCreated.header:type_name -> entities.Header
-	5, // 1: entities.CommandCreated.created_at:type_name -> google.protobuf.Timestamp
-	4, // 2: entities.SessionKeyValueModified.header:type_name -> entities.Header
-	4, // 3: entities.SessionKeyValueDeleted.header:type_name -> entities.Header
-	4, // 4: entities.SessionNameModified.header:type_name -> entities.Header
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	5, // 0: entities.CommandCreated.header:type_name -> entities.Header
+	6, // 1: entities.CommandCreated.created_at:type_name -> google.protobuf.Timestamp
+	5, // 2: entities.SessionKeyValueModified.header:type_name -> entities.Header
+	5, // 3: entities.SessionKeyValueDeleted.header:type_name -> entities.Header
+	5, // 4: entities.SessionNameModified.header:type_name -> entities.Header
+	5, // 5: entities.SessionHeartbeatUpdated.header:type_name -> entities.Header
+	6, // 6: entities.SessionHeartbeatUpdated.heartbeat_at:type_name -> google.protobuf.Timestamp
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_common_entities_events_proto_init() }
@@ -501,6 +579,18 @@ func file_common_entities_events_proto_init() {
 				return nil
 			}
 		}
+		file_common_entities_events_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SessionHeartbeatUpdated); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -508,7 +598,7 @@ func file_common_entities_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_common_entities_events_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

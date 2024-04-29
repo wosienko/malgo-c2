@@ -1,5 +1,7 @@
 package commands
 
+import "context"
+
 type Handler struct {
 	commandRepo CommandRepository
 	sessionRepo SessionRepository
@@ -26,4 +28,5 @@ type CommandRepository interface {
 }
 
 type SessionRepository interface {
+	UpdateSessionHeartbeat(ctx context.Context, sessionId string) error
 }

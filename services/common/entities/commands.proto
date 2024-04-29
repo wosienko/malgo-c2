@@ -53,3 +53,9 @@ message ModifySessionName {
     string sessionId = 2;
     string name = 3;
 }
+
+// Session heartbeat-related messages
+message UpdateSessionHeartbeat {
+    optional Header header = 1;
+    string sessionId = 2;
+}

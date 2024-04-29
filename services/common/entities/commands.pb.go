@@ -474,6 +474,62 @@ func (x *ModifySessionName) GetName() string {
 	return ""
 }
 
+// Session heartbeat-related messages
+type UpdateSessionHeartbeat struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Header    *Header `protobuf:"bytes,1,opt,name=header,proto3,oneof" json:"header,omitempty"`
+	SessionId string  `protobuf:"bytes,2,opt,name=sessionId,proto3" json:"sessionId,omitempty"`
+}
+
+func (x *UpdateSessionHeartbeat) Reset() {
+	*x = UpdateSessionHeartbeat{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_common_entities_commands_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UpdateSessionHeartbeat) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateSessionHeartbeat) ProtoMessage() {}
+
+func (x *UpdateSessionHeartbeat) ProtoReflect() protoreflect.Message {
+	mi := &file_common_entities_commands_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateSessionHeartbeat.ProtoReflect.Descriptor instead.
+func (*UpdateSessionHeartbeat) Descriptor() ([]byte, []int) {
+	return file_common_entities_commands_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *UpdateSessionHeartbeat) GetHeader() *Header {
+	if x != nil {
+		return x.Header
+	}
+	return nil
+}
+
+func (x *UpdateSessionHeartbeat) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
 var File_common_entities_commands_proto protoreflect.FileDescriptor
 
 var file_common_entities_commands_proto_rawDesc = []byte{
@@ -540,11 +596,18 @@ var file_common_entities_commands_proto_rawDesc = []byte{
 	0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x73, 0x65,
 	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18,
 	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x42, 0x09, 0x0a, 0x07, 0x5f,
-	0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x42, 0x34, 0x5a, 0x32, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
-	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x56, 0x69, 0x70, 0x57, 0x57, 0x2f, 0x6d, 0x61, 0x6c, 0x67, 0x6f,
-	0x2d, 0x63, 0x32, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x63, 0x6f, 0x6d,
-	0x6d, 0x6f, 0x6e, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x69, 0x65, 0x73, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x22, 0x70, 0x0a, 0x16, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x48, 0x65, 0x61, 0x72, 0x74, 0x62, 0x65, 0x61, 0x74,
+	0x12, 0x2d, 0x0a, 0x06, 0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x10, 0x2e, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x69, 0x65, 0x73, 0x2e, 0x48, 0x65, 0x61, 0x64,
+	0x65, 0x72, 0x48, 0x00, 0x52, 0x06, 0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x88, 0x01, 0x01, 0x12,
+	0x1c, 0x0a, 0x09, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x09, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x42, 0x09, 0x0a,
+	0x07, 0x5f, 0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x42, 0x34, 0x5a, 0x32, 0x67, 0x69, 0x74, 0x68,
+	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x56, 0x69, 0x70, 0x57, 0x57, 0x2f, 0x6d, 0x61, 0x6c,
+	0x67, 0x6f, 0x2d, 0x63, 0x32, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x63,
+	0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x69, 0x65, 0x73, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -559,30 +622,32 @@ func file_common_entities_commands_proto_rawDescGZIP() []byte {
 	return file_common_entities_commands_proto_rawDescData
 }
 
-var file_common_entities_commands_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_common_entities_commands_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_common_entities_commands_proto_goTypes = []interface{}{
-	(*CreateCommand)(nil),         // 0: entities.CreateCommand
-	(*SubscribeToSession)(nil),    // 1: entities.SubscribeToSession
-	(*SubscribeToProject)(nil),    // 2: entities.SubscribeToProject
-	(*AddSessionKeyValue)(nil),    // 3: entities.AddSessionKeyValue
-	(*DeleteSessionKeyValue)(nil), // 4: entities.DeleteSessionKeyValue
-	(*ModifySessionKeyValue)(nil), // 5: entities.ModifySessionKeyValue
-	(*ModifySessionName)(nil),     // 6: entities.ModifySessionName
-	(*Header)(nil),                // 7: entities.Header
+	(*CreateCommand)(nil),          // 0: entities.CreateCommand
+	(*SubscribeToSession)(nil),     // 1: entities.SubscribeToSession
+	(*SubscribeToProject)(nil),     // 2: entities.SubscribeToProject
+	(*AddSessionKeyValue)(nil),     // 3: entities.AddSessionKeyValue
+	(*DeleteSessionKeyValue)(nil),  // 4: entities.DeleteSessionKeyValue
+	(*ModifySessionKeyValue)(nil),  // 5: entities.ModifySessionKeyValue
+	(*ModifySessionName)(nil),      // 6: entities.ModifySessionName
+	(*UpdateSessionHeartbeat)(nil), // 7: entities.UpdateSessionHeartbeat
+	(*Header)(nil),                 // 8: entities.Header
 }
 var file_common_entities_commands_proto_depIdxs = []int32{
-	7, // 0: entities.CreateCommand.header:type_name -> entities.Header
-	7, // 1: entities.SubscribeToSession.header:type_name -> entities.Header
-	7, // 2: entities.SubscribeToProject.header:type_name -> entities.Header
-	7, // 3: entities.AddSessionKeyValue.header:type_name -> entities.Header
-	7, // 4: entities.DeleteSessionKeyValue.header:type_name -> entities.Header
-	7, // 5: entities.ModifySessionKeyValue.header:type_name -> entities.Header
-	7, // 6: entities.ModifySessionName.header:type_name -> entities.Header
-	7, // [7:7] is the sub-list for method output_type
-	7, // [7:7] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	8, // 0: entities.CreateCommand.header:type_name -> entities.Header
+	8, // 1: entities.SubscribeToSession.header:type_name -> entities.Header
+	8, // 2: entities.SubscribeToProject.header:type_name -> entities.Header
+	8, // 3: entities.AddSessionKeyValue.header:type_name -> entities.Header
+	8, // 4: entities.DeleteSessionKeyValue.header:type_name -> entities.Header
+	8, // 5: entities.ModifySessionKeyValue.header:type_name -> entities.Header
+	8, // 6: entities.ModifySessionName.header:type_name -> entities.Header
+	8, // 7: entities.UpdateSessionHeartbeat.header:type_name -> entities.Header
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	8, // [8:8] is the sub-list for extension type_name
+	8, // [8:8] is the sub-list for extension extendee
+	0, // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_common_entities_commands_proto_init() }
@@ -676,6 +741,18 @@ func file_common_entities_commands_proto_init() {
 				return nil
 			}
 		}
+		file_common_entities_commands_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateSessionHeartbeat); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_common_entities_commands_proto_msgTypes[0].OneofWrappers = []interface{}{}
 	file_common_entities_commands_proto_msgTypes[1].OneofWrappers = []interface{}{}
@@ -684,13 +761,14 @@ func file_common_entities_commands_proto_init() {
 	file_common_entities_commands_proto_msgTypes[4].OneofWrappers = []interface{}{}
 	file_common_entities_commands_proto_msgTypes[5].OneofWrappers = []interface{}{}
 	file_common_entities_commands_proto_msgTypes[6].OneofWrappers = []interface{}{}
+	file_common_entities_commands_proto_msgTypes[7].OneofWrappers = []interface{}{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_common_entities_commands_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
