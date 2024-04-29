@@ -4,7 +4,7 @@ package entities;
 
 option go_package = "malgo-websocket/entities";
 
-import "internal/entities/header.proto";
+import "common/entities/header.proto";
 import "google/protobuf/timestamp.proto";
 
 // Command-related messages
