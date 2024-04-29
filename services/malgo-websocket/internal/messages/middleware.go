@@ -2,7 +2,7 @@ package messages
 
 import (
 	"fmt"
-	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/log"
+	log2 "github.com/VipWW/malgo-c2/services/common/log"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -49,7 +49,7 @@ var (
 	)
 )
 
-func useMiddlewares(router *message.Router, watermillLogger watermill.LoggerAdapter) {
+func UseMiddlewares(router *message.Router, watermillLogger watermill.LoggerAdapter) {
 	router.AddMiddleware(middleware.Recoverer)
 
 	router.AddMiddleware(middleware.Retry{
@@ -125,8 +125,8 @@ func useMiddlewares(router *message.Router, watermillLogger watermill.LoggerAdap
 				reqCorrelationID = shortuuid.New()
 			}
 
-			ctx = log.ToContext(ctx, logrus.WithFields(logrus.Fields{"correlation_id": reqCorrelationID}))
-			ctx = log.ContextWithCorrelationID(ctx, reqCorrelationID)
+			ctx = log2.ToContext(ctx, logrus.WithFields(logrus.Fields{"correlation_id": reqCorrelationID}))
+			ctx = log2.ContextWithCorrelationID(ctx, reqCorrelationID)
 
 			msg.SetContext(ctx)
 
@@ -137,7 +137,7 @@ func useMiddlewares(router *message.Router, watermillLogger watermill.LoggerAdap
 	// Logging middleware
 	router.AddMiddleware(func(next message.HandlerFunc) message.HandlerFunc {
 		return func(msg *message.Message) ([]*message.Message, error) {
-			logger := log.FromContext(msg.Context()).WithFields(logrus.Fields{
+			logger := log2.FromContext(msg.Context()).WithFields(logrus.Fields{
 				"message_id": msg.UUID,
 				"payload":    string(msg.Payload),
 				"metadata":   msg.Metadata,

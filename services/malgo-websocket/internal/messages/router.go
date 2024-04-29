@@ -23,7 +23,7 @@ func NewWatermillRouter(
 		panic(err)
 	}
 
-	useMiddlewares(router, watermillLogger)
+	UseMiddlewares(router, watermillLogger)
 
 	outbox.AddForwarderHandler(postgresSubscriber, redisPublisher, router, watermillLogger)
 

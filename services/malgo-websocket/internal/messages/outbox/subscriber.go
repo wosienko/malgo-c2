@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/log"
+	log2 "github.com/VipWW/malgo-c2/services/common/log"
 	"time"
 
 	"github.com/ThreeDotsLabs/watermill"
@@ -30,6 +30,6 @@ func NewPostgresSubscriber(db *sql.DB, logger watermill.LoggerAdapter) *watermil
 }
 
 func InitializeSchema(db *sql.DB) error {
-	subscriber := NewPostgresSubscriber(db, log.NewWatermill(log.FromContext(context.Background())))
+	subscriber := NewPostgresSubscriber(db, log2.NewWatermill(log2.FromContext(context.Background())))
 	return subscriber.SubscribeInitialize(outboxTopic)
 }

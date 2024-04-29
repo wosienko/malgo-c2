@@ -4,7 +4,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/components/forwarder"
 	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/log"
+	"github.com/VipWW/malgo-c2/services/common/log"
 	"github.com/sirupsen/logrus"
 )
 

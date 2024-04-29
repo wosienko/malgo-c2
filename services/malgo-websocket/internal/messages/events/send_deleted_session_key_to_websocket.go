@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/VipWW/malgo-c2/services/common/entities"
-	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/log"
+	"github.com/VipWW/malgo-c2/services/common/log"
 	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/ws"
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/proto"

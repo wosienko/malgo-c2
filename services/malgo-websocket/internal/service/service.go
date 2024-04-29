@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
+	log2 "github.com/VipWW/malgo-c2/services/common/log"
 	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/db"
 	httpSrv "github.com/VipWW/malgo-c2/services/malgo-websocket/internal/http"
-	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/log"
 	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/messages"
 	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/messages/commands"
 	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/messages/events"
@@ -23,7 +23,7 @@ import (
 )
 
 func init() {
-	log.Init(logrus.InfoLevel)
+	log2.Init(logrus.InfoLevel)
 }
 
 type Service struct {
@@ -43,11 +43,11 @@ func New(
 ) Service {
 	traceProvider := observability.ConfigureTraceProvider()
 
-	watermillLogger := log.NewWatermill(log.FromContext(context.Background()))
+	watermillLogger := log2.NewWatermill(log2.FromContext(context.Background()))
 
 	var redisPublisher message.Publisher
 	redisPublisher = messages.NewRedisPublisher(redisClient, watermillLogger)
-	redisPublisher = log.CorrelationPublisherDecorator{Publisher: redisPublisher}
+	redisPublisher = log2.CorrelationPublisherDecorator{Publisher: redisPublisher}
 	redisPublisher = observability.TracingPublisherDecorator{Publisher: redisPublisher}
 
 	//redisSubscriber := messages.NewRedisSubscriber(redisClient, watermillLogger)

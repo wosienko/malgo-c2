@@ -6,7 +6,7 @@ import (
 	"github.com/ThreeDotsLabs/watermill-redisstream/pkg/redisstream"
 	"github.com/ThreeDotsLabs/watermill/components/cqrs"
 	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/marshalers"
+	"github.com/VipWW/malgo-c2/services/common/marshalers"
 	"github.com/redis/go-redis/v9"
 )
 

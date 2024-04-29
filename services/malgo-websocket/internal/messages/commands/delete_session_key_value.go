@@ -3,8 +3,8 @@ package commands
 import (
 	"context"
 	"github.com/VipWW/malgo-c2/services/common/entities"
+	"github.com/VipWW/malgo-c2/services/common/log"
 	internalEntities "github.com/VipWW/malgo-c2/services/malgo-websocket/internal/entities"
-	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/log"
 )
 
 func (h *Handler) DeleteSessionKeyValue(ctx context.Context, keyValue *entities.DeleteSessionKeyValue) error {
