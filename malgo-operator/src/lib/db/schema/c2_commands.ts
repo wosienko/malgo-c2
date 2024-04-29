@@ -13,6 +13,7 @@ export const C2CommandTypeEnum = pgEnum('c2_command_type', [
 
 export const C2CommandStatusEnum = pgEnum('c2_command_status', [
 	'created',
+	'queried',
 	'sending',
 	'sent',
 	'retrieving',

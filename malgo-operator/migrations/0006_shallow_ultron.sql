@@ -1,0 +1,1 @@
+ALTER TYPE "c2_command_status" ADD VALUE 'queried';
