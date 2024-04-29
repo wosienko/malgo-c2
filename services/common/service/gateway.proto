@@ -27,13 +27,13 @@ message CommandInfoRequest {
 message CommandInfoResponse {
     string command_id = 1;
     string type = 2;
-    string command_length = 3;
+    int64 command_length = 3;
 }
 
 message CommandDetailsChunkRequest {
     string command_id = 1;
     string offset = 2;
-    string length = 3;
+    int64 length = 3;
 }
 
 message CommandDetailsChunkResponse {

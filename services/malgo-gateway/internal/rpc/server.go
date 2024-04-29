@@ -13,11 +13,13 @@ type GrpcServer struct {
 	commandBus *cqrs.CommandBus
 
 	sessionRepo SessionRepository
+	commandRepo CommandRepository
 }
 
 func NewGrpcServer(
 	commandBus *cqrs.CommandBus,
 	sessionRepo SessionRepository,
+	commandRepo CommandRepository,
 ) *GrpcServer {
 	if commandBus == nil {
 		panic("sessionRepository is nil")
@@ -25,14 +27,22 @@ func NewGrpcServer(
 	if sessionRepo == nil {
 		panic("sessionRepository is nil")
 	}
+	if commandRepo == nil {
+		panic("commandRepo is nil")
+	}
 
 	return &GrpcServer{
 		commandBus: commandBus,
 
 		sessionRepo: sessionRepo,
+		commandRepo: commandRepo,
 	}
 }
 
 type SessionRepository interface {
 	RegisterNewSession(ctx context.Context, session internalEntities.RegisterNewSession) error
+}
+
+type CommandRepository interface {
+	GetCommandInfo(ctx context.Context, commandId string) (*internalEntities.CommandInfo, error)
 }

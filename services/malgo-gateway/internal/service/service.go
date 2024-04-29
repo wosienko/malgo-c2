@@ -77,6 +77,7 @@ func New(
 	gateway.RegisterGatewayServiceServer(s, rpc.NewGrpcServer(
 		commandBus,
 		sessionRepo,
+		commandRepo,
 	))
 
 	return Service{

@@ -21,6 +21,13 @@ message CommandCreated {
     string operator_name = 10;
 }
 
+message CommandStatusModified {
+    Header header = 1;
+    string command_id = 2;
+    string status = 3;
+    string session_id = 4;
+}
+
 // Session-related messages
 message SessionRegistered {
     Header header = 1;

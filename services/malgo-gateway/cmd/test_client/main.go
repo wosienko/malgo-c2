@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	gateway "github.com/VipWW/malgo-c2/services/common/service"
-	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -34,15 +33,24 @@ func main() {
 	//}
 	//fmt.Printf("Sent session heartbeat\n")
 
-	fmt.Printf("Registering new session\n")
-	_, err = client.RegisterNewSession(context.Background(), &gateway.RegisterNewSessionRequest{
-		SessionId: uuid.NewString(),
-		ProjectId: "4e960188-b535-40bf-99ff-567b8144e028",
+	//fmt.Printf("Registering new session\n")
+	//_, err = client.RegisterNewSession(context.Background(), &gateway.RegisterNewSessionRequest{
+	//	SessionId: uuid.NewString(),
+	//	ProjectId: "4e960188-b535-40bf-99ff-567b8144e028",
+	//})
+	//if err != nil {
+	//	fmt.Printf("error: %v\n", err)
+	//}
+	//fmt.Printf("Registered new session\n")
+
+	fmt.Printf("Getting command info\n")
+	resp, err := client.CommandInfo(context.Background(), &gateway.CommandInfoRequest{
+		SessionId: "6b7efe93-fc33-4709-969f-4f3ad2d52a49",
 	})
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 	}
-	fmt.Printf("Registered new session\n")
+	fmt.Printf("Got command info: %v\n", resp)
 }
 
 func NewGrpcClient() (client gateway.GatewayServiceClient, close func() error, err error) {
