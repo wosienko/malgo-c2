@@ -9,7 +9,7 @@
 		heartbeatAt: string;
 	};
 
-	let { id, name, createdAt, heartbeatAt }: InputProps = $props();
+	let { id, name = $bindable(), createdAt = $bindable(), heartbeatAt = $bindable() }: InputProps = $props();
 
 	const olderThanInSeconds = (date: string, seconds: number): boolean => {
 		const d = new Date(date);

@@ -13,6 +13,7 @@ const (
 	SessionKeyValueDeletedTopic  = "session-key-value-deleted"
 	RenamedSessionTopic          = "renamed-session"
 	SessionHeartbeatUpdatedTopic = "session-heartbeat-updated"
+	NewSessionTopic              = "new-session"
 )
 
 func (h *Handler) WriteToWebsocket() {
@@ -39,6 +40,10 @@ func (h *Handler) WriteToWebsocket() {
 	sessionHeartbeatChannel, err := h.pubSub.Subscribe(ctx, SessionHeartbeatUpdatedTopic)
 	if err != nil {
 		fmt.Printf("error listening on session heartbeat channel")
+	}
+	newSessionChannel, err := h.pubSub.Subscribe(ctx, NewSessionTopic)
+	if err != nil {
+		fmt.Printf("error listening on new session channel")
 	}
 
 	ticker := time.NewTicker(pingPeriod)
@@ -80,6 +85,13 @@ func (h *Handler) WriteToWebsocket() {
 			fmt.Printf("Received updated heartbeat to send through websocket\n")
 			if err := h.handleUpdatedHeartbeat(message.Payload); err != nil {
 				fmt.Printf("Error handling updated heartbeat: %v", err)
+				message.Nack()
+			}
+			message.Ack()
+		case message := <-newSessionChannel:
+			fmt.Printf("Received new session to send through websocket\n")
+			if err := h.handleNewSession(message.Payload); err != nil {
+				fmt.Printf("Error handling new session: %v", err)
 				message.Nack()
 			}
 			message.Ack()

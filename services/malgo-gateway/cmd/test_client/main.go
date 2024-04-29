@@ -10,6 +10,9 @@ import (
 )
 
 func main() {
+	fmt.Printf("Starting test client\n")
+	fmt.Printf("---------------------\n")
+	fmt.Printf("Connecting to gRPC server\n")
 	client, connClose, err := NewGrpcClient()
 	if err != nil {
 		panic(err)
@@ -19,14 +22,19 @@ func main() {
 			panic(err)
 		}
 	}()
+	fmt.Printf("Connected to gRPC server\n")
+	fmt.Printf("---------------------\n")
 
+	//fmt.Printf("Sending session heartbeat\n")
 	//_, err = client.SessionHeartbeat(context.Background(), &gateway.SessionHeartbeatRequest{
 	//	SessionId: "d946c4b4-77df-4dc8-abbc-3935156f54d6",
 	//})
 	//if err != nil {
 	//	fmt.Printf("error: %v\n", err)
 	//}
+	//fmt.Printf("Sent session heartbeat\n")
 
+	fmt.Printf("Registering new session\n")
 	_, err = client.RegisterNewSession(context.Background(), &gateway.RegisterNewSessionRequest{
 		SessionId: uuid.NewString(),
 		ProjectId: "4e960188-b535-40bf-99ff-567b8144e028",
@@ -34,6 +42,7 @@ func main() {
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 	}
+	fmt.Printf("Registered new session\n")
 }
 
 func NewGrpcClient() (client gateway.GatewayServiceClient, close func() error, err error) {
