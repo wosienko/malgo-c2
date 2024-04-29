@@ -11,7 +11,19 @@
 	import SessionNotFound from '$lib/components/custom/session/SessionNotFound.svelte';
 	import { createWebsocketStore, type WebsocketStore } from '$lib/stores/Websocket';
 
+	type Session = {
+		id: string;
+		name: string;
+		createdAt: string;
+		heartbeatAt: string;
+		data: object;
+	};
+
 	let { data } = $props();
+
+	let loaded = $state(false);
+	let sessions: Session[] = $state([]);
+	let uniqueSessionIds = $derived(new Set<string>(sessions.map((session) => session.id)));
 
 	let project = data.project!;
 
@@ -46,6 +58,23 @@
 		}
 	};
 
+	const handleNewSession = async (event: MessageEvent) => {
+		const dataFromWs = JSON.parse(event.data);
+		if (dataFromWs.message_type === 'session-new') {
+			if (uniqueSessionIds.has(dataFromWs.session_id)) return;
+			uniqueSessionIds.add(dataFromWs.session_id);
+			Array.prototype.unshift.apply(sessions, [
+				{
+					id: dataFromWs.session_id,
+					name: dataFromWs.name,
+					createdAt: dataFromWs.created_at,
+					heartbeatAt: dataFromWs.heartbeat,
+					data: {}
+				}
+			]);
+		}
+	};
+
 	let unsubscribe: () => void;
 
 	let websocketStore: WebsocketStore;
@@ -55,17 +84,24 @@
 		window.addEventListener('resize', drawerResize);
 		unsubscribe = navigating.subscribe(drawerResize);
 
+		sessions = await data.sessions;
+		loaded = true;
+
 		websocketStore = createWebsocketStore();
 		await websocketStore.subscribeToProject(get(page).params.id);
 		websocketStore.ws?.addEventListener('close', async () => {
 			await websocketStore.subscribeToProject(get(page).params.id);
 		});
+
+		websocketStore.ws?.addEventListener('message', handleNewSession);
 	});
 
 	onDestroy(async () => {
 		if (browser) {
 			window.removeEventListener('resize', drawerResize);
 			unsubscribe();
+
+			websocketStore.ws?.removeEventListener('message', handleNewSession);
 
 			websocketStore.ws?.removeEventListener('close', async () => {
 				await websocketStore.subscribeToProject(get(page).params.id);
@@ -92,7 +128,12 @@
 					<li>
 						<SessionLoading />
 					</li>
-				{:then sessions}
+				{:catch error}
+					<li>
+						<p class="text-center text-base-content">Error: {error.message}</p>
+					</li>
+				{/await}
+				{#if loaded}
 					{#if sessions.length === 0}
 						<li>
 							<SessionNotFound />
@@ -106,14 +147,14 @@
 							>
 								<Session
 									id={session.id}
-									name={session.name}
-									createdAt={session.createdAt}
-									heartbeatAt={session.heartbeatAt}
+									bind:name={session.name}
+									bind:createdAt={session.createdAt}
+									bind:heartbeatAt={session.heartbeatAt}
 								/>
 							</SidebarEntry>
 						{/each}
 					{/if}
-				{/await}
+				{/if}
 			</svelte:fragment>
 		</Sidebar>
 	</div>
