@@ -33,13 +33,26 @@
 		}
 	};
 
+	const handleHeartbeat = (event: MessageEvent) => {
+		const dataFromWs = JSON.parse(event.data);
+		if (dataFromWs.message_type === 'session-heartbeat') {
+			if (dataFromWs.session_id !== id) return;
+			heartbeatAt = dataFromWs.heartbeat;
+			console.log('heartbeat ', heartbeatAt);
+			console.log('olderThanInSeconds ', olderThanInSeconds(heartbeatAt, 3600));
+			console.log('formatDateAndTime ', formatDateAndTime(heartbeatAt));
+		}
+	};
+
 	onMount(() => {
 		websocketStore = createWebsocketStore();
 
 		websocketStore.ws?.addEventListener('message', handleSessionRename);
+		websocketStore.ws?.addEventListener('message', handleHeartbeat);
 
 		return () => {
 			websocketStore.ws?.removeEventListener('message', handleSessionRename);
+			websocketStore.ws?.removeEventListener('message', handleHeartbeat);
 		};
 	});
 </script>
