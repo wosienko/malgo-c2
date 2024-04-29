@@ -2,6 +2,9 @@
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
 	import { afterNavigate } from '$app/navigation';
+	import { onDestroy, onMount } from 'svelte';
+	import { createWebsocketStore, type WebsocketStore } from '$lib/stores/Websocket';
+	import { browser } from '$app/environment';
 
 	const ALL_TABS = ['/commands', '/modules', '/history', '/settings'] as const;
 
@@ -18,6 +21,32 @@
 	const capitalize = (s: string) => {
 		return s.charAt(0).toUpperCase() + s.slice(1);
 	};
+
+	let websocketStore: WebsocketStore;
+
+	onMount(async () => {
+		websocketStore = createWebsocketStore();
+		await websocketStore.subscribeToSession(get(page).params.sessionid);
+		websocketStore.ws?.addEventListener('close', async () => {
+			await websocketStore.subscribeToSession(get(page).params.sessionid);
+		});
+	});
+
+	afterNavigate(async () => {
+		if (browser && get(page).params.id !== '') {
+			await websocketStore.unsubscribeFromSession();
+			await websocketStore.subscribeToSession(get(page).params.sessionid);
+		}
+	});
+
+	onDestroy(async () => {
+		if (browser) {
+			websocketStore.ws?.removeEventListener('close', async () => {
+				await websocketStore.subscribeToSession(get(page).params.sessionid);
+			});
+			await websocketStore.unsubscribeFromSession();
+		}
+	});
 </script>
 
 <div class="flex h-full w-full flex-col pt-3">

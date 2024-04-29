@@ -17,6 +17,15 @@
 		isOverflowing = contentElement!.scrollHeight > contentElement!.clientHeight;
 	};
 
+	let logoutTimeout: ReturnType<typeof setTimeout> | null = null;
+	const logoutTimeoutTime = 29 * 60 * 1000;
+	const logoutAutomatically = () => {
+		// get form element
+		const form = document.getElementById('logout-form') as HTMLFormElement;
+		// submit form
+		form.submit();
+	};
+
 	onMount(() => {
 		// load light mode from local storage
 		lightMode = localStorage.getItem('lightMode') === 'true';
@@ -30,9 +39,19 @@
 		window.addEventListener('resize', checkOverflow);
 		let unsubscribe = navigating.subscribe(checkOverflow);
 
+		// logout after 60 minutes of inactivity
+		if (data.loggedIn) {
+			logoutTimeout = setTimeout(logoutAutomatically, logoutTimeoutTime);
+		}
+		window.addEventListener('mousemove', () => {
+			if (logoutTimeout) clearTimeout(logoutTimeout);
+			logoutTimeout = setTimeout(logoutAutomatically, logoutTimeoutTime);
+		});
+
 		// cleanup. We can't use onDestroy because onDestroy runs on server side
 		return () => {
 			window.removeEventListener('resize', checkOverflow);
+			if (logoutTimeout) clearTimeout(logoutTimeout);
 			unsubscribe();
 		};
 	});
@@ -68,7 +87,7 @@
 								>
 									<li><a href="/settings" data-sveltekit-preload-data>Settings</a></li>
 									<li>
-										<form method="post" action="/logout" use:enhance>
+										<form id="logout-form" method="post" action="/logout" use:enhance>
 											<button class="w-40 text-left">Sign out</button>
 										</form>
 									</li>

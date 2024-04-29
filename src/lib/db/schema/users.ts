@@ -1,6 +1,7 @@
 import { pgTable, primaryKey, serial, uuid, varchar } from 'drizzle-orm/pg-core';
 import { sql, relations } from 'drizzle-orm';
 import { UserProjects } from './projects';
+import { C2Commands } from './c2_commands';
 
 export const Users = pgTable('users', {
 	id: uuid('id')
@@ -34,7 +35,8 @@ export const UserRoles = pgTable(
 
 export const userRelations = relations(Users, ({ many }) => ({
 	UserRoles: many(UserRoles),
-	UserProjects: many(UserProjects)
+	UserProjects: many(UserProjects),
+	C2Commands: many(C2Commands)
 }));
 
 export const roleRelations = relations(Roles, ({ many }) => ({

@@ -1,6 +1,7 @@
 import { pgTable, text, timestamp, uuid, jsonb } from 'drizzle-orm/pg-core';
-import { sql } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import { Projects } from './projects';
+import { C2Commands } from './c2_commands';
 
 export const C2Sessions = pgTable('c2_sessions', {
 	id: uuid('id')
@@ -28,3 +29,11 @@ export const C2Sessions = pgTable('c2_sessions', {
 		.notNull()
 		.default(sql`'{}'`)
 });
+
+export const c2SessionRelations = relations(C2Sessions, ({ one, many }) => ({
+	Project: one(Projects, {
+		fields: [C2Sessions.project_id],
+		references: [Projects.id]
+	}),
+	C2Commands: many(C2Commands)
+}));

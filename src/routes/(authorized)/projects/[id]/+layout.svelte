@@ -9,12 +9,14 @@
 	import Session from '$lib/components/custom/session/Session.svelte';
 	import SessionLoading from '$lib/components/custom/session/SessionLoading.svelte';
 	import SessionNotFound from '$lib/components/custom/session/SessionNotFound.svelte';
+	import { createWebsocketStore, type WebsocketStore } from '$lib/stores/Websocket';
 
 	let { data } = $props();
 
 	let project = data.project!;
 
 	let currentUrl = $state(get(page).url.pathname);
+	let currentSuffix = $derived(currentUrl.split('/')[4] ?? 'commands');
 	afterNavigate(() => {
 		currentUrl = get(page).url.pathname;
 	});
@@ -46,16 +48,29 @@
 
 	let unsubscribe: () => void;
 
+	let websocketStore: WebsocketStore;
+
 	onMount(async () => {
 		drawerResize();
 		window.addEventListener('resize', drawerResize);
 		unsubscribe = navigating.subscribe(drawerResize);
+
+		websocketStore = createWebsocketStore();
+		await websocketStore.subscribeToProject(get(page).params.id);
+		websocketStore.ws?.addEventListener('close', async () => {
+			await websocketStore.subscribeToProject(get(page).params.id);
+		});
 	});
 
-	onDestroy(() => {
+	onDestroy(async () => {
 		if (browser) {
 			window.removeEventListener('resize', drawerResize);
 			unsubscribe();
+
+			websocketStore.ws?.removeEventListener('close', async () => {
+				await websocketStore.subscribeToProject(get(page).params.id);
+			});
+			await websocketStore.unsubscribeFromProject();
 		}
 	});
 </script>
@@ -86,10 +101,11 @@
 						{#each sessions as session}
 							{@const isSelected = currentUrl.includes(`/projects/${project.id}/${session.id}`)}
 							<SidebarEntry
-								href={`/projects/${project.id}/${session.id}/commands`}
+								href={`/projects/${project.id}/${session.id}/${currentSuffix}`}
 								active={isSelected}
 							>
 								<Session
+									id={session.id}
 									name={session.name}
 									createdAt={session.createdAt}
 									heartbeatAt={session.heartbeatAt}
