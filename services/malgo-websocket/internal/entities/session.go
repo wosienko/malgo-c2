@@ -23,3 +23,9 @@ type SessionNameSentToOperator struct {
 	SessionId   string `json:"session_id" db:"session_id"`
 	Name        string `json:"name" db:"name"`
 }
+
+type SessionHeartbeatSentToOperator struct {
+	MessageType string `json:"message_type"`
+	SessionId   string `json:"session_id" db:"session_id"`
+	Heartbeat   string `json:"heartbeat" db:"heartbeat"`
+}

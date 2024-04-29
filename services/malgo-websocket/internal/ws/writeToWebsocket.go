@@ -12,6 +12,7 @@ const (
 	SessionKeyValueModifiedTopic = "session-key-value-modified"
 	SessionKeyValueDeletedTopic  = "session-key-value-deleted"
 	RenamedSessionTopic          = "renamed-session"
+	SessionHeartbeatUpdatedTopic = "session-heartbeat-updated"
 )
 
 func (h *Handler) WriteToWebsocket() {
@@ -34,6 +35,10 @@ func (h *Handler) WriteToWebsocket() {
 	renamedSessionChannel, err := h.pubSub.Subscribe(ctx, RenamedSessionTopic)
 	if err != nil {
 		fmt.Printf("error listening on renamed session channel")
+	}
+	sessionHeartbeatChannel, err := h.pubSub.Subscribe(ctx, SessionHeartbeatUpdatedTopic)
+	if err != nil {
+		fmt.Printf("error listening on session heartbeat channel")
 	}
 
 	ticker := time.NewTicker(pingPeriod)
@@ -68,6 +73,13 @@ func (h *Handler) WriteToWebsocket() {
 			fmt.Printf("Received renamed session to send through websocket\n")
 			if err := h.handleRenamedSession(message.Payload); err != nil {
 				fmt.Printf("Error handling renamed session: %v", err)
+				message.Nack()
+			}
+			message.Ack()
+		case message := <-sessionHeartbeatChannel:
+			fmt.Printf("Received updated heartbeat to send through websocket\n")
+			if err := h.handleUpdatedHeartbeat(message.Payload); err != nil {
+				fmt.Printf("Error handling updated heartbeat: %v", err)
 				message.Nack()
 			}
 			message.Ack()

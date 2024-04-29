@@ -19,7 +19,7 @@ func main() {
 	}()
 
 	_, err = client.SessionHeartbeat(context.Background(), &gateway.SessionHeartbeatRequest{
-		SessionId: "10126263-ee6d-4136-9c38-ea463162ea64",
+		SessionId: "d946c4b4-77df-4dc8-abbc-3935156f54d6",
 	})
 	if err != nil {
 		panic(err)

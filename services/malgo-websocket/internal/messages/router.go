@@ -49,6 +49,10 @@ func NewWatermillRouter(
 			"SendRenamedSessionToWebsocket",
 			eventHandler.SendRenamedSessionToWebsocket,
 		),
+		cqrs.NewEventHandler(
+			"SendUpdatedHeartbeatToWebsocket",
+			eventHandler.SendUpdatedHeartbeatToWebsocket,
+		),
 	)
 	if err != nil {
 		panic(err)

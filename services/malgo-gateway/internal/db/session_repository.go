@@ -35,12 +35,13 @@ func (r *SessionRepository) UpdateSessionHeartbeat(ctx context.Context, sessionI
 				`UPDATE c2_sessions
     				SET heartbeat_at = NOW()
     				WHERE id = $1
-    				RETURNING heartbeat_at
+    				RETURNING heartbeat_at, project_id
 					`,
 				sessionId,
 			)
 			var heartbeatAt time.Time
-			err := row.Scan(&heartbeatAt)
+			var projectId string
+			err := row.Scan(&heartbeatAt, &projectId)
 			if err != nil {
 				log.FromContext(ctx).Warnf("session not found: %s", sessionId)
 			}
@@ -54,6 +55,7 @@ func (r *SessionRepository) UpdateSessionHeartbeat(ctx context.Context, sessionI
 				Header:      entities.NewHeader(),
 				SessionId:   sessionId,
 				HeartbeatAt: timestamppb.New(heartbeatAt),
+				ProjectId:   projectId,
 			})
 			if err != nil {
 				return fmt.Errorf("could not publish event: %w", err)

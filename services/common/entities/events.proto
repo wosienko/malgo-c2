@@ -48,5 +48,6 @@ message SessionNameModified {
 message SessionHeartbeatUpdated {
     Header header = 1;
     string session_id = 2;
-    google.protobuf.Timestamp heartbeat_at = 3;
+    string project_id = 3;
+    google.protobuf.Timestamp heartbeat_at = 4;
 }
