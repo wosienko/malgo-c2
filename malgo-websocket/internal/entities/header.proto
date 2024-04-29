@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package entities;
+
+option go_package = "malgo-websocket/entities";
+
+import "google/protobuf/timestamp.proto";
+
+message Header {
+    string ID = 1;
+    google.protobuf.Timestamp PublishedAt = 2;
+    string IdempotencyKey = 3;
+}

@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafanadata:/var/lib/grafana
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./docker/grafana/grafana_dashboards/:/var/lib/grafana/dashboards/
+
+  #  Metrics collector.
+  #  It scrapes targets defined in --promscrape.config
+  #  And forward them to --remoteWrite.url
+  vmagent:
+    container_name: vmagent
+    image: victoriametrics/vmagent:v1.101.0
+    depends_on:
+      - "victoriametrics"
+    ports:
+      - 8429:8429
+    volumes:
+      - vmagentdata:/vmagentdata
+      - ./docker/prometheus/:/etc/prometheus/
+    command:
+      - "--promscrape.config=/etc/prometheus/prometheus.yml"
+      - "--remoteWrite.url=http://victoriametrics:8428/api/v1/write"
+    restart: unless-stopped
+  # VictoriaMetrics instance, a single process responsible for
+  # storing metrics and serve read requests.
+  victoriametrics:
+    container_name: victoriametrics
+    image: victoriametrics/victoria-metrics:v1.101.0
+    ports:
+      - 8428:8428
+      - 8089:8089
+      - 8089:8089/udp
+      - 2003:2003
+      - 2003:2003/udp
+      - 4242:4242
+    volumes:
+      - vmdata:/storage
+    command:
+      - "--storageDataPath=/storage"
+      - "--graphiteListenAddr=:2003"
+      - "--opentsdbListenAddr=:4242"
+      - "--httpListenAddr=:8428"
+      - "--influxListenAddr=:8089"
+      - "--vmalert.proxyURL=http://vmalert:8880"
+    restart: unless-stopped
+
+volumes:
+  vmagentdata: {}
+  vmdata: {}
+  grafanadata: {}

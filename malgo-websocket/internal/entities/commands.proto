@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package entities;
+
+option go_package = "malgo-websocket/entities";
+
+import "internal/entities/header.proto";
+
+// Command-related messages
+message CreateCommand {
+    optional Header header = 1;
+    string sessionId = 2;
+    string command = 3;
+    string userId = 4;
+}
+
+// Subscription-related messages
+message SubscribeToSession {
+    optional Header header = 1;
+    string sessionId = 2;
+}
+
+message SubscribeToProject {
+    optional Header header = 1;
+    string projectId = 2;
+}
+
+// Session-related messages
+// Key-value-related messages
+message AddSessionKeyValue {
+    optional Header header = 1;
+    string sessionId = 2;
+    string key = 3;
+    string value = 4;
+}
+
+message DeleteSessionKeyValue {
+    optional Header header = 1;
+    string sessionId = 2;
+    string key = 3;
+}
+
+message ModifySessionKeyValue {
+    optional Header header = 1;
+    string sessionId = 2;
+    string key = 3;
+    string value = 4;
+}
+
+// Session name-related messages
+message ModifySessionName {
+    optional Header header = 1;
+    string sessionId = 2;
+    string name = 3;
+}
