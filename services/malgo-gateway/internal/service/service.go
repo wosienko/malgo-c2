@@ -6,17 +6,20 @@ import (
 	"fmt"
 	"github.com/ThreeDotsLabs/watermill/message"
 	log2 "github.com/VipWW/malgo-c2/services/common/log"
+	gateway "github.com/VipWW/malgo-c2/services/common/service"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/db"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages/commands"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages/events"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/observability"
+	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/rpc"
 	"github.com/jmoiron/sqlx"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	"golang.org/x/sync/errgroup"
-	"net/http"
+	"google.golang.org/grpc"
+	"net"
 )
 
 func init() {
@@ -28,7 +31,8 @@ type Service struct {
 
 	watermillRouter *message.Router
 
-	httpServer *http.Server
+	grpcServer *grpc.Server
+	grpcAddr   string
 
 	traceProvider *tracesdk.TracerProvider
 }
@@ -72,13 +76,15 @@ func New(
 		watermillLogger,
 	)
 
+	s := grpc.NewServer()
+	gateway.RegisterGatewayServiceServer(s, &rpc.GrpcServer{})
+
 	return Service{
 		db:              dbConn,
 		watermillRouter: watermillRouter,
-		httpServer: &http.Server{
-			Addr: httpNetworkAddress,
-		},
-		traceProvider: traceProvider,
+		grpcServer:      s,
+		grpcAddr:        httpNetworkAddress,
+		traceProvider:   traceProvider,
 	}
 }
 
@@ -96,10 +102,14 @@ func (s Service) Run(
 		// we don't want to start HTTP server before Watermill router (so service won't be healthy before it's ready)
 		<-s.watermillRouter.Running()
 
-		fmt.Printf("Starting HTTP server on %s\n", s.httpServer.Addr)
-		err := s.httpServer.ListenAndServe()
+		fmt.Printf("Starting GRPC server on %s\n", s.grpcAddr)
+		lis, err := net.Listen("tcp", s.grpcAddr)
+		if err != nil {
+			return err
+		}
+		err = s.grpcServer.Serve(lis)
 
-		if !errors.Is(err, http.ErrServerClosed) {
+		if !errors.Is(err, grpc.ErrServerStopped) {
 			return err
 		}
 
@@ -114,8 +124,9 @@ func (s Service) Run(
 
 	errgrp.Go(func() error {
 		<-ctx.Done()
-		fmt.Printf("Shutting down HTTP server\n")
-		return s.httpServer.Shutdown(context.Background())
+		fmt.Printf("Shutting down GRPC server\n")
+		s.grpcServer.GracefulStop()
+		return nil
 	})
 	errgrp.Go(func() error {
 		<-ctx.Done()
