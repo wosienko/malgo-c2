@@ -45,7 +45,7 @@
 </script>
 
 <div class="flex flex-col">
-	<span class="text-xl text-info w-64">{name}</span>
+	<span class="w-64 text-xl text-info">{name}</span>
 	<table class="text-left">
 		<tbody>
 			<tr>

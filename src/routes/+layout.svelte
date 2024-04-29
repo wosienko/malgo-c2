@@ -4,7 +4,6 @@
 	import { navigating } from '$app/stores';
 	import { enhance } from '$app/forms';
 	import { version } from '$lib';
-	import { onNavigate } from '$app/navigation';
 
 	let { data } = $props();
 
@@ -19,7 +18,13 @@
 	};
 
 	let logoutTimeout: ReturnType<typeof setTimeout> | null = null;
-	const logoutTimeoutTime = 60 * 60 * 1000;
+	const logoutTimeoutTime = 29 * 60 * 1000;
+	const logoutAutomatically = () => {
+		// get form element
+		const form = document.getElementById('logout-form') as HTMLFormElement;
+		// submit form
+		form.submit();
+	};
 
 	onMount(() => {
 		// load light mode from local storage
@@ -36,16 +41,12 @@
 
 		// logout after 60 minutes of inactivity
 		if (data.loggedIn) {
-			logoutTimeout = setTimeout(
-				() => {
-					// get form element
-					const form = document.getElementById('logout-form') as HTMLFormElement;
-					// submit form
-					form.submit();
-				},
-				logoutTimeoutTime
-			);
+			logoutTimeout = setTimeout(logoutAutomatically, logoutTimeoutTime);
 		}
+		window.addEventListener('mousemove', () => {
+			if (logoutTimeout) clearTimeout(logoutTimeout);
+			logoutTimeout = setTimeout(logoutAutomatically, logoutTimeoutTime);
+		});
 
 		// cleanup. We can't use onDestroy because onDestroy runs on server side
 		return () => {
@@ -53,22 +54,6 @@
 			if (logoutTimeout) clearTimeout(logoutTimeout);
 			unsubscribe();
 		};
-	});
-
-	onNavigate(() => {
-		if (data.loggedIn) {
-			// reset logout timeout
-			if (logoutTimeout) clearTimeout(logoutTimeout!);
-			logoutTimeout = setTimeout(
-				() => {
-					// get form element
-					const form = document.getElementById('logout-form') as HTMLFormElement;
-					// submit form
-					form.submit();
-				},
-				logoutTimeoutTime
-			);
-		}
 	});
 </script>
 

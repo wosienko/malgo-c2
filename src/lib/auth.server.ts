@@ -12,8 +12,8 @@ export const lucia = new Lucia(adapter, {
 			secure: !import.meta.env.PROD
 		}
 	},
-	// expire session after 1 hour
-	sessionExpiresIn: new TimeSpan(60, 'm')
+	// expire session after 30 minutes
+	sessionExpiresIn: new TimeSpan(30, 'm')
 });
 
 declare module 'lucia' {
