@@ -45,7 +45,7 @@ func main() {
 
 	fmt.Printf("Getting command info\n")
 	resp, err := client.CommandInfo(context.Background(), &gateway.CommandInfoRequest{
-		SessionId: "6b7efe93-fc33-4709-969f-4f3ad2d52a49",
+		SessionId: "7a3a60aa-c829-470a-8b8c-1d8c3dd9be72",
 	})
 	if err != nil {
 		fmt.Printf("error: %v\n", err)

@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { Command } from '$lib/components/custom/command/command';
+	import { createWebsocketStore, type WebsocketStore } from '$lib/stores/Websocket';
+	import { onMount } from 'svelte';
 
 	let isResultVisible = $state(true);
 	let isCommandVisible = $state(true);
@@ -8,15 +10,40 @@
 		command: Command;
 	};
 
-	let { command }: InputProps = $props();
+	let { command = $bindable() }: InputProps = $props();
+	let typeUppercase = $derived(command.type.toUpperCase());
+	let statusUppercase = $derived(command.status.toUpperCase());
+
+	let websocketStore: WebsocketStore;
+
+	const handleStatusChange = (event: MessageEvent) => {
+		const dataFromWs = JSON.parse(event.data);
+		if (dataFromWs.message_type === 'command-status-updated') {
+			if (dataFromWs.id !== command.id) return;
+			console.log('command-status-updated', dataFromWs.id);
+			console.log('command id', command.id)
+			console.log('command', command.command)
+			command.status = dataFromWs.status;
+		}
+	};
+
+	onMount(() => {
+		websocketStore = createWebsocketStore();
+
+		websocketStore.ws?.addEventListener('message', handleStatusChange);
+
+		return () => {
+			websocketStore.ws?.removeEventListener('message', handleStatusChange);
+		};
+	});
 </script>
 
 <div class="mx-3 rounded-2xl border-2 border-neutral bg-base-100 p-4 shadow-xl">
 	<div>
 		<div class="mb-3 flex justify-between">
 			<h2 class="card-title flex-col items-center justify-center md:flex-row">
-				<span class="badge badge-primary">{command.type.toUpperCase()}</span>
-				<span class="badge badge-secondary">{command.status.toUpperCase()}</span>
+				<span class="badge badge-primary">{typeUppercase}</span>
+				<span class="badge badge-secondary">{statusUppercase}</span>
 			</h2>
 			<div class="flex flex-col justify-around space-y-1.5 md:flex-row md:space-x-1 md:space-y-0">
 				<button class="btn btn-sm" on:click={() => (isCommandVisible = !isCommandVisible)}
