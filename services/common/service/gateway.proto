@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package gateway;
+
+service GatewayService {
+  rpc RegisterNewSession(RegisterNewSessionRequest) returns (EmptyResponse) {}
+  rpc SessionHeartbeat(SessionHeartbeatRequest) returns (EmptyResponse) {}
+  rpc CommandInfo(CommandInfoRequest) returns (CommandInfoResponse) {}
+  rpc CommandDetailsChunk(CommandDetailsChunkRequest) returns (CommandDetailsChunkResponse) {}
+}
+
+message RegisterNewSessionRequest {
+    string session_id = 1;
+}
+
+message SessionHeartbeatRequest {
+    string session_id = 1;
+}
+
+message CommandInfoRequest {
+    string session_id = 1;
+}
+
+message CommandInfoResponse {
+    string command_id = 1;
+    string type = 2;
+    string command_length = 3;
+}
+
+message CommandDetailsChunkRequest {
+    string command_id = 1;
+    string offset = 2;
+    string length = 3;
+}
+
+message CommandDetailsChunkResponse {
+    string data = 1;
+    bool is_last_chunk = 2;
+}
+
+message EmptyResponse {}
