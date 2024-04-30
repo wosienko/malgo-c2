@@ -14,6 +14,7 @@ type CommandChunkQuery struct {
 
 type CommandChunk struct {
 	CommandID string `db:"id"`
+	SessionID string `db:"session_id"`
 	Offset    int    `db:"offset"`
 	Data      string `db:"data"`
 	Length    int    `db:"length"`

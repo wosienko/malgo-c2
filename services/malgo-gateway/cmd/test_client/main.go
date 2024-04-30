@@ -43,25 +43,25 @@ func main() {
 	//}
 	//fmt.Printf("Registered new session\n")
 
-	fmt.Printf("Getting command info\n")
-	resp, err := client.CommandInfo(context.Background(), &gateway.CommandInfoRequest{
-		SessionId: "67b785b3-8207-4391-9dea-098fcc8b8f6b",
-	})
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-	}
-	fmt.Printf("Got command info: %v\n", resp)
-
-	//fmt.Printf("Getting command details chunk\n")
-	//resp, err := client.CommandDetailsChunk(context.Background(), &gateway.CommandDetailsChunkRequest{
-	//	CommandId: "74c48256-6855-4c44-beba-fe00d1fa4863",
-	//	Offset:    0,
-	//	Length:    6,
+	//fmt.Printf("Getting command info\n")
+	//resp, err := client.CommandInfo(context.Background(), &gateway.CommandInfoRequest{
+	//	SessionId: "67b785b3-8207-4391-9dea-098fcc8b8f6b",
 	//})
 	//if err != nil {
 	//	fmt.Printf("error: %v\n", err)
 	//}
-	//fmt.Printf("Got command details chunk: %v\n", resp)
+	//fmt.Printf("Got command info: %v\n", resp)
+
+	fmt.Printf("Getting command details chunk\n")
+	resp, err := client.CommandDetailsChunk(context.Background(), &gateway.CommandDetailsChunkRequest{
+		CommandId: "74c48256-6855-4c44-beba-fe00d1fa4863",
+		Offset:    0,
+		Length:    6,
+	})
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+	}
+	fmt.Printf("Got command details chunk: %v\n", resp)
 }
 
 func NewGrpcClient() (client gateway.GatewayServiceClient, close func() error, err error) {

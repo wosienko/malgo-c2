@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"github.com/VipWW/malgo-c2/services/common/entities"
+	"github.com/VipWW/malgo-c2/services/common/log"
 	internalEntities "github.com/VipWW/malgo-c2/services/malgo-gateway/internal/entities"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages/events"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages/outbox"
@@ -98,6 +99,7 @@ func (r *CommandRepository) GetCommandChunk(ctx context.Context, query *internal
 				ctx2,
 				`SELECT
 					id,
+					session_id,
 					substring(command from $1::INTEGER for $2::INTEGER) AS data,
 					(octet_length(command) < $1::INTEGER + $2::INTEGER) AS is_last
 					FROM c2_commands
@@ -110,6 +112,68 @@ func (r *CommandRepository) GetCommandChunk(ctx context.Context, query *internal
 			err := row.StructScan(&commandChunk)
 			if err != nil {
 				return err
+			}
+
+			outboxPublisher, err := outbox.NewPublisherForDb(ctx, tx)
+			if err != nil {
+				return err
+			}
+
+			bus := events.NewBus(outboxPublisher)
+
+			if query.Offset == 0 {
+				_, err = tx.ExecContext(
+					ctx2,
+					`UPDATE c2_commands
+    					SET status = 'sending'
+    					WHERE id = $1
+    					AND status = 'queried'`,
+					query.CommandID,
+				)
+				if err != nil {
+					log.FromContext(ctx2).Warnf("failed to update command status: %v", err)
+				}
+
+				err = bus.Publish(
+					ctx2,
+					&entities.CommandStatusModified{
+						Header:    entities.NewHeader(),
+						CommandId: query.CommandID,
+						SessionId: commandChunk.SessionID,
+						Status:    "sending",
+					},
+				)
+				if err != nil {
+					return err
+				}
+			}
+
+			if commandChunk.IsLast {
+				_, err = tx.ExecContext(
+					ctx2,
+					`UPDATE c2_commands
+    					SET status = 'sent'
+    					WHERE id = $1
+    					AND status = 'sending'`,
+					query.CommandID,
+				)
+				if err != nil {
+					log.FromContext(ctx2).Warnf("failed to update command status: %v", err)
+				}
+
+				err = bus.Publish(
+					ctx2,
+					&entities.CommandStatusModified{
+						Header:    entities.NewHeader(),
+						CommandId: query.CommandID,
+						SessionId: commandChunk.SessionID,
+						Status:    "sent",
+					},
+				)
+				if err != nil {
+					return err
+				}
+
 			}
 
 			commandChunk.Length = len(commandChunk.Data)

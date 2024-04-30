@@ -20,9 +20,6 @@
 		const dataFromWs = JSON.parse(event.data);
 		if (dataFromWs.message_type === 'command-status-updated') {
 			if (dataFromWs.id !== command.id) return;
-			console.log('command-status-updated', dataFromWs.id);
-			console.log('command id', command.id)
-			console.log('command', command.command)
 			command.status = dataFromWs.status;
 		}
 	};
