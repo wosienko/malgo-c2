@@ -32,7 +32,7 @@ message CommandInfoResponse {
 
 message CommandDetailsChunkRequest {
     string command_id = 1;
-    string offset = 2;
+    int64 offset = 2;
     int64 length = 3;
 }
 

@@ -85,3 +85,41 @@ func (r *CommandRepository) GetCommandInfo(ctx context.Context, sessionId string
 
 	return &commandInfo, nil
 }
+
+func (r *CommandRepository) GetCommandChunk(ctx context.Context, query *internalEntities.CommandChunkQuery) (*internalEntities.CommandChunk, error) {
+	var commandChunk internalEntities.CommandChunk
+
+	err := updateInTx(
+		ctx,
+		r.db,
+		sql.LevelSerializable,
+		func(ctx2 context.Context, tx *sqlx.Tx) error {
+			row := tx.QueryRowxContext(
+				ctx2,
+				`SELECT
+					id,
+					substring(command from $1::INTEGER for $2::INTEGER) AS data,
+					(octet_length(command) < $1::INTEGER + $2::INTEGER) AS is_last
+					FROM c2_commands
+					WHERE id = $3
+			`,
+				query.Offset+1,
+				query.Length,
+				query.CommandID,
+			)
+			err := row.StructScan(&commandChunk)
+			if err != nil {
+				return err
+			}
+
+			commandChunk.Length = len(commandChunk.Data)
+
+			return nil
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &commandChunk, nil
+}

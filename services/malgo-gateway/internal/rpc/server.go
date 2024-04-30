@@ -45,4 +45,5 @@ type SessionRepository interface {
 
 type CommandRepository interface {
 	GetCommandInfo(ctx context.Context, commandId string) (*internalEntities.CommandInfo, error)
+	GetCommandChunk(ctx context.Context, query *internalEntities.CommandChunkQuery) (*internalEntities.CommandChunk, error)
 }
