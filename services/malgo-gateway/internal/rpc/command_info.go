@@ -17,6 +17,13 @@ func (g *GrpcServer) CommandInfo(ctx context.Context, req *gateway.CommandInfoRe
 		return nil, err
 	}
 
+	_, err = g.SessionHeartbeat(ctx, &gateway.SessionHeartbeatRequest{
+		SessionId: req.SessionId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return &gateway.CommandInfoResponse{
 		CommandId:     info.ID,
 		Type:          info.Type,
