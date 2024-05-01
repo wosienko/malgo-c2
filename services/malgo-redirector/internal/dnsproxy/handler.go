@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-const maxDNSMessageSize = 176
+const maxDNSMessageSize = 140
 
 type Handler struct {
 	grpcClient gateway.GatewayServiceClient

