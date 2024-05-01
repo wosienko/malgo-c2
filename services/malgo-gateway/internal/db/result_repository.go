@@ -3,6 +3,8 @@ package db
 import (
 	"context"
 	"database/sql"
+	"github.com/VipWW/malgo-c2/services/common/log"
+
 	"github.com/VipWW/malgo-c2/services/common/entities"
 	internalEntities "github.com/VipWW/malgo-c2/services/malgo-gateway/internal/entities"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages/events"
@@ -76,8 +78,30 @@ func (r *ResultRepository) AddResultChunk(ctx context.Context, chunk internalEnt
 
 			bus := events.NewBus(outboxPublisher)
 
-			// if it is the first chunk, send event 'retrieving'
-			if chunk.Offset == 0 {
+			log.FromContext(ctx2).Infof("Result size: %d, chunk offset: %d, chunk size: %d, sum: %d", resultSize, chunk.Offset, len(chunk.Chunk), chunk.Offset+len(chunk.Chunk))
+
+			if resultSize <= chunk.Offset+len(chunk.Chunk) {
+				_, err := tx.ExecContext(
+					ctx2,
+					`UPDATE c2_commands
+    					SET status = 'completed'
+    					WHERE id = $1
+    					AND status = 'retrieving'`,
+					chunk.CommandId,
+				)
+				if err != nil {
+					return err
+				}
+				err = bus.Publish(ctx2, &entities.CommandStatusModified{
+					Header:    entities.NewHeader(),
+					CommandId: chunk.CommandId,
+					Status:    "completed",
+					SessionId: sessionID,
+				})
+				if err != nil {
+					return err
+				}
+			} else if chunk.Offset == 0 {
 				_, err := tx.ExecContext(
 					ctx2,
 					`UPDATE c2_commands
@@ -94,28 +118,6 @@ func (r *ResultRepository) AddResultChunk(ctx context.Context, chunk internalEnt
 					Header:    entities.NewHeader(),
 					CommandId: chunk.CommandId,
 					Status:    "retrieving",
-					SessionId: sessionID,
-				})
-				if err != nil {
-					return err
-				}
-			}
-			if resultSize == chunk.Offset+len(chunk.Chunk) {
-				_, err := tx.ExecContext(
-					ctx2,
-					`UPDATE c2_commands
-    					SET status = 'completed'
-    					WHERE id = $1
-    					AND status = 'retrieving'`,
-					chunk.CommandId,
-				)
-				if err != nil {
-					return err
-				}
-				err = bus.Publish(ctx2, &entities.CommandStatusModified{
-					Header:    entities.NewHeader(),
-					CommandId: chunk.CommandId,
-					Status:    "completed",
 					SessionId: sessionID,
 				})
 				if err != nil {

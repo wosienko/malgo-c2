@@ -32,7 +32,7 @@ func main() {
 	}()
 
 	err = service.New(
-		"127.0.0.1:5653", // TODO: move to env
+		"127.0.0.1:53", // TODO: move to env
 		grpcClient,
 	).Run(ctx)
 	if err != nil {
