@@ -12,16 +12,16 @@ func (g *GrpcServer) CommandInfo(ctx context.Context, req *gateway.CommandInfoRe
 		return nil, err
 	}
 
-	info, err := g.commandRepo.GetCommandInfo(ctx, req.SessionId)
-	if err != nil {
-		return nil, err
-	}
-
 	go func() {
 		_, _ = g.SessionHeartbeat(ctx, &gateway.SessionHeartbeatRequest{
 			SessionId: req.SessionId,
 		})
 	}()
+
+	info, err := g.commandRepo.GetCommandInfo(ctx, req.SessionId)
+	if err != nil {
+		return nil, err
+	}
 
 	return &gateway.CommandInfoResponse{
 		CommandId:     info.ID,

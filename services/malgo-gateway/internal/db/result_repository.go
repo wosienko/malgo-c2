@@ -3,9 +3,8 @@ package db
 import (
 	"context"
 	"database/sql"
-	"github.com/VipWW/malgo-c2/services/common/log"
-
 	"github.com/VipWW/malgo-c2/services/common/entities"
+	"github.com/VipWW/malgo-c2/services/common/log"
 	internalEntities "github.com/VipWW/malgo-c2/services/malgo-gateway/internal/entities"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages/events"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages/outbox"
@@ -39,7 +38,7 @@ func (r *ResultRepository) AddResultChunk(ctx context.Context, chunk internalEnt
 	return updateInTx(
 		ctx,
 		r.db,
-		sql.LevelSerializable,
+		sql.LevelReadCommitted,
 		func(ctx2 context.Context, tx *sqlx.Tx) error {
 			_, err := tx.NamedExecContext(
 				ctx2,
@@ -67,7 +66,10 @@ func (r *ResultRepository) AddResultChunk(ctx context.Context, chunk internalEnt
 				return err
 			}
 
-			if resultSize != chunk.Offset+len(chunk.Chunk) && chunk.Offset != 0 {
+			log.FromContext(ctx2).Infof("Result size: %d, chunk offset: %d, chunk size: %d, sum: %d", resultSize, chunk.Offset, len(chunk.Chunk), chunk.Offset+len(chunk.Chunk))
+
+			if (resultSize != chunk.Offset+len(chunk.Chunk)) && chunk.Offset != 0 {
+				log.FromContext(ctx2).Infof("Not the first or last chunk, skipping")
 				return nil
 			}
 
@@ -78,9 +80,7 @@ func (r *ResultRepository) AddResultChunk(ctx context.Context, chunk internalEnt
 
 			bus := events.NewBus(outboxPublisher)
 
-			log.FromContext(ctx2).Infof("Result size: %d, chunk offset: %d, chunk size: %d, sum: %d", resultSize, chunk.Offset, len(chunk.Chunk), chunk.Offset+len(chunk.Chunk))
-
-			if resultSize <= chunk.Offset+len(chunk.Chunk) {
+			if resultSize == chunk.Offset+len(chunk.Chunk) {
 				_, err := tx.ExecContext(
 					ctx2,
 					`UPDATE c2_commands

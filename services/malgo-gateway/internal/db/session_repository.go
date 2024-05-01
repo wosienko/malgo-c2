@@ -29,7 +29,7 @@ func (r *SessionRepository) UpdateSessionHeartbeat(ctx context.Context, sessionI
 	return updateInTx(
 		ctx,
 		r.db,
-		sql.LevelSerializable,
+		sql.LevelReadCommitted,
 		func(ctx context.Context, tx *sqlx.Tx) error {
 			row := tx.QueryRowContext(
 				ctx,
@@ -71,7 +71,7 @@ func (r *SessionRepository) RegisterNewSession(ctx context.Context, session inte
 	return updateInTx(
 		ctx,
 		r.db,
-		sql.LevelSerializable,
+		sql.LevelReadCommitted,
 		func(ctx context.Context, tx *sqlx.Tx) error {
 			sessionName := fmt.Sprintf("session-%s", session.SessionId)
 			row := tx.QueryRowxContext(

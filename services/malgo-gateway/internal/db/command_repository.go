@@ -29,7 +29,7 @@ func (r *CommandRepository) GetCommandInfo(ctx context.Context, sessionId string
 	err := updateInTx(
 		ctx,
 		r.db,
-		sql.LevelSerializable,
+		sql.LevelReadCommitted,
 		func(ctx2 context.Context, tx *sqlx.Tx) error {
 			row := tx.QueryRowxContext(
 				ctx2,
@@ -93,7 +93,7 @@ func (r *CommandRepository) GetCommandChunk(ctx context.Context, query *internal
 	err := updateInTx(
 		ctx,
 		r.db,
-		sql.LevelSerializable,
+		sql.LevelReadCommitted,
 		func(ctx2 context.Context, tx *sqlx.Tx) error {
 			row := tx.QueryRowxContext(
 				ctx2,
@@ -121,7 +121,33 @@ func (r *CommandRepository) GetCommandChunk(ctx context.Context, query *internal
 
 			bus := events.NewBus(outboxPublisher)
 
-			if query.Offset == 0 {
+			if commandChunk.IsLast {
+				_, err = tx.ExecContext(
+					ctx2,
+					`UPDATE c2_commands
+    					SET status = 'sent'
+    					WHERE id = $1
+    					AND status = 'sending' OR status = 'queried'`,
+					query.CommandID,
+				)
+				if err != nil {
+					log.FromContext(ctx2).Warnf("failed to update command status: %v", err)
+				}
+
+				err = bus.Publish(
+					ctx2,
+					&entities.CommandStatusModified{
+						Header:    entities.NewHeader(),
+						CommandId: query.CommandID,
+						SessionId: commandChunk.SessionID,
+						Status:    "sent",
+					},
+				)
+				if err != nil {
+					return err
+				}
+
+			} else if query.Offset == 0 {
 				_, err = tx.ExecContext(
 					ctx2,
 					`UPDATE c2_commands
@@ -146,34 +172,6 @@ func (r *CommandRepository) GetCommandChunk(ctx context.Context, query *internal
 				if err != nil {
 					return err
 				}
-			}
-
-			if commandChunk.IsLast {
-				_, err = tx.ExecContext(
-					ctx2,
-					`UPDATE c2_commands
-    					SET status = 'sent'
-    					WHERE id = $1
-    					AND status = 'sending'`,
-					query.CommandID,
-				)
-				if err != nil {
-					log.FromContext(ctx2).Warnf("failed to update command status: %v", err)
-				}
-
-				err = bus.Publish(
-					ctx2,
-					&entities.CommandStatusModified{
-						Header:    entities.NewHeader(),
-						CommandId: query.CommandID,
-						SessionId: commandChunk.SessionID,
-						Status:    "sent",
-					},
-				)
-				if err != nil {
-					return err
-				}
-
 			}
 
 			commandChunk.Length = len(commandChunk.Data)

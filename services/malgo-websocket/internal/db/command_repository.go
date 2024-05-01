@@ -29,7 +29,7 @@ func (c *CommandRepository) AddCommand(ctx context.Context, command entities.Com
 	return updateInTx(
 		ctx,
 		c.db,
-		sql.LevelSerializable,
+		sql.LevelReadCommitted,
 		func(ctx context.Context, tx *sqlx.Tx) error {
 			if command.ID == uuid.Nil {
 				command.ID = uuid.New()

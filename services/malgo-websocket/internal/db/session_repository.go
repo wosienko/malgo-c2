@@ -26,7 +26,7 @@ func (s *SessionRepository) AddKeyValue(ctx context.Context, value entities.Sess
 	return updateInTx(
 		ctx,
 		s.db,
-		sql.LevelSerializable,
+		sql.LevelReadCommitted,
 		func(ctx context.Context, tx *sqlx.Tx) error {
 			row := tx.QueryRowxContext(
 				ctx,
@@ -75,7 +75,7 @@ func (s *SessionRepository) DeleteKeyValue(ctx context.Context, value entities.S
 	return updateInTx(
 		ctx,
 		s.db,
-		sql.LevelSerializable,
+		sql.LevelReadCommitted,
 		func(ctx context.Context, tx *sqlx.Tx) error {
 			_, err := tx.ExecContext(
 				ctx,
@@ -109,7 +109,7 @@ func (s *SessionRepository) ModifyKeyValue(ctx context.Context, value entities.S
 	return updateInTx(
 		ctx,
 		s.db,
-		sql.LevelSerializable,
+		sql.LevelReadCommitted,
 		func(ctx context.Context, tx *sqlx.Tx) error {
 			_, err := tx.ExecContext(
 				ctx,
@@ -145,7 +145,7 @@ func (s *SessionRepository) RenameSession(ctx context.Context, value entities.Se
 	return updateInTx(
 		ctx,
 		s.db,
-		sql.LevelSerializable,
+		sql.LevelReadCommitted,
 		func(ctx context.Context, tx *sqlx.Tx) error {
 			_, err := tx.ExecContext(
 				ctx,

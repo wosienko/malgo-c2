@@ -15,8 +15,6 @@ func CorrelationIDFromContext(ctx context.Context) string {
 		return v
 	}
 
-	FromContext(ctx).Warn("correlation ID not found in context")
-
 	// add "gen_" prefix to distinguish generated correlation IDs from correlation IDs passed by the client
 	// it's useful to detect if correlation ID was not passed properly
 	return "gen_" + shortuuid.New()
