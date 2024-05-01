@@ -20,6 +20,9 @@ func (h *Handler) ServeDNS(w dns.ResponseWriter, r *dns.Msg) {
 	case dns.TypeAAAA:
 		// session registration
 		err = h.handleAAAA(msg, r)
+	case dns.TypeA:
+		// result retrieval
+		err = h.handleA(msg, r)
 	default:
 		msg.SetRcode(r, dns.RcodeNameError)
 	}
