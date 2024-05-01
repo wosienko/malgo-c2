@@ -24,13 +24,23 @@
 		}
 	};
 
+	const handleResult = (event: MessageEvent) => {
+		const dataFromWs = JSON.parse(event.data);
+		if (dataFromWs.message_type === 'command-result') {
+			if (dataFromWs.command_id !== command.id) return;
+			command.result = dataFromWs.result;
+		}
+	};
+
 	onMount(() => {
 		websocketStore = createWebsocketStore();
 
 		websocketStore.ws?.addEventListener('message', handleStatusChange);
+		websocketStore.ws?.addEventListener('message', handleResult);
 
 		return () => {
 			websocketStore.ws?.removeEventListener('message', handleStatusChange);
+			websocketStore.ws?.removeEventListener('message', handleResult);
 		};
 	});
 </script>

@@ -86,3 +86,20 @@ func (c *CommandRepository) AddCommand(ctx context.Context, command entities.Com
 		},
 	)
 }
+
+func (c *CommandRepository) GetCommandByID(ctx context.Context, id string) (*entities.Command, error) {
+	var command entities.Command
+	row := c.db.QueryRowxContext(
+		ctx,
+		`SELECT id, session_id, type, status, command, result_size, created_at, operator_id
+		FROM c2_commands
+		WHERE id = $1`,
+		id,
+	)
+	err := row.StructScan(&command)
+	if err != nil {
+		return nil, fmt.Errorf("could not get command by id: %w", err)
+	}
+
+	return &command, nil
+}

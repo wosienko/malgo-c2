@@ -10,6 +10,7 @@ import (
 const (
 	NewCommandsTopic             = "new-commands"
 	CommandStatusUpdatedTopic    = "command-status-updated"
+	CommandResultRetrievedTopic  = "command-result-retrieved"
 	SessionKeyValueModifiedTopic = "session-key-value-modified"
 	SessionKeyValueDeletedTopic  = "session-key-value-deleted"
 	RenamedSessionTopic          = "renamed-session"
@@ -29,6 +30,10 @@ func (h *Handler) WriteToWebsocket() {
 	commandStatusChangedChannel, err := h.pubSub.Subscribe(ctx, CommandStatusUpdatedTopic)
 	if err != nil {
 		fmt.Printf("error listening on command status changed channel")
+	}
+	commandResultRetrievedChannel, err := h.pubSub.Subscribe(ctx, CommandResultRetrievedTopic)
+	if err != nil {
+		fmt.Printf("error listening on command result retrieved channel")
 	}
 	modifiedKeyValueChannel, err := h.pubSub.Subscribe(ctx, SessionKeyValueModifiedTopic)
 	if err != nil {
@@ -69,6 +74,13 @@ func (h *Handler) WriteToWebsocket() {
 			fmt.Printf("Received command status changed to send through websocket\n")
 			if err := h.handleCommandStatusChanged(message.Payload); err != nil {
 				fmt.Printf("Error handling command status changed: %v", err)
+				message.Nack()
+			}
+			message.Ack()
+		case message := <-commandResultRetrievedChannel:
+			fmt.Printf("Received command result to send through websocket\n")
+			if err := h.handleCommandResultRetrieved(message.Payload); err != nil {
+				fmt.Printf("Error handling command result: %v", err)
 				message.Nack()
 			}
 			message.Ack()

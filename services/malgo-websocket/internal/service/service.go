@@ -57,6 +57,7 @@ func New(
 	userRepo := db.NewUserRepository(dbConn)
 	commandRepo := db.NewCommandRepository(dbConn)
 	sessionRepo := db.NewSessionRepository(dbConn)
+	resultRepo := db.NewResultRepository(dbConn)
 
 	pubSub := gochannel.NewGoChannel(gochannel.Config{}, watermillLogger) // TODO: check if buffer size is ok
 
@@ -65,6 +66,8 @@ func New(
 
 	eventHandler := events.NewHandler(
 		pubSub,
+		commandRepo,
+		resultRepo,
 	)
 	commandHandler := commands.NewHandler(
 		commandRepo,

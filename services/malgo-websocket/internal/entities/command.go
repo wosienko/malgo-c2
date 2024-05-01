@@ -31,3 +31,10 @@ type CommandStatusSentToOperator struct {
 	ID          string `json:"id"`
 	Status      string `json:"status"`
 }
+
+type CommandResultSentToOperator struct {
+	MessageType string `json:"message_type"`
+	CommandId   string `json:"command_id"`
+	SessionId   string `json:"session_id"`
+	Result      string `json:"result"`
+}

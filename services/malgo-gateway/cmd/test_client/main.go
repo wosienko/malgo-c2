@@ -43,44 +43,48 @@ func main() {
 	//}
 	//fmt.Printf("Registered new session\n")
 
-	//fmt.Printf("Getting command info\n")
-	//resp, err := client.CommandInfo(context.Background(), &gateway.CommandInfoRequest{
-	//	SessionId: "a264d459-4ba4-453b-8bd6-f40ba39eb087",
-	//})
-	//if err != nil {
-	//	fmt.Printf("error: %v\n", err)
-	//}
-	//fmt.Printf("Got command info: %v\n", resp)
+	fmt.Printf("Getting command info\n")
+	resp1, err := client.CommandInfo(context.Background(), &gateway.CommandInfoRequest{
+		SessionId: "a264d459-4ba4-453b-8bd6-f40ba39eb087",
+	})
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	fmt.Printf("Got command info: %v\n", resp1)
 
-	//fmt.Printf("Getting command details chunk\n")
-	//resp, err := client.CommandDetailsChunk(context.Background(), &gateway.CommandDetailsChunkRequest{
-	//	CommandId: "9e994a9b-f85d-42db-9d80-595070341b6d",
-	//	Offset:    0,
-	//	Length:    9,
-	//})
-	//if err != nil {
-	//	fmt.Printf("error: %v\n", err)
-	//}
-	//fmt.Printf("Got command details chunk: %v\n", resp)
+	fmt.Printf("Getting command details chunk\n")
+	resp2, err := client.CommandDetailsChunk(context.Background(), &gateway.CommandDetailsChunkRequest{
+		CommandId: resp1.CommandId,
+		Offset:    0,
+		Length:    9,
+	})
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	fmt.Printf("Got command details chunk: %v\n", resp2)
 
-	//fmt.Printf("Setting result info\n")
-	//_, err = client.ResultInfo(context.Background(), &gateway.ResultInfoRequest{
-	//	CommandId: "9e994a9b-f85d-42db-9d80-595070341b6d",
-	//	Length:    6,
-	//})
-	//if err != nil {
-	//	fmt.Printf("error: %v\n", err)
-	//}
-	//fmt.Printf("Set result info\n")
+	fmt.Printf("Setting result info\n")
+	_, err = client.ResultInfo(context.Background(), &gateway.ResultInfoRequest{
+		CommandId: resp1.CommandId,
+		Length:    6,
+	})
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	fmt.Printf("Set result info\n")
 
 	fmt.Printf("Adding result chunk\n")
 	_, err = client.ResultDetailsChunk(context.Background(), &gateway.ResultDetailsChunkRequest{
-		CommandId: "9e994a9b-f85d-42db-9d80-595070341b6d",
+		CommandId: resp1.CommandId,
 		Offset:    0,
 		Data:      []byte("whoami"),
 	})
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
+		return
 	}
 	fmt.Printf("Added result chunk\n")
 }
