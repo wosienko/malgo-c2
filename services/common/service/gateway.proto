@@ -9,6 +9,9 @@ service GatewayService {
   rpc SessionHeartbeat(SessionHeartbeatRequest) returns (EmptyResponse) {} // Asynchronous
   rpc CommandInfo(CommandInfoRequest) returns (CommandInfoResponse) {} // Synchronous
   rpc CommandDetailsChunk(CommandDetailsChunkRequest) returns (CommandDetailsChunkResponse) {} // Synchronous
+
+  rpc ResultInfo(ResultInfoRequest) returns (EmptyResponse) {} // Synchronous
+  rpc ResultDetailsChunk(ResultDetailsChunkRequest) returns (EmptyResponse) {} // Synchronous
 }
 
 message RegisterNewSessionRequest {
@@ -28,6 +31,18 @@ message CommandDetailsChunkRequest {
   string command_id = 1;
   int64 offset = 2;
   int64 length = 3;
+}
+
+message ResultInfoRequest {
+    string command_id = 1;
+    int64 length = 2;
+}
+
+message ResultDetailsChunkRequest {
+    string command_id = 1;
+    int64 offset = 2;
+    int64 length = 3;
+    bytes data = 4;
 }
 
 message CommandInfoResponse {

@@ -1,6 +1,12 @@
-import { pgTable, uuid, text, integer, timestamp, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, integer, timestamp, primaryKey, customType } from 'drizzle-orm/pg-core';
 import { C2Commands } from './c2_commands';
 import { relations, sql } from 'drizzle-orm';
+
+const bytea = customType<{ data: Buffer; notNull: true; default: false }>({
+	dataType() {
+		return 'bytea';
+	}
+});
 
 export const C2ResultChunks = pgTable(
 	'c2_result_chunks',
@@ -8,7 +14,7 @@ export const C2ResultChunks = pgTable(
 		command_id: uuid('command_id')
 			.notNull()
 			.references(() => C2Commands.id, { onDelete: 'cascade' }),
-		resultChunk: text('result_chunk').notNull().default(''),
+		resultChunk: bytea('result_chunk').notNull(),
 		chunkOffset: integer('chunk_offset').notNull(),
 		createdAt: timestamp('created_at', {
 			withTimezone: true,

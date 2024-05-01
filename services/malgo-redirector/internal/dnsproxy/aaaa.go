@@ -28,7 +28,11 @@ func (h *Handler) handleAAAA(msg *dns.Msg, r *dns.Msg) error {
 		ProjectId: ids[0],
 	})
 	if err != nil {
-		return err
+		if strings.Contains(err.Error(), "no rows in result set") {
+			// Session duplicate, it's ok
+		} else {
+			return err
+		}
 	}
 
 	msg.Answer = append(msg.Answer, &dns.AAAA{

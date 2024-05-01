@@ -26,6 +26,8 @@ type GatewayServiceClient interface {
 	SessionHeartbeat(ctx context.Context, in *SessionHeartbeatRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
 	CommandInfo(ctx context.Context, in *CommandInfoRequest, opts ...grpc.CallOption) (*CommandInfoResponse, error)
 	CommandDetailsChunk(ctx context.Context, in *CommandDetailsChunkRequest, opts ...grpc.CallOption) (*CommandDetailsChunkResponse, error)
+	ResultInfo(ctx context.Context, in *ResultInfoRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
+	ResultDetailsChunk(ctx context.Context, in *ResultDetailsChunkRequest, opts ...grpc.CallOption) (*EmptyResponse, error)
 }
 
 type gatewayServiceClient struct {
@@ -72,6 +74,24 @@ func (c *gatewayServiceClient) CommandDetailsChunk(ctx context.Context, in *Comm
 	return out, nil
 }
 
+func (c *gatewayServiceClient) ResultInfo(ctx context.Context, in *ResultInfoRequest, opts ...grpc.CallOption) (*EmptyResponse, error) {
+	out := new(EmptyResponse)
+	err := c.cc.Invoke(ctx, "/gateway.GatewayService/ResultInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *gatewayServiceClient) ResultDetailsChunk(ctx context.Context, in *ResultDetailsChunkRequest, opts ...grpc.CallOption) (*EmptyResponse, error) {
+	out := new(EmptyResponse)
+	err := c.cc.Invoke(ctx, "/gateway.GatewayService/ResultDetailsChunk", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GatewayServiceServer is the server API for GatewayService service.
 // All implementations must embed UnimplementedGatewayServiceServer
 // for forward compatibility
@@ -80,6 +100,8 @@ type GatewayServiceServer interface {
 	SessionHeartbeat(context.Context, *SessionHeartbeatRequest) (*EmptyResponse, error)
 	CommandInfo(context.Context, *CommandInfoRequest) (*CommandInfoResponse, error)
 	CommandDetailsChunk(context.Context, *CommandDetailsChunkRequest) (*CommandDetailsChunkResponse, error)
+	ResultInfo(context.Context, *ResultInfoRequest) (*EmptyResponse, error)
+	ResultDetailsChunk(context.Context, *ResultDetailsChunkRequest) (*EmptyResponse, error)
 	mustEmbedUnimplementedGatewayServiceServer()
 }
 
@@ -98,6 +120,12 @@ func (UnimplementedGatewayServiceServer) CommandInfo(context.Context, *CommandIn
 }
 func (UnimplementedGatewayServiceServer) CommandDetailsChunk(context.Context, *CommandDetailsChunkRequest) (*CommandDetailsChunkResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CommandDetailsChunk not implemented")
+}
+func (UnimplementedGatewayServiceServer) ResultInfo(context.Context, *ResultInfoRequest) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResultInfo not implemented")
+}
+func (UnimplementedGatewayServiceServer) ResultDetailsChunk(context.Context, *ResultDetailsChunkRequest) (*EmptyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResultDetailsChunk not implemented")
 }
 func (UnimplementedGatewayServiceServer) mustEmbedUnimplementedGatewayServiceServer() {}
 
@@ -184,6 +212,42 @@ func _GatewayService_CommandDetailsChunk_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GatewayService_ResultInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResultInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServiceServer).ResultInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gateway.GatewayService/ResultInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServiceServer).ResultInfo(ctx, req.(*ResultInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GatewayService_ResultDetailsChunk_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResultDetailsChunkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GatewayServiceServer).ResultDetailsChunk(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gateway.GatewayService/ResultDetailsChunk",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GatewayServiceServer).ResultDetailsChunk(ctx, req.(*ResultDetailsChunkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // GatewayService_ServiceDesc is the grpc.ServiceDesc for GatewayService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -206,6 +270,14 @@ var GatewayService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CommandDetailsChunk",
 			Handler:    _GatewayService_CommandDetailsChunk_Handler,
+		},
+		{
+			MethodName: "ResultInfo",
+			Handler:    _GatewayService_ResultInfo_Handler,
+		},
+		{
+			MethodName: "ResultDetailsChunk",
+			Handler:    _GatewayService_ResultDetailsChunk_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
