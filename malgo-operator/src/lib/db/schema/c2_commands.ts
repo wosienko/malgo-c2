@@ -17,8 +17,7 @@ export const C2CommandStatusEnum = pgEnum('c2_command_status', [
 	'sending',
 	'sent',
 	'retrieving',
-	'success',
-	'error',
+	'completed',
 	'canceled'
 ]);
 

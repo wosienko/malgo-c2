@@ -14,12 +14,14 @@ type GrpcServer struct {
 
 	sessionRepo SessionRepository
 	commandRepo CommandRepository
+	resultRepo  ResultRepository
 }
 
 func NewGrpcServer(
 	commandBus *cqrs.CommandBus,
 	sessionRepo SessionRepository,
 	commandRepo CommandRepository,
+	resultRepo ResultRepository,
 ) *GrpcServer {
 	if commandBus == nil {
 		panic("sessionRepository is nil")
@@ -30,12 +32,16 @@ func NewGrpcServer(
 	if commandRepo == nil {
 		panic("commandRepo is nil")
 	}
+	if resultRepo == nil {
+		panic("resultRepo is nil")
+	}
 
 	return &GrpcServer{
 		commandBus: commandBus,
 
 		sessionRepo: sessionRepo,
 		commandRepo: commandRepo,
+		resultRepo:  resultRepo,
 	}
 }
 
@@ -46,4 +52,9 @@ type SessionRepository interface {
 type CommandRepository interface {
 	GetCommandInfo(ctx context.Context, commandId string) (*internalEntities.CommandInfo, error)
 	GetCommandChunk(ctx context.Context, query *internalEntities.CommandChunkQuery) (*internalEntities.CommandChunk, error)
+}
+
+type ResultRepository interface {
+	SetResultLength(ctx context.Context, commandId string, length int) error
+	AddResultChunk(ctx context.Context, chunk internalEntities.ResultChunk) error
 }

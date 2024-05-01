@@ -1,5 +1,5 @@
 DO $$ BEGIN
- CREATE TYPE "c2_command_status" AS ENUM('created', 'queried', 'sending', 'sent', 'retrieving', 'success', 'error', 'canceled');
+ CREATE TYPE "c2_command_status" AS ENUM('created', 'queried', 'sending', 'sent', 'retrieving', 'completed', 'canceled');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

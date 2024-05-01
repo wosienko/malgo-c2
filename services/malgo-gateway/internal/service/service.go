@@ -55,6 +55,7 @@ func New(
 
 	commandRepo := db.NewCommandRepository(dbConn)
 	sessionRepo := db.NewSessionRepository(dbConn)
+	resultRepo := db.NewResultRepository(dbConn)
 
 	commandBus := commands.NewBusWithConfig(redisPublisher, commands.NewBusConfig(watermillLogger))
 
@@ -78,6 +79,7 @@ func New(
 		commandBus,
 		sessionRepo,
 		commandRepo,
+		resultRepo,
 	))
 
 	return Service{

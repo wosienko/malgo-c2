@@ -36,7 +36,7 @@ func main() {
 	//fmt.Printf("Registering new session\n")
 	//_, err = client.RegisterNewSession(context.Background(), &gateway.RegisterNewSessionRequest{
 	//	SessionId: uuid.NewString(),
-	//	ProjectId: "4e960188-b535-40bf-99ff-567b8144e028",
+	//	ProjectId: "6ed44c13-1a72-4652-936e-d6799a487736",
 	//})
 	//if err != nil {
 	//	fmt.Printf("error: %v\n", err)
@@ -45,23 +45,44 @@ func main() {
 
 	//fmt.Printf("Getting command info\n")
 	//resp, err := client.CommandInfo(context.Background(), &gateway.CommandInfoRequest{
-	//	SessionId: "67b785b3-8207-4391-9dea-098fcc8b8f6b",
+	//	SessionId: "a264d459-4ba4-453b-8bd6-f40ba39eb087",
 	//})
 	//if err != nil {
 	//	fmt.Printf("error: %v\n", err)
 	//}
 	//fmt.Printf("Got command info: %v\n", resp)
 
-	fmt.Printf("Getting command details chunk\n")
-	resp, err := client.CommandDetailsChunk(context.Background(), &gateway.CommandDetailsChunkRequest{
-		CommandId: "74c48256-6855-4c44-beba-fe00d1fa4863",
+	//fmt.Printf("Getting command details chunk\n")
+	//resp, err := client.CommandDetailsChunk(context.Background(), &gateway.CommandDetailsChunkRequest{
+	//	CommandId: "9e994a9b-f85d-42db-9d80-595070341b6d",
+	//	Offset:    0,
+	//	Length:    9,
+	//})
+	//if err != nil {
+	//	fmt.Printf("error: %v\n", err)
+	//}
+	//fmt.Printf("Got command details chunk: %v\n", resp)
+
+	//fmt.Printf("Setting result info\n")
+	//_, err = client.ResultInfo(context.Background(), &gateway.ResultInfoRequest{
+	//	CommandId: "9e994a9b-f85d-42db-9d80-595070341b6d",
+	//	Length:    6,
+	//})
+	//if err != nil {
+	//	fmt.Printf("error: %v\n", err)
+	//}
+	//fmt.Printf("Set result info\n")
+
+	fmt.Printf("Adding result chunk\n")
+	_, err = client.ResultDetailsChunk(context.Background(), &gateway.ResultDetailsChunkRequest{
+		CommandId: "9e994a9b-f85d-42db-9d80-595070341b6d",
 		Offset:    0,
-		Length:    6,
+		Data:      []byte("whoami"),
 	})
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 	}
-	fmt.Printf("Got command details chunk: %v\n", resp)
+	fmt.Printf("Added result chunk\n")
 }
 
 func NewGrpcClient() (client gateway.GatewayServiceClient, close func() error, err error) {

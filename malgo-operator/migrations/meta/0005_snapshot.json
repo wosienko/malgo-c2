@@ -1,5 +1,5 @@
 {
-  "id": "f881cb6e-89df-4d90-b1ea-727705b9c97f",
+  "id": "88a00f42-2420-4b8d-ad75-a2fc7f3921f5",
   "prevId": "7ec0f5e5-ab2b-4ba4-8a7e-6534968af766",
   "version": "5",
   "dialect": "pg",
@@ -533,8 +533,7 @@
         "sending": "sending",
         "sent": "sent",
         "retrieving": "retrieving",
-        "success": "success",
-        "error": "error",
+        "completed": "completed",
         "canceled": "canceled"
       }
     },
