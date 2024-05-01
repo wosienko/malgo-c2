@@ -15,6 +15,7 @@ export const getAllSessionsForProject = async (projectId: string) => {
 export const getLatestCommandForSession = async (
 	sessionId: string
 ): Promise<Command | undefined> => {
+	// TODO: redo as a single query with a join and order by
 	const result = await db.query.C2Commands.findFirst({
 		where: eq(C2Commands.session_id, sessionId),
 		orderBy: [desc(C2Commands.createdAt)],
