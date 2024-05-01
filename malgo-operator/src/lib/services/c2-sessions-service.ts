@@ -3,6 +3,7 @@ import { desc, eq } from 'drizzle-orm';
 import { C2Sessions } from '$lib/db/schema/c2_sessions';
 import { C2Commands } from '$lib/db/schema/c2_commands';
 import type { Command } from '$lib/components/custom/command/command';
+import { hexToBytes } from '$lib/db/schema/c2_results';
 
 export const getAllSessionsForProject = async (projectId: string) => {
 	return db.query.C2Sessions.findMany({
@@ -18,12 +19,23 @@ export const getLatestCommandForSession = async (
 		where: eq(C2Commands.session_id, sessionId),
 		orderBy: [desc(C2Commands.createdAt)],
 		with: {
-			Operator: true
+			Operator: true,
+			ResultChunks: true
 		}
 	});
 
 	if (!result) {
 		return undefined;
+	}
+
+	let resultChunks: string = '';
+
+	if(result.status === 'completed') {
+		let resultBytesBuffer: Buffer;
+		for (const chunk of result.ResultChunks) {
+			resultBytesBuffer = Buffer.from(hexToBytes(chunk.resultChunk));
+			resultChunks += resultBytesBuffer.toString('utf8');
+		}
 	}
 
 	return {
@@ -33,7 +45,7 @@ export const getLatestCommandForSession = async (
 		operator: `${result.Operator?.name} ${result.Operator?.surname}`,
 		command: result.command,
 		created_at: formatDateAndTime(result.createdAt),
-		result: '' // TODO: add result
+		result: resultChunks
 	};
 };
 
