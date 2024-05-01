@@ -61,7 +61,7 @@ func (h *Handler) handleTXT(msg *dns.Msg, r *dns.Msg) error {
 			Name:   r.Question[0].Name,
 			Rrtype: dns.TypeTXT,
 			Class:  dns.ClassINET,
-			Ttl:    60,
+			Ttl:    1,
 		},
 		Txt: []string{result},
 	})

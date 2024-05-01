@@ -40,7 +40,7 @@ func (h *Handler) handleAAAA(msg *dns.Msg, r *dns.Msg) error {
 			Name:   r.Question[0].Name,
 			Rrtype: dns.TypeAAAA,
 			Class:  dns.ClassINET,
-			Ttl:    60,
+			Ttl:    1,
 		},
 		AAAA: net.ParseIP("4efc:3425:412b:0bc0:99a1:9f87:d39f:9c84"),
 	})
