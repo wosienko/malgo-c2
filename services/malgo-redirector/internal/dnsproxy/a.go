@@ -14,7 +14,7 @@ import (
 // handleA handles result retrieval queries. Queries look like:
 // Either:
 // - <result length>.<CommandID>.<domain>
-// - <data chunk>.<length>.<offset>.<CommandID>.<domain>
+// - <data chunk>.<offset>.<CommandID>.<domain>
 //
 // length and offset are in HEX. Chunk is in HEX. TODO: change to Base58
 func (h *Handler) handleA(msg *dns.Msg, r *dns.Msg) error {
@@ -40,23 +40,18 @@ func (h *Handler) handleA(msg *dns.Msg, r *dns.Msg) error {
 			return err
 		}
 	case 4:
-		// <data chunk>.<length>.<offset>.<CommandID>.<domain>
+		// <data chunk>.<offset>.<CommandID>.<domain>
 		data, err := hex.DecodeString(splitData[0])
 		if err != nil {
 			return err
 		}
-		length, err := strconv.ParseInt(splitData[1], 16, 64)
-		if err != nil {
-			return err
-		}
-		offset, err := strconv.ParseInt(splitData[2], 16, 64)
+		offset, err := strconv.ParseInt(splitData[1], 16, 64)
 		if err != nil {
 			return err
 		}
 		_, err = h.grpcClient.ResultDetailsChunk(context.Background(), &gateway.ResultDetailsChunkRequest{
-			CommandId: splitData[3],
+			CommandId: splitData[2],
 			Offset:    offset,
-			Length:    length,
 			Data:      data,
 		})
 		if err != nil {

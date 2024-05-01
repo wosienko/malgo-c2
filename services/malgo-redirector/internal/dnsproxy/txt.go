@@ -51,7 +51,8 @@ func (h *Handler) handleTXT(msg *dns.Msg, r *dns.Msg) error {
 			return err
 		}
 		r, _ := json.Marshal(grpcResult)
-		result = string(r)
+		result = string(r) // TODO: check for encoding issues (e.g. "data": "Write-Host "... "")
+		// TODO: check for newline encoding issues, see if obfuscation fixes it
 	}
 
 	//TODO: obfuscate the result
