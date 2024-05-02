@@ -1,8 +1,8 @@
-FROM oven/bun:1.1.6 as builder
+FROM node:22-slim as builder
 WORKDIR /app
 
 COPY . .
 
-RUN bun install
+RUN npm install --force
 
-CMD [ "bun", "run", "migrate" ]
+CMD [ "npx", "drizzle-kit", "push:pg", "--config", "drizzle.config.ts" ]

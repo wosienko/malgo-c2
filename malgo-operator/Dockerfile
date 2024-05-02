@@ -1,24 +1,32 @@
-FROM oven/bun:1.1.6 as builder
+ARG DATABASE_URL
+ARG DEFAULT_ADMIN_EMAIL
+ARG DEFAULT_ADMIN_PASSWORD
+
+FROM oven/bun:1-slim as builder
 WORKDIR /app
 
 COPY . .
+
+RUN echo "DATABASE_URL=${DATABASE_URL}" > .env
+RUN echo "DEFAULT_ADMIN_EMAIL=${DEFAULT_ADMIN_EMAIL}" >> .env
+RUN echo "DEFAULT_ADMIN_PASSWORD=${DEFAULT_ADMIN_PASSWORD}" >> .env
 
 RUN bun install
 RUN bun run build
 
 
-FROM oven/bun:1.1.6-slim as runner
+# FROM oven/bun:slim as runner
 
-WORKDIR /app
+# WORKDIR /app
 
-COPY --from=builder /app/build /app
+# ENV DATABASE_URL=${DATABASE_URL}
+# ENV DEFAULT_ADMIN_EMAIL=${DEFAULT_ADMIN_EMAIL}
+# ENV DEFAULT_ADMIN_PASSWORD=${DEFAULT_ADMIN_PASSWORD}
 
-RUN bun install
+# COPY --from=builder /app/build /app
 
-RUN chown -R bun:bun /app
-
-USER bun
+# RUN bun install
 
 EXPOSE 3000
 
-CMD ["bun", "run", "start"]
+CMD ["bun", "run", "./build/index.js"]

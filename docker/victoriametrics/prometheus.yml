@@ -13,5 +13,4 @@ scrape_configs:
     metrics_path: /metrics
     scheme: http
     static_configs:
-      - targets:
-          - "%{C2_WEBSOCKET_HOST}"
+      - targets: ["malgo-websocket:8080"]

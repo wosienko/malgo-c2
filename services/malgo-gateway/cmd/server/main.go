@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/VipWW/malgo-c2/services/common/log"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/service"
 	"github.com/jmoiron/sqlx"
@@ -17,7 +18,7 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		panic(err)
+		log.FromContext(context.Background()).Error(err)
 	}
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
