@@ -77,7 +77,7 @@
 	});
 </script>
 
-<div class="mx-3 rounded-2xl border-2 border-neutral bg-base-100 p-4 shadow-xl">
+<div class="border-neutral bg-base-100 mx-3 rounded-2xl border-2 p-4 shadow-xl">
 	<div>
 		<div class="mb-3 flex justify-between">
 			<h2 class="card-title flex-col items-center justify-center md:flex-row">
@@ -117,15 +117,17 @@
 				</tr>
 			</tbody>
 		</table>
-		{#if isCommandVisible}
-			<div class="divider m-0"></div>
-			<p class="whitespace-pre-line">{command.command}</p>
-		{/if}
-		{#if isResultVisible && command.result}
-			<div class="divider m-0"></div>
-			<p class="whitespace-pre-line">
-				{command.result}
-			</p>
-		{/if}
+		<div class="w-full overflow-x-auto">
+			{#if isCommandVisible}
+				<div class="divider m-0"></div>
+				<pre><code>{command.command}</code></pre>
+			{/if}
+		</div>
+		<div class="w-full overflow-x-auto">
+			{#if isResultVisible && command.result}
+				<div class="divider m-0"></div>
+				<pre><code>{command.result}</code></pre>
+			{/if}
+		</div>
 	</div>
 </div>
