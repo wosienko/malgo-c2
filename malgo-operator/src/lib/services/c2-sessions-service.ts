@@ -30,6 +30,19 @@ export const getLatestCommandForSession = async (
 	}
 
 	let resultChunks: string = '';
+	let last_result_update: string = '';
+	// result progress is calculated as last chunk offset + chunk size / total size * 100
+	let result_progress: number = 0;
+
+	if (result.ResultChunks.length > 0) {
+		last_result_update = formatDateAndTime(
+			result.ResultChunks[result.ResultChunks.length - 1].createdAt
+		);
+		const lastChunk = result.ResultChunks[result.ResultChunks.length - 1];
+		const lastChunkOffset: number = lastChunk.chunkOffset;
+		const lastChunkSize: number = hexToBytes(lastChunk.resultChunk).length;
+		result_progress = Math.round(((lastChunkOffset + lastChunkSize) / result.resultSize) * 100);
+	}
 
 	if (result.status === 'completed') {
 		let resultBytesBuffer: Buffer;
@@ -46,7 +59,9 @@ export const getLatestCommandForSession = async (
 		operator: `${result.Operator?.name} ${result.Operator?.surname}`,
 		command: result.command,
 		created_at: formatDateAndTime(result.createdAt),
-		result: resultChunks
+		result: resultChunks,
+		last_result_update,
+		result_progress
 	};
 };
 

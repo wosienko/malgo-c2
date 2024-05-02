@@ -7,4 +7,5 @@ export type Command = {
 	result: string;
 	created_at: string;
 	last_result_update?: string;
+	result_progress?: number;
 };

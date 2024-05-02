@@ -38,3 +38,11 @@ type CommandResultSentToOperator struct {
 	SessionId   string `json:"session_id"`
 	Result      string `json:"result"`
 }
+
+type CommandResultChunkSentToOperator struct {
+	MessageType string `json:"message_type"`
+	CommandId   string `json:"command_id"`
+	SessionId   string `json:"session_id"`
+	CreatedAt   string `json:"created_at"`
+	Progress    int64  `json:"progress"`
+}

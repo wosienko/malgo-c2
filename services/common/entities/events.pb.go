@@ -650,6 +650,86 @@ func (x *SessionHeartbeatUpdated) GetHeartbeatAt() *timestamppb.Timestamp {
 	return nil
 }
 
+// Result-related messages
+type ResultChunkInserted struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Header    *Header                `protobuf:"bytes,1,opt,name=header,proto3" json:"header,omitempty"`
+	SessionId string                 `protobuf:"bytes,2,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	CommandId string                 `protobuf:"bytes,3,opt,name=command_id,json=commandId,proto3" json:"command_id,omitempty"`
+	CreatedAt *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	Progress  int64                  `protobuf:"varint,5,opt,name=progress,proto3" json:"progress,omitempty"`
+}
+
+func (x *ResultChunkInserted) Reset() {
+	*x = ResultChunkInserted{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_common_entities_events_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ResultChunkInserted) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResultChunkInserted) ProtoMessage() {}
+
+func (x *ResultChunkInserted) ProtoReflect() protoreflect.Message {
+	mi := &file_common_entities_events_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResultChunkInserted.ProtoReflect.Descriptor instead.
+func (*ResultChunkInserted) Descriptor() ([]byte, []int) {
+	return file_common_entities_events_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ResultChunkInserted) GetHeader() *Header {
+	if x != nil {
+		return x.Header
+	}
+	return nil
+}
+
+func (x *ResultChunkInserted) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
+func (x *ResultChunkInserted) GetCommandId() string {
+	if x != nil {
+		return x.CommandId
+	}
+	return ""
+}
+
+func (x *ResultChunkInserted) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *ResultChunkInserted) GetProgress() int64 {
+	if x != nil {
+		return x.Progress
+	}
+	return 0
+}
+
 var File_common_entities_events_proto protoreflect.FileDescriptor
 
 var file_common_entities_events_proto_rawDesc = []byte{
@@ -755,11 +835,24 @@ var file_common_entities_events_proto_rawDesc = []byte{
 	0x61, 0x74, 0x5f, 0x61, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f,
 	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69,
 	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0b, 0x68, 0x65, 0x61, 0x72, 0x74, 0x62, 0x65,
-	0x61, 0x74, 0x41, 0x74, 0x42, 0x34, 0x5a, 0x32, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
-	0x6f, 0x6d, 0x2f, 0x56, 0x69, 0x70, 0x57, 0x57, 0x2f, 0x6d, 0x61, 0x6c, 0x67, 0x6f, 0x2d, 0x63,
-	0x32, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
-	0x6e, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x69, 0x65, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x61, 0x74, 0x41, 0x74, 0x22, 0xd4, 0x01, 0x0a, 0x13, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x43,
+	0x68, 0x75, 0x6e, 0x6b, 0x49, 0x6e, 0x73, 0x65, 0x72, 0x74, 0x65, 0x64, 0x12, 0x28, 0x0a, 0x06,
+	0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x65,
+	0x6e, 0x74, 0x69, 0x74, 0x69, 0x65, 0x73, 0x2e, 0x48, 0x65, 0x61, 0x64, 0x65, 0x72, 0x52, 0x06,
+	0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x12, 0x1d, 0x0a, 0x0a, 0x73, 0x65, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x73, 0x65, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64,
+	0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x6f, 0x6d, 0x6d, 0x61,
+	0x6e, 0x64, 0x49, 0x64, 0x12, 0x39, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f,
+	0x61, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73,
+	0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12,
+	0x1a, 0x0a, 0x08, 0x70, 0x72, 0x6f, 0x67, 0x72, 0x65, 0x73, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x08, 0x70, 0x72, 0x6f, 0x67, 0x72, 0x65, 0x73, 0x73, 0x42, 0x34, 0x5a, 0x32, 0x67,
+	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x56, 0x69, 0x70, 0x57, 0x57, 0x2f,
+	0x6d, 0x61, 0x6c, 0x67, 0x6f, 0x2d, 0x63, 0x32, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
+	0x73, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2f, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x69, 0x65,
+	0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -774,7 +867,7 @@ func file_common_entities_events_proto_rawDescGZIP() []byte {
 	return file_common_entities_events_proto_rawDescData
 }
 
-var file_common_entities_events_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_common_entities_events_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_common_entities_events_proto_goTypes = []interface{}{
 	(*CommandCreated)(nil),          // 0: entities.CommandCreated
 	(*CommandStatusModified)(nil),   // 1: entities.CommandStatusModified
@@ -784,27 +877,30 @@ var file_common_entities_events_proto_goTypes = []interface{}{
 	(*SessionKeyValueDeleted)(nil),  // 5: entities.SessionKeyValueDeleted
 	(*SessionNameModified)(nil),     // 6: entities.SessionNameModified
 	(*SessionHeartbeatUpdated)(nil), // 7: entities.SessionHeartbeatUpdated
-	(*Header)(nil),                  // 8: entities.Header
-	(*timestamppb.Timestamp)(nil),   // 9: google.protobuf.Timestamp
+	(*ResultChunkInserted)(nil),     // 8: entities.ResultChunkInserted
+	(*Header)(nil),                  // 9: entities.Header
+	(*timestamppb.Timestamp)(nil),   // 10: google.protobuf.Timestamp
 }
 var file_common_entities_events_proto_depIdxs = []int32{
-	8,  // 0: entities.CommandCreated.header:type_name -> entities.Header
-	9,  // 1: entities.CommandCreated.created_at:type_name -> google.protobuf.Timestamp
-	8,  // 2: entities.CommandStatusModified.header:type_name -> entities.Header
-	8,  // 3: entities.CommandResultRetrieved.header:type_name -> entities.Header
-	8,  // 4: entities.SessionRegistered.header:type_name -> entities.Header
-	9,  // 5: entities.SessionRegistered.created_at:type_name -> google.protobuf.Timestamp
-	9,  // 6: entities.SessionRegistered.heartbeat_at:type_name -> google.protobuf.Timestamp
-	8,  // 7: entities.SessionKeyValueModified.header:type_name -> entities.Header
-	8,  // 8: entities.SessionKeyValueDeleted.header:type_name -> entities.Header
-	8,  // 9: entities.SessionNameModified.header:type_name -> entities.Header
-	8,  // 10: entities.SessionHeartbeatUpdated.header:type_name -> entities.Header
-	9,  // 11: entities.SessionHeartbeatUpdated.heartbeat_at:type_name -> google.protobuf.Timestamp
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	9,  // 0: entities.CommandCreated.header:type_name -> entities.Header
+	10, // 1: entities.CommandCreated.created_at:type_name -> google.protobuf.Timestamp
+	9,  // 2: entities.CommandStatusModified.header:type_name -> entities.Header
+	9,  // 3: entities.CommandResultRetrieved.header:type_name -> entities.Header
+	9,  // 4: entities.SessionRegistered.header:type_name -> entities.Header
+	10, // 5: entities.SessionRegistered.created_at:type_name -> google.protobuf.Timestamp
+	10, // 6: entities.SessionRegistered.heartbeat_at:type_name -> google.protobuf.Timestamp
+	9,  // 7: entities.SessionKeyValueModified.header:type_name -> entities.Header
+	9,  // 8: entities.SessionKeyValueDeleted.header:type_name -> entities.Header
+	9,  // 9: entities.SessionNameModified.header:type_name -> entities.Header
+	9,  // 10: entities.SessionHeartbeatUpdated.header:type_name -> entities.Header
+	10, // 11: entities.SessionHeartbeatUpdated.heartbeat_at:type_name -> google.protobuf.Timestamp
+	9,  // 12: entities.ResultChunkInserted.header:type_name -> entities.Header
+	10, // 13: entities.ResultChunkInserted.created_at:type_name -> google.protobuf.Timestamp
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_common_entities_events_proto_init() }
@@ -910,6 +1006,18 @@ func file_common_entities_events_proto_init() {
 				return nil
 			}
 		}
+		file_common_entities_events_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ResultChunkInserted); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -917,7 +1025,7 @@ func file_common_entities_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_common_entities_events_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

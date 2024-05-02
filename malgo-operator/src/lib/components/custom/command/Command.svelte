@@ -3,6 +3,12 @@
 	import { createWebsocketStore, type WebsocketStore } from '$lib/stores/Websocket';
 	import { onMount } from 'svelte';
 
+	const formatDateAndTime = (date: string): string => {
+		const d = new Date(date);
+		// format DD.MM.YYYY HH:MM:SS
+		return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
+	};
+
 	let isResultVisible = $state(true);
 	let isCommandVisible = $state(true);
 
@@ -13,6 +19,12 @@
 	let { command = $bindable() }: InputProps = $props();
 	let typeUppercase = $derived(command.type.toUpperCase());
 	let statusUppercase = $derived(command.status.toUpperCase());
+	let lastUpdateString = $derived.by(() => {
+		if (command.last_result_update) {
+			return formatDateAndTime(command.last_result_update);
+		}
+		return 'N/A';
+	});
 
 	let websocketStore: WebsocketStore;
 
@@ -32,6 +44,15 @@
 		}
 	};
 
+	const handleResultChunk = (event: MessageEvent) => {
+		const dataFromWs = JSON.parse(event.data);
+		if (dataFromWs.message_type === 'result-chunk') {
+			if (dataFromWs.command_id !== command.id) return;
+			command.last_result_update = dataFromWs.created_at;
+			command.result_progress = dataFromWs.progress;
+		}
+	};
+
 	const cancelCommand = () => {
 		websocketStore.ws?.send(
 			JSON.stringify({
@@ -46,10 +67,12 @@
 
 		websocketStore.ws?.addEventListener('message', handleStatusChange);
 		websocketStore.ws?.addEventListener('message', handleResult);
+		websocketStore.ws?.addEventListener('message', handleResultChunk);
 
 		return () => {
 			websocketStore.ws?.removeEventListener('message', handleStatusChange);
 			websocketStore.ws?.removeEventListener('message', handleResult);
+			websocketStore.ws?.removeEventListener('message', handleResultChunk);
 		};
 	});
 </script>
@@ -86,7 +109,11 @@
 				</tr>
 				<tr>
 					<td class="text-left">Last result update:</td>
-					<td class="text-right">{command.last_result_update ?? 'No result'}</td>
+					<td class="text-right">{lastUpdateString}</td>
+				</tr>
+				<tr>
+					<td class="text-left">Result retrieval progress:</td>
+					<td class="text-right">{command.result_progress ?? 0}%</td>
 				</tr>
 			</tbody>
 		</table>

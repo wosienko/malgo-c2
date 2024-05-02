@@ -37,8 +37,11 @@ export const c2ResultChunkRelations = relations(C2ResultChunks, ({ one }) => ({
 
 export function hexToBytes(hex: string) {
 	const bytes: number[] = [];
-	for (let c = 0; c < hex.length; c += 2)
+	for (let c = 0; c < hex.length; c += 2) {
 		// bytes.push(parseInt(hex.substr(c, 2), 16));
-		bytes.push(parseInt(String.prototype.substring.call(hex, c, c + 2), 16));
+		const val = parseInt(String.prototype.substring.call(hex, c, c + 2), 16);
+		if (isNaN(val)) continue;
+		bytes.push(val);
+	}
 	return bytes;
 }

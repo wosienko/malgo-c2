@@ -73,3 +73,12 @@ message SessionHeartbeatUpdated {
     string project_id = 3;
     google.protobuf.Timestamp heartbeat_at = 4;
 }
+
+// Result-related messages
+message ResultChunkInserted {
+    Header header = 1;
+    string session_id = 2;
+    string command_id = 3;
+    google.protobuf.Timestamp created_at = 4;
+    int64 progress = 5;
+}

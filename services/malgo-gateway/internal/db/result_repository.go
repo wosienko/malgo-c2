@@ -9,6 +9,9 @@ import (
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages/events"
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages/outbox"
 	"github.com/jmoiron/sqlx"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"math"
+	"time"
 )
 
 type ResultRepository struct {
@@ -40,19 +43,27 @@ func (r *ResultRepository) AddResultChunk(ctx context.Context, chunk internalEnt
 		r.db,
 		sql.LevelReadCommitted,
 		func(ctx2 context.Context, tx *sqlx.Tx) error {
-			_, err := tx.NamedExecContext(
+			row := tx.QueryRowxContext(
 				ctx2,
 				`INSERT INTO c2_result_chunks (command_id, chunk_offset, result_chunk)
-    				 VALUES (:command_id, :offset, :chunk)
-    				 ON CONFLICT DO NOTHING`,
-				chunk,
+    				 VALUES ($1, $2, $3)
+    				 ON CONFLICT DO NOTHING
+    				 RETURNING created_at`,
+				chunk.CommandId,
+				chunk.Offset,
+				chunk.Chunk,
 			)
+			var createdAt time.Time
+			err := row.Scan(&createdAt)
 			if err != nil {
+				if isErrorUniqueViolation(err) {
+					return nil
+				}
 				return err
 			}
 
 			// check the total expected length of the result
-			row := tx.QueryRowxContext(
+			row = tx.QueryRowxContext(
 				ctx2,
 				`SELECT result_size, session_id
 				FROM c2_commands
@@ -68,17 +79,29 @@ func (r *ResultRepository) AddResultChunk(ctx context.Context, chunk internalEnt
 
 			log.FromContext(ctx2).Infof("Result size: %d, chunk offset: %d, chunk size: %d, sum: %d", resultSize, chunk.Offset, len(chunk.Chunk), chunk.Offset+len(chunk.Chunk))
 
-			if (resultSize != chunk.Offset+len(chunk.Chunk)) && chunk.Offset != 0 {
-				log.FromContext(ctx2).Infof("Not the first or last chunk, skipping")
-				return nil
-			}
-
 			outboxPublisher, err := outbox.NewPublisherForDb(ctx, tx)
 			if err != nil {
 				return err
 			}
 
 			bus := events.NewBus(outboxPublisher)
+			// Publish information about inserting a new chunk
+			err = bus.Publish(ctx2, &entities.ResultChunkInserted{
+				Header:    entities.NewHeader(),
+				SessionId: sessionID,
+				CommandId: chunk.CommandId,
+				CreatedAt: timestamppb.New(createdAt),
+				Progress:  int64(math.Round(float64(chunk.Offset+len(chunk.Chunk)) / float64(resultSize) * 100)),
+			})
+			if err != nil {
+				return err
+			}
+
+			// Publish information about the first and last chunk
+			if (resultSize != chunk.Offset+len(chunk.Chunk)) && chunk.Offset != 0 {
+				log.FromContext(ctx2).Infof("Not the first or last chunk, skipping")
+				return nil
+			}
 
 			if resultSize == chunk.Offset+len(chunk.Chunk) {
 				_, err := tx.ExecContext(

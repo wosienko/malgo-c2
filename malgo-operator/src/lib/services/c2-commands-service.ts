@@ -16,6 +16,21 @@ export const getCommandsForSession = async (sessionId: string, page: number, pag
 	}).then((commands) =>
 		commands.map((command) => {
 			let resultChunks: string = '';
+			let last_result_update: string = '';
+			// result progress is calculated as last chunk offset + chunk size / total size * 100
+			let result_progress: number = 0;
+
+			if (command.ResultChunks.length > 0) {
+				last_result_update = formatDateAndTime(
+					command.ResultChunks[command.ResultChunks.length - 1].createdAt
+				);
+				const lastChunk = command.ResultChunks[command.ResultChunks.length - 1];
+				const lastChunkOffset: number = lastChunk.chunkOffset;
+				const lastChunkSize: number = hexToBytes(lastChunk.resultChunk).length;
+				result_progress = Math.round(
+					((lastChunkOffset + lastChunkSize) / command.resultSize) * 100
+				);
+			}
 
 			if (command.status === 'completed') {
 				let resultBytesBuffer: Buffer;
@@ -32,7 +47,9 @@ export const getCommandsForSession = async (sessionId: string, page: number, pag
 				operator: `${command.Operator?.name} ${command.Operator?.surname}`,
 				command: command.command,
 				created_at: formatDateAndTime(command.createdAt),
-				result: resultChunks
+				result: resultChunks,
+				last_result_update,
+				result_progress
 			};
 		})
 	);

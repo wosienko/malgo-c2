@@ -11,6 +11,7 @@ const (
 	NewCommandsTopic             = "new-commands"
 	CommandStatusUpdatedTopic    = "command-status-updated"
 	CommandResultRetrievedTopic  = "command-result-retrieved"
+	ResultChunkInsertedTopic     = "result-chunk-inserted"
 	SessionKeyValueModifiedTopic = "session-key-value-modified"
 	SessionKeyValueDeletedTopic  = "session-key-value-deleted"
 	RenamedSessionTopic          = "renamed-session"
@@ -34,6 +35,10 @@ func (h *Handler) WriteToWebsocket() {
 	commandResultRetrievedChannel, err := h.pubSub.Subscribe(ctx, CommandResultRetrievedTopic)
 	if err != nil {
 		fmt.Printf("error listening on command result retrieved channel")
+	}
+	resultChunkInsertedChannel, err := h.pubSub.Subscribe(ctx, ResultChunkInsertedTopic)
+	if err != nil {
+		fmt.Printf("error listening on result chunk inserted channel")
 	}
 	modifiedKeyValueChannel, err := h.pubSub.Subscribe(ctx, SessionKeyValueModifiedTopic)
 	if err != nil {
@@ -81,6 +86,13 @@ func (h *Handler) WriteToWebsocket() {
 			fmt.Printf("Received command result to send through websocket\n")
 			if err := h.handleCommandResultRetrieved(message.Payload); err != nil {
 				fmt.Printf("Error handling command result: %v", err)
+				message.Nack()
+			}
+			message.Ack()
+		case message := <-resultChunkInsertedChannel:
+			fmt.Printf("Received result chunk to send through websocket\n")
+			if err := h.handleResultChunkInserted(message.Payload); err != nil {
+				fmt.Printf("Error handling result chunk: %v", err)
 				message.Nack()
 			}
 			message.Ack()

@@ -65,6 +65,10 @@ func NewWatermillRouter(
 			"SendResultToWebsocket",
 			eventHandler.SendResultToWebsocket,
 		),
+		cqrs.NewEventHandler(
+			"SendResultChunkToWebsocket",
+			eventHandler.SendResultChunkToWebsocket,
+		),
 	)
 	if err != nil {
 		panic(err)
