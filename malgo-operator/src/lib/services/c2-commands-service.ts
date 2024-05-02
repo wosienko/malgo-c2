@@ -17,7 +17,7 @@ export const getCommandsForSession = async (sessionId: string, page: number, pag
 		commands.map((command) => {
 			let resultChunks: string = '';
 
-			if(command.status === 'completed') {
+			if (command.status === 'completed') {
 				let resultBytesBuffer: Buffer;
 				for (const chunk of command.ResultChunks) {
 					resultBytesBuffer = Buffer.from(hexToBytes(chunk.resultChunk));

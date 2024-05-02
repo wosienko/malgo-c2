@@ -31,7 +31,7 @@ export const getLatestCommandForSession = async (
 
 	let resultChunks: string = '';
 
-	if(result.status === 'completed') {
+	if (result.status === 'completed') {
 		let resultBytesBuffer: Buffer;
 		for (const chunk of result.ResultChunks) {
 			resultBytesBuffer = Buffer.from(hexToBytes(chunk.resultChunk));

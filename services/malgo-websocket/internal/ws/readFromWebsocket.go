@@ -39,6 +39,8 @@ func (h *Handler) ReadFromWebsocket() {
 		switch msgType.Type {
 		case "command":
 			h.createNewCommand(message)
+		case "cancel-command":
+			h.cancelCommand(message)
 		case "subscribeSession":
 			h.subscribeSession(message)
 		case "unsubscribeSession":

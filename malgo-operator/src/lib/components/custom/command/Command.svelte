@@ -32,6 +32,15 @@
 		}
 	};
 
+	const cancelCommand = () => {
+		websocketStore.ws?.send(
+			JSON.stringify({
+				type: 'cancel-command',
+				commandId: command.id
+			})
+		);
+	};
+
 	onMount(() => {
 		websocketStore = createWebsocketStore();
 
@@ -61,7 +70,11 @@
 					class:btn-disabled={!command.result}
 					on:click={() => (isResultVisible = !isResultVisible)}>Toggle result</button
 				>
-				<button class="btn btn-sm">Cancel</button>
+				<button
+					class="btn btn-sm"
+					class:btn-disabled={command.status !== 'created'}
+					on:click={cancelCommand}>Cancel</button
+				>
 			</div>
 		</div>
 		<p>Operator: {command.operator}</p>

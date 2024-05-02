@@ -5,7 +5,7 @@ import { relations, sql } from 'drizzle-orm';
 const bytea = customType<{ data: string; notNull: true; default: false }>({
 	dataType() {
 		return 'bytea';
-	},
+	}
 });
 
 export const C2ResultChunks = pgTable(

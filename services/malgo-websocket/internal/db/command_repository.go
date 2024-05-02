@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	externalEntities "github.com/VipWW/malgo-c2/services/common/entities"
+	"github.com/VipWW/malgo-c2/services/common/log"
 	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/entities"
 	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/messages/events"
 	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/messages/outbox"
@@ -102,4 +103,47 @@ func (c *CommandRepository) GetCommandByID(ctx context.Context, id string) (*ent
 	}
 
 	return &command, nil
+}
+
+func (c *CommandRepository) CancelCommand(ctx context.Context, id string) error {
+	return updateInTx(
+		ctx,
+		c.db,
+		sql.LevelReadCommitted,
+		func(ctx context.Context, tx *sqlx.Tx) error {
+			row := tx.QueryRowxContext(
+				ctx,
+				`UPDATE c2_commands
+    				SET status = 'canceled'
+    				WHERE id = $1
+    				AND status = 'created'
+    				RETURNING session_id
+					`,
+				id,
+			)
+			var sessionId string
+			err := row.Scan(&sessionId)
+			if err != nil {
+				log.FromContext(ctx).Warnf("could not cancel command: %v", err)
+				return nil
+			}
+
+			outboxPublisher, err := outbox.NewPublisherForDb(ctx, tx)
+			if err != nil {
+				return fmt.Errorf("could not create event bus: %w", err)
+			}
+
+			err = events.NewBus(outboxPublisher).Publish(ctx, &externalEntities.CommandStatusModified{
+				Header:    externalEntities.NewHeader(),
+				CommandId: id,
+				Status:    "canceled",
+				SessionId: sessionId,
+			})
+			if err != nil {
+				return fmt.Errorf("could not publish event: %w", err)
+			}
+
+			return nil
+		},
+	)
 }

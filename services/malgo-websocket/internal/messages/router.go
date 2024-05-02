@@ -96,6 +96,10 @@ func NewWatermillRouter(
 			"RenameSession",
 			commandHandler.RenameSession,
 		),
+		cqrs.NewCommandHandler(
+			"CancelCommand",
+			commandHandler.CancelCommand,
+		),
 	)
 	if err != nil {
 		panic(err)
