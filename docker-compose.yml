@@ -40,16 +40,12 @@ services:
       context: ./malgo-operator
       dockerfile: Dockerfile
       args:
-        - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-        - DEFAULT_ADMIN_EMAIL=${DEFAULT_ADMIN_EMAIL}
-        - DEFAULT_ADMIN_PASSWORD=${DEFAULT_ADMIN_PASSWORD}
-        - PUBLIC_WEBSOCKET_URL=${PUBLIC_WEBSOCKET_URL}
+        DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+        DEFAULT_ADMIN_EMAIL: ${DEFAULT_ADMIN_EMAIL}
+        DEFAULT_ADMIN_PASSWORD: ${DEFAULT_ADMIN_PASSWORD}
     container_name: malgo-operator
     hostname: malgo-operator
     environment:
-      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-      - DEFAULT_ADMIN_EMAIL=${DEFAULT_ADMIN_EMAIL}
-      - DEFAULT_ADMIN_PASSWORD=${DEFAULT_ADMIN_PASSWORD}
       - PUBLIC_WEBSOCKET_URL=${PUBLIC_WEBSOCKET_URL}
     ports:
       - "${FRONTEND_PORT}:3000"

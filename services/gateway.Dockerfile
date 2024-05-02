@@ -1,6 +1,5 @@
-ARG GRPC_PORT=8080
-
 FROM golang:1.22.2-alpine as builder
+ARG GRPC_PORT=8080
 
 WORKDIR /app
 
