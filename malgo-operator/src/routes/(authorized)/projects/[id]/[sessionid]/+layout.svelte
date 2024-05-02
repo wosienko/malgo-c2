@@ -57,7 +57,7 @@
 				class="tab pb-9 hover:opacity-50"
 				class:tab-active={currentUrl.endsWith(tab)}
 				href={`/projects/${id}/${sessionid}${tab}`}
-				>{capitalize(tab.replace('/', '').replace('-', ' '))}</a
+				data-sveltekit-preload-data>{capitalize(tab.replace('/', '').replace('-', ' '))}</a
 			>
 		{/each}
 	</div>
