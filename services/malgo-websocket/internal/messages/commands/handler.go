@@ -29,6 +29,7 @@ func NewHandler(
 
 type CommandRepository interface {
 	AddCommand(ctx context.Context, command entities.Command) error
+	CancelCommand(ctx context.Context, id string) error
 }
 
 type SessionRepository interface {
