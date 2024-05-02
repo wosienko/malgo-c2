@@ -1,0 +1,190 @@
+services:
+  postgres:
+    image: postgres:16.2
+    container_name: postgres
+    hostname: postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    networks:
+      - postgres-net
+      - malgo-services
+    ports:
+      - 5432:5432
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  schema-migration:
+    build:
+      context: ./malgo-operator
+      dockerfile: drizzle.Dockerfile
+    container_name: schema-migration
+    hostname: schema-migration
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    networks:
+      - postgres-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  
+  malgo-operator:
+    build:
+      context: ./malgo-operator
+      dockerfile: Dockerfile
+      args:
+        DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+        DEFAULT_ADMIN_EMAIL: ${DEFAULT_ADMIN_EMAIL}
+        DEFAULT_ADMIN_PASSWORD: ${DEFAULT_ADMIN_PASSWORD}
+    container_name: malgo-operator
+    hostname: malgo-operator
+    environment:
+      - PUBLIC_WEBSOCKET_URL=${PUBLIC_WEBSOCKET_URL}
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    networks:
+      - postgres-net
+    depends_on:
+      schema-migration:
+        condition: service_completed_successfully
+
+  malgo-websocket:
+    build:
+      context: ./services
+      dockerfile: websocket.Dockerfile
+      args:
+        - WS_PORT=8080
+    container_name: malgo-websocket
+    hostname: malgo-websocket
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+      - REDIS_URL=redis:6379
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - WS_ADDR=0.0.0.0:8080
+    ports:
+      - "${WS_PORT}:8080"
+    networks:
+      - malgo-services
+    depends_on:
+      schema-migration:
+        condition: service_completed_successfully
+
+  malgo-gateway:
+    build:
+      context: ./services
+      dockerfile: gateway.Dockerfile
+      args:
+        - GRPC_PORT=8080
+    container_name: malgo-gateway
+    hostname: malgo-gateway
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+      - REDIS_URL=redis:6379
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - GRPC_ADDR=0.0.0.0:8080
+    networks:
+      - malgo-services
+    ports:
+      - "${GRPC_PORT}:8080"
+    depends_on:
+      schema-migration:
+        condition: service_completed_successfully
+
+  redis:
+    image: redis/redis-stack:latest
+    container_name: redis
+    hostname: redis
+    ports:
+      - 8001:8001
+    networks:
+      - malgo-services
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.6
+    container_name: jaeger
+    hostname: jaeger
+    ports:
+      - 16686:16686
+    networks:
+      - malgo-services
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_DEFAULT_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_DEFAULT_PASSWORD}
+    volumes:
+      - grafanadata:/var/lib/grafana
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./docker/grafana/grafana_dashboards/:/var/lib/grafana/dashboards/
+    networks:
+      - metrics
+
+  #  Metrics collector.
+  #  It scrapes targets defined in --promscrape.config
+  #  And forward them to --remoteWrite.url
+  vmagent:
+    container_name: vmagent
+    image: victoriametrics/vmagent:v1.101.0
+    depends_on:
+      - "victoriametrics"
+    ports:
+      - 8429:8429
+    volumes:
+      - vmagentdata:/vmagentdata
+      - ./docker/victoriametrics/:/etc/prometheus/
+    command:
+      - "-envflag.enable"
+      - "--promscrape.config=/etc/prometheus/prometheus.yml"
+      - "--remoteWrite.url=http://victoriametrics:8428/api/v1/write"
+    restart: unless-stopped
+    networks:
+      - metrics
+      - malgo-services
+
+  # VictoriaMetrics instance, a single process responsible for
+  # storing metrics and serve read requests.
+  victoriametrics:
+    container_name: victoriametrics
+    image: victoriametrics/victoria-metrics:v1.101.0
+    ports:
+      - 8428:8428
+    volumes:
+      - vmdata:/storage
+    command:
+      - "--storageDataPath=/storage"
+      - "--graphiteListenAddr=:2003"
+      - "--opentsdbListenAddr=:4242"
+      - "--httpListenAddr=:8428"
+      - "--influxListenAddr=:8089"
+    restart: unless-stopped
+    networks:
+      - metrics
+
+volumes:
+  postgresdata: {}
+  vmagentdata: {}
+  vmdata: {}
+  grafanadata: {}
+
+networks:
+  metrics:
+    driver: bridge
+  malgo-services:
+    driver: bridge
+  postgres-net:
+    driver: bridge
+  redirector:
+    driver: bridge
