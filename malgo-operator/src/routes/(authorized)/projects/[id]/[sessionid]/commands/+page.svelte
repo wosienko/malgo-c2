@@ -22,6 +22,7 @@
 	let websocketStore: WebsocketStore;
 
 	const sendNewCommand = () => {
+		if (commandToBeSent === '') return;
 		websocketStore.sendCommand(get(page).params.sessionid, commandToBeSent);
 		commandToBeSent = '';
 	};
