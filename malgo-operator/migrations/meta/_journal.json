@@ -1,0 +1,55 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1712095160969,
+      "tag": "0000_awesome_nightmare",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1712096459383,
+      "tag": "0001_wakeful_ricochet",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1712256422585,
+      "tag": "0002_careful_sumo",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1712483908667,
+      "tag": "0003_tired_doctor_strange",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1712585967881,
+      "tag": "0004_silent_warpath",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1714557900872,
+      "tag": "0005_special_liz_osborn",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1714669668030,
+      "tag": "0006_lovely_dakota_north",
+      "breakpoints": true
+    }
+  ]
+}

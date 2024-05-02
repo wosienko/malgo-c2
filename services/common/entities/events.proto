@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package entities;
+
+option go_package = "github.com/VipWW/malgo-c2/services/common/entities";
+
+import "common/entities/header.proto";
+import "google/protobuf/timestamp.proto";
+
+// Command-related messages
+message CommandCreated {
+    Header header = 1;
+    string command_id = 2;
+    string session_id = 3;
+    string type = 4;
+    string status = 5;
+    string command = 6;
+    int64 result_size = 7;
+    google.protobuf.Timestamp created_at = 8;
+    string operator_id = 9;
+    string operator_name = 10;
+}
+
+message CommandStatusModified {
+    Header header = 1;
+    string command_id = 2;
+    string status = 3;
+    string session_id = 4;
+}
+
+message CommandResultRetrieved {
+    Header header = 1;
+    string command_id = 2;
+    string session_id = 3;
+    string result = 4;
+}
+
+// Session-related messages
+message SessionRegistered {
+    Header header = 1;
+    string session_id = 2;
+    string project_id = 3;
+    string name = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp heartbeat_at = 6;
+}
+// Key-value-related messages
+message SessionKeyValueModified {
+    Header header = 1;
+    string session_id = 2;
+    string key = 3;
+    string value = 4;
+}
+
+message SessionKeyValueDeleted {
+    Header header = 1;
+    string session_id = 2;
+    string key = 3;
+}
+
+// Session name-related messages
+message SessionNameModified {
+    Header header = 1;
+    string session_id = 2;
+    string name = 3;
+    string project_id = 4;
+}
+
+// Session heartbeat-related messages
+message SessionHeartbeatUpdated {
+    Header header = 1;
+    string session_id = 2;
+    string project_id = 3;
+    google.protobuf.Timestamp heartbeat_at = 4;
+}
+
+// Result-related messages
+message ResultChunkInserted {
+    Header header = 1;
+    string session_id = 2;
+    string command_id = 3;
+    google.protobuf.Timestamp created_at = 4;
+    int64 progress = 5;
+}

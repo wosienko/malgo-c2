@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package entities;
+
+option go_package = "github.com/VipWW/malgo-c2/services/common/entities";
+
+import "common/entities/header.proto";
+
+// Command-related messages
+message CreateCommand {
+    optional Header header = 1;
+    string sessionId = 2;
+    string command = 3;
+    string userId = 4;
+}
+
+message CancelCommand {
+    optional Header header = 1;
+    string commandId = 3;
+}
+
+// Subscription-related messages
+message SubscribeToSession {
+    optional Header header = 1;
+    string sessionId = 2;
+}
+
+message SubscribeToProject {
+    optional Header header = 1;
+    string projectId = 2;
+}
+
+// Session-related messages
+// Key-value-related messages
+message AddSessionKeyValue {
+    optional Header header = 1;
+    string sessionId = 2;
+    string key = 3;
+    string value = 4;
+}
+
+message DeleteSessionKeyValue {
+    optional Header header = 1;
+    string sessionId = 2;
+    string key = 3;
+}
+
+message ModifySessionKeyValue {
+    optional Header header = 1;
+    string sessionId = 2;
+    string key = 3;
+    string value = 4;
+}
+
+// Session name-related messages
+message ModifySessionName {
+    optional Header header = 1;
+    string sessionId = 2;
+    string name = 3;
+}
+
+// Session heartbeat-related messages
+message UpdateSessionHeartbeat {
+    optional Header header = 1;
+    string sessionId = 2;
+}
