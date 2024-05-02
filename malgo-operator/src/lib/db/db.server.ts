@@ -5,6 +5,7 @@ import * as projectsSchema from './schema/projects';
 import * as c2SessionsSchema from './schema/c2_sessions';
 import * as c2CommandsSchema from './schema/c2_commands';
 import * as c2ResultsSchema from './schema/c2_results';
+import * as OutboxSchema from './schema/outbox';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { DATABASE_URL } from '$env/static/private';
@@ -18,7 +19,8 @@ export const db = drizzle(client, {
 		...projectsSchema,
 		...c2SessionsSchema,
 		...c2CommandsSchema,
-		...c2ResultsSchema
+		...c2ResultsSchema,
+		...OutboxSchema
 	}
 });
 
