@@ -108,11 +108,6 @@ func New(
 func (s Service) Run(
 	ctx context.Context,
 ) error {
-	err := outbox.InitializeSchema(s.db.DB)
-	if err != nil {
-		return fmt.Errorf("failed to initialize outbox schema: %w", err)
-	}
-
 	errgrp, ctx := errgroup.WithContext(ctx)
 
 	errgrp.Go(func() error {
