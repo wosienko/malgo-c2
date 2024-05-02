@@ -86,7 +86,7 @@ func (r *ResultRepository) AddResultChunk(ctx context.Context, chunk internalEnt
 					`UPDATE c2_commands
     					SET status = 'completed'
     					WHERE id = $1
-    					AND status = 'retrieving'`,
+    					AND status = 'retrieving' OR status = 'sent'`,
 					chunk.CommandId,
 				)
 				if err != nil {
