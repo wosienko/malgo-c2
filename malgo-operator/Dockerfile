@@ -1,4 +1,4 @@
-FROM oven/bun:1-slim as builder
+FROM oven/bun:1.1-slim as builder
 ARG DATABASE_URL
 ARG DEFAULT_ADMIN_EMAIL
 ARG DEFAULT_ADMIN_PASSWORD
@@ -15,7 +15,7 @@ RUN bun install
 RUN bun run build
 
 
-FROM oven/bun:slim as runner
+FROM oven/bun:1.1-slim as runner
 
 WORKDIR /app
 
