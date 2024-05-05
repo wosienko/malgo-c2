@@ -99,8 +99,9 @@
 		if (res.ok) {
 			successMessage = 'Password changed successfully!';
 			passwordChange = {
-				password: '',
-				passwordConfirmation: ''
+				currentPassword: '',
+				newPassword: '',
+				newPasswordConfirmation: ''
 			};
 			return true;
 		} else {
