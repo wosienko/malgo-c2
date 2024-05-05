@@ -3,6 +3,6 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm install drizzle-kit
+RUN npm install --force drizzle-kit
 
 CMD [ "npx", "drizzle-kit", "push:pg", "--config", "drizzle.config.ts" ]
