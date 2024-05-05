@@ -15,7 +15,7 @@ services:
     volumes:
       - postgresdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -34,7 +34,6 @@ services:
       postgres:
         condition: service_healthy
 
-  
   malgo-operator:
     build:
       context: ./malgo-operator
@@ -67,6 +66,7 @@ services:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
       - REDIS_URL=redis:6379
       - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - ENV=production
       - WS_ADDR=0.0.0.0:8080
     ports:
       - "${WS_PORT}:8080"
@@ -88,6 +88,7 @@ services:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
       - REDIS_URL=redis:6379
       - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - ENV=production
       - GRPC_ADDR=0.0.0.0:8080
     networks:
       - malgo-services

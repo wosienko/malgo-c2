@@ -47,3 +47,28 @@ func (u *UserRepository) GetUserIdIfLoggedInAndOperator(ctx context.Context, ses
 
 	return userId, nil
 }
+
+func (u *UserRepository) IsUserAllowedToAccessProject(ctx context.Context, userId string, projectId string) (bool, error) {
+	// one query to check if the user is an operator or has access to the project
+	// if the user is an operator, return true
+	row, err := u.db.QueryContext(ctx,
+		`
+				SELECT p.id FROM projects p
+				JOIN user_projects pu ON pu.project_id = p.id
+				JOIN users u ON u.id = pu.user_id
+				WHERE u.id = $1 AND p.id = $2
+	    `,
+		userId, projectId,
+	)
+	if err != nil {
+		return false, err
+	}
+
+	defer row.Close()
+
+	if !row.Next() {
+		return false, nil
+	}
+
+	return true, nil
+}

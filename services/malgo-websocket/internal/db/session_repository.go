@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	externalEntities "github.com/VipWW/malgo-c2/services/common/entities"
+	"github.com/VipWW/malgo-c2/services/common/log"
 	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/entities"
 	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/messages/events"
 	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/messages/outbox"
@@ -37,7 +38,7 @@ func (s *SessionRepository) AddKeyValue(ctx context.Context, value entities.Sess
 			var disposable int
 			err := row.Scan(&disposable)
 			if err == nil {
-				fmt.Printf("Key already exists\n")
+				log.FromContext(ctx).Infof("Key already exists\n")
 				return nil
 			}
 

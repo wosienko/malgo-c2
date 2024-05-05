@@ -32,8 +32,6 @@ func (h *Handler) handleModifiedSessionKeyValue(input []byte) error {
 		return fmt.Errorf("error marshalling response: %v", err)
 	}
 
-	fmt.Printf("Sending message through websocket: %v\n", response)
-
 	if err := h.conn.WriteMessage(websocket.TextMessage, payload); err != nil {
 		return fmt.Errorf("error sending message through websocket: %v", err)
 	}

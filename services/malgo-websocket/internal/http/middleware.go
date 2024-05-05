@@ -2,7 +2,7 @@ package http
 
 import (
 	"context"
-	"fmt"
+	"github.com/VipWW/malgo-c2/services/common/log"
 	"net/http"
 )
 
@@ -26,12 +26,12 @@ func (h *Handler) Auth(next http.Handler) http.Handler {
 		}
 		userId, err := h.userRepo.GetUserIdIfLoggedInAndOperator(r.Context(), sessionId)
 		if err != nil {
-			fmt.Printf("Error: %v\n", err)
+			log.FromContext(context.Background()).Errorf("Error: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		if userId == "" {
-			fmt.Println("Unauthorized")
+			log.FromContext(context.Background()).Infof("Unauthorized")
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}

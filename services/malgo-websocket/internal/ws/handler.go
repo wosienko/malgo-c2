@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"context"
 	"github.com/ThreeDotsLabs/watermill/components/cqrs"
 	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
 	"github.com/gorilla/websocket"
@@ -26,6 +27,8 @@ type Handler struct {
 	eventBus   *cqrs.EventBus
 	commandBus *cqrs.CommandBus
 
+	userRepo UserRepository
+
 	pubSub *gochannel.GoChannel
 
 	cancel chan struct{}
@@ -34,12 +37,17 @@ type Handler struct {
 func NewHandler(
 	conn *websocket.Conn,
 	userId string,
+	userRepo UserRepository,
 	pubSub *gochannel.GoChannel,
 	eventBus *cqrs.EventBus,
 	commandBus *cqrs.CommandBus,
 ) *Handler {
 	if conn == nil {
 		panic("WS connection is nil")
+	}
+
+	if userRepo == nil {
+		panic("UserRepo is nil")
 	}
 
 	if pubSub == nil {
@@ -59,6 +67,13 @@ func NewHandler(
 		eventBus:   eventBus,
 		commandBus: commandBus,
 
+		userRepo: userRepo,
+
 		cancel: make(chan struct{}),
 	}
+}
+
+type UserRepository interface {
+	GetUserIdIfLoggedInAndOperator(ctx context.Context, sessionId string) (string, error)
+	IsUserAllowedToAccessProject(ctx context.Context, userId string, projectId string) (bool, error)
 }

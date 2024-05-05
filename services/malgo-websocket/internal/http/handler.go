@@ -1,9 +1,9 @@
 package http
 
 import (
-	"context"
 	"github.com/ThreeDotsLabs/watermill/components/cqrs"
 	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
+	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/ws"
 )
 
 type Handler struct {
@@ -12,9 +12,5 @@ type Handler struct {
 
 	pubSub *gochannel.GoChannel
 
-	userRepo UserRepo
-}
-
-type UserRepo interface {
-	GetUserIdIfLoggedInAndOperator(ctx context.Context, sessionId string) (string, error)
+	userRepo ws.UserRepository
 }

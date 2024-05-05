@@ -28,11 +28,16 @@ func ConfigureTraceProvider() *tracesdk.TracerProvider {
 		panic(err)
 	}
 
+	var registrationSyncerOrBatcher tracesdk.TracerProviderOption
+	isProd := os.Getenv("ENV") == "production"
+	if isProd {
+		registrationSyncerOrBatcher = tracesdk.WithBatcher(exp)
+	} else {
+		registrationSyncerOrBatcher = tracesdk.WithSyncer(exp)
+	}
+
 	tp := tracesdk.NewTracerProvider(
-		// WARNING: `tracesdk.WithSyncer` should be not used in production,
-		// for prod you should use `tracesdk.WithBatcher`
-		tracesdk.WithSyncer(exp), // TODO: add automatic change to `tracesdk.WithBatcher` in the future
-		//tracesdk.WithBatcher(exp),
+		registrationSyncerOrBatcher,
 		tracesdk.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceName(TracingServiceName),

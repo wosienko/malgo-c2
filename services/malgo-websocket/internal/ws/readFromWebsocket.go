@@ -1,10 +1,10 @@
 package ws
 
 import (
+	"context"
 	"encoding/json"
-	"fmt"
+	"github.com/VipWW/malgo-c2/services/common/log"
 	"github.com/gorilla/websocket"
-	"log"
 	"time"
 )
 
@@ -14,7 +14,7 @@ type messageType struct {
 
 func (h *Handler) ReadFromWebsocket() {
 	defer func() {
-		fmt.Printf("Closing reading channel\n")
+		log.FromContext(context.Background()).Info("Closing reading channel\n")
 		_ = h.conn.Close()
 	}()
 
@@ -24,7 +24,7 @@ func (h *Handler) ReadFromWebsocket() {
 		_, message, err := h.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("error: %v", err)
+				log.FromContext(context.Background()).Errorf("error: %v", err)
 			}
 			h.cancel <- struct{}{}
 			break
@@ -32,7 +32,7 @@ func (h *Handler) ReadFromWebsocket() {
 		var msgType messageType
 		err = json.Unmarshal(message, &msgType)
 		if err != nil {
-			log.Printf("error: %v", err)
+			log.FromContext(context.Background()).Errorf("error: %v", err)
 			continue
 		}
 

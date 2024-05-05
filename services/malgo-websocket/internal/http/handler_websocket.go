@@ -1,7 +1,9 @@
 package http
 
 import (
+	"context"
 	"fmt"
+	"github.com/VipWW/malgo-c2/services/common/log"
 	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/ws"
 	"github.com/gorilla/websocket"
 	"net/http"
@@ -24,11 +26,12 @@ func (h *Handler) UpgradeToWebsocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("New websocket connection: %v\n", conn.RemoteAddr().String())
+	log.FromContext(context.Background()).Infof("New websocket connection: %v\n", conn.RemoteAddr().String())
 
 	handler := ws.NewHandler(
 		conn,
 		r.Context().Value("user_id").(string),
+		h.userRepo,
 		h.pubSub,
 		h.eventBus,
 		h.commandBus,

@@ -53,12 +53,12 @@ func (h *Handler) handleA(msg *dns.Msg, r *dns.Msg) error {
 		if err != nil {
 			return err
 		}
-		log.FromContext(context.Background()).Infof("Data chunk: %s", string(data))
+		log.FromContext(context.Background()).Debugf("Data chunk: %s", string(data))
 		offset, err := strconv.ParseInt(splitData[dataLength-2], 10, 64)
 		if err != nil {
 			return err
 		}
-		log.FromContext(context.Background()).Infof("Adding result chunk %v", offset)
+		log.FromContext(context.Background()).Debugf("Adding result chunk %v", offset)
 		_, err = h.grpcClient.ResultDetailsChunk(context.Background(), &gateway.ResultDetailsChunkRequest{
 			CommandId: splitData[dataLength-1],
 			Offset:    offset,

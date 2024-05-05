@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/ThreeDotsLabs/watermill/components/cqrs"
 	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
+	"github.com/VipWW/malgo-c2/services/malgo-websocket/internal/ws"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -12,7 +13,7 @@ import (
 func NewRouter(
 	eventBus *cqrs.EventBus,
 	commandBus *cqrs.CommandBus,
-	userRepo UserRepo,
+	userRepo ws.UserRepository,
 	pubSub *gochannel.GoChannel,
 ) http.Handler {
 	mux := httprouter.New()
