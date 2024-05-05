@@ -29,7 +29,7 @@
 	<ZodIssues
 		issues={form.issues}
 		on:close={() => {
-			form.issues = [];
+			if (form) form.issues = [];
 		}}
 	/>
 {/if}

@@ -24,7 +24,6 @@ export const GET: RequestHandler = async ({ url }) => {
 	});
 };
 
-// Admin only
 export const POST: RequestHandler = async ({ request }) => {
 	const body = await request.json();
 

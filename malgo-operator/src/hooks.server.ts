@@ -2,6 +2,7 @@ import { error, type Handle, type HandleServerError, redirect } from '@sveltejs/
 import { createDefaultAdminAndRoles } from '$lib/services/user-service';
 import { deleteExpiredSessions, validateSession } from '$lib/services/session-service';
 import { isUserAdmin, isUserOperator } from '$lib/services/roles-service';
+import { isUserAllowedToQueryProject } from '$lib/services/project-service';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	await deleteExpiredSessions();
@@ -23,6 +24,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 			!(await isUserOperator(event.locals.user!.id))
 		) {
 			return error(403, 'Forbidden');
+		}
+
+		if (nextRoute.includes('projects/[id]')) {
+			const projectId = event.params.id;
+			if (!projectId) return error(400, 'Bad Request');
+			if (!(await isUserAllowedToQueryProject(event.locals.user!.id, projectId))) {
+				return error(403, 'Forbidden');
+			}
 		}
 	}
 

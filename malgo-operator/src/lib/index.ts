@@ -21,15 +21,3 @@ export type UsersWithRoles = {
 	users: UserWithRoles[];
 	count: number;
 };
-
-export type Project = {
-	id: string;
-	name: string;
-	startDate: Date;
-	endDate: Date;
-};
-
-export type Projects = {
-	projects: Project[];
-	count: number;
-};

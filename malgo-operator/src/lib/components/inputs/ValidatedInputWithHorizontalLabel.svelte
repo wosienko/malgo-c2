@@ -8,7 +8,7 @@
 		name: string;
 		type: string;
 		value: string;
-		validation: SafeParseReturnType<string, string>;
+		validation: SafeParseReturnType<unknown, unknown>;
 		classes?: string;
 	};
 

@@ -77,7 +77,7 @@
 	});
 </script>
 
-<div class="border-neutral bg-base-100 mx-3 rounded-2xl border-2 p-4 shadow-xl">
+<div class="mx-3 rounded-2xl border-2 border-neutral bg-base-100 p-4 shadow-xl">
 	<div>
 		<div class="mb-3 flex justify-between">
 			<h2 class="card-title flex-col items-center justify-center md:flex-row">
