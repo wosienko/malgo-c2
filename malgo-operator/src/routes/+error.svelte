@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { get } from 'svelte/store';
 	import { browser } from '$app/environment';
-	// TODO: Update once page is officially updated
+	// TODO: Update once "page" store is officially updated
 </script>
 
 <svelte:head>
