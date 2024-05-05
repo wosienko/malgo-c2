@@ -10,7 +10,7 @@
 	type InputProps = {
 		projectToAlter: ProjectTableEntryType;
 		users: UserWithRoles[];
-		showOperatorAssignmentModal: () => void;
+		showModal: () => void;
 		successMessage: string | undefined;
 		zodIssues: ZodIssue[];
 		apiError: ApiError | undefined;
@@ -19,7 +19,7 @@
 	let {
 		projectToAlter,
 		users,
-		showOperatorAssignmentModal = $bindable(),
+		showModal = $bindable(),
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		successMessage = $bindable(),
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -48,11 +48,11 @@
 		}));
 	};
 
-	let showModal = $state(() => {});
+	let showActualModal = $state(() => {});
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	showOperatorAssignmentModal = () => {
+	showModal = () => {
 		getAssignedOperators(projectToAlter);
-		showModal();
+		showActualModal();
 	};
 
 	const assignOperators = async () => {
@@ -100,7 +100,7 @@
 	btnText="Assign operators"
 	btnDisabledCondition={!isAnyUserChanged}
 	onclickCallback={assignOperators}
-	bind:showModal
+	bind:showModal={showActualModal}
 	onHideModal={() => {
 		for (const user of checkedUsers) {
 			user.checked = false;

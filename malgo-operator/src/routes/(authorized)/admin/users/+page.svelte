@@ -1,44 +1,21 @@
 <script lang="ts">
-	import type { UsersWithRoles } from '$lib';
+	import type { UserWithRoles } from '$lib';
 	import type { ApiError } from '$lib';
-	import { emailSchema, fieldSchema, passwordSchema } from '$lib/validationSchemas';
 	import type { ZodIssue } from 'zod';
 	import { pushState } from '$app/navigation';
 	import ZodIssues from '$lib/components/toasts/ZodIssues.svelte';
 	import ApiIssues from '$lib/components/toasts/ApiIssues.svelte';
 	import ChangeSuccessful from '$lib/components/toasts/ChangeSuccessful.svelte';
-	import ModalRunCancel from '$lib/components/modals/ModalRunCancel.svelte';
-	import ValidatedInput from '$lib/components/inputs/ValidatedInput.svelte';
-	import ValidatedInputWithLabel from '$lib/components/inputs/ValidatedInputWithHorizontalLabel.svelte';
 	import { onMount } from 'svelte';
+	import UserTableEntryLoading from '$lib/components/custom/admin/projects/UserTableEntryLoading.svelte';
+	import UserTableEntry from '$lib/components/custom/admin/users/UserTableEntry.svelte';
+	import NewUserModal from '$lib/components/custom/admin/users/NewUserModal.svelte';
+	import DeleteUserModal from '$lib/components/custom/admin/users/DeleteUserModal.svelte';
+	import PasswordChangeModal from '$lib/components/custom/admin/users/PasswordChangeModal.svelte';
 
 	let { data } = $props();
 
-	let loading = $state(false);
-
-	type User = {
-		id: string;
-		name: string;
-		surname: string;
-		email: string;
-		admin: boolean;
-		operator: boolean;
-		editing: boolean;
-	};
-	const createEmptyUser = (): User => ({
-		id: '',
-		name: '',
-		surname: '',
-		email: '',
-		admin: false,
-		operator: false,
-		editing: false
-	});
-
-	let users: User[] = $state([]);
 	let count = $state(0);
-
-	let lastUserValues: User = $state(createEmptyUser());
 
 	let page = $state(data.page);
 	let pageSize = $state(data.pageSize);
@@ -53,12 +30,8 @@
 				res.json()
 			);
 			pushState(`/admin/users?page=${nextPage}&pageSize=${pageSize}`, {});
-			const usersPage: UsersWithRoles = await data.users;
-			users = usersPage.users.map((user) => ({
-				...user,
-				editing: false
-			}));
-			count = usersPage.count;
+
+			count = (await data.users).count;
 			page = nextPage;
 		};
 	};
@@ -73,42 +46,14 @@
 		await loadPage(page - 1)();
 	};
 
-	const updateUser = async (user: User) => {
-		loading = true;
-		const res = await fetch(`/api/user/${user.id}`, {
-			method: 'PATCH',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				name: user.name,
-				surname: user.surname,
-				email: user.email,
-				admin: user.admin,
-				operator: user.operator
-			})
-		});
-		loading = false;
-
-		if (res.ok) {
-			user.editing = false;
-			successMessage = 'User updated successfully!';
-		} else {
-			try {
-				let body: ApiError | ZodIssue[] = await res.json();
-
-				if (Array.isArray(body)) {
-					zodIssues = body;
-				} else {
-					apiError = body;
-				}
-			} catch (e) {
-				console.error(e);
-			}
-		}
-	};
-
-	let userToAlter: User = $state(createEmptyUser());
+	let userToAlter: UserWithRoles = $state({
+		id: '',
+		name: '',
+		surname: '',
+		email: '',
+		admin: false,
+		operator: false
+	});
 
 	let showDeletionModal = $state(() => {});
 	const prepareForDeletion = (user: typeof userToAlter) => {
@@ -117,47 +62,6 @@
 			showDeletionModal();
 		};
 	};
-	const deleteUser = async (user: User): Promise<boolean> => {
-		const res = await fetch(`/api/user/${user.id}`, {
-			method: 'DELETE'
-		});
-
-		if (res.ok) {
-			await reloadCurrentPage();
-
-			successMessage = 'User deleted successfully!';
-			return true;
-		} else {
-			try {
-				let body: ApiError | ZodIssue[] = await res.json();
-
-				if (Array.isArray(body)) {
-					zodIssues = body;
-				} else {
-					apiError = body;
-				}
-			} catch (e) {
-				console.error(e);
-			}
-			return false;
-		}
-	};
-
-	let passwordChange = $state({
-		password: '',
-		passwordConfirmation: ''
-	});
-
-	let passwordChangeVerification = $derived({
-		password: passwordSchema.safeParse(passwordChange.password),
-		passwordConfirmation: passwordSchema
-			.refine((data) => data === passwordChange.password, { message: "Passwords don't match" })
-			.safeParse(passwordChange.passwordConfirmation)
-	});
-	let passwordChangeValid = $derived(
-		passwordChangeVerification.password.success &&
-			passwordChangeVerification.passwordConfirmation.success
-	);
 
 	let showPasswordChangeModal = $state(() => {});
 	const prepareForPasswordChange = (user: typeof userToAlter) => {
@@ -166,113 +70,13 @@
 			showPasswordChangeModal();
 		};
 	};
-	const changePassword = async (user: User): Promise<boolean> => {
-		const res = await fetch(`/api/user/${user.id}/password`, {
-			method: 'PATCH',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(passwordChange)
-		});
-
-		if (res.ok) {
-			successMessage = 'Password changed successfully!';
-			passwordChange = {
-				password: '',
-				passwordConfirmation: ''
-			};
-			return true;
-		} else {
-			try {
-				let body: ApiError | ZodIssue[] = await res.json();
-
-				if (Array.isArray(body)) {
-					zodIssues = body;
-				} else {
-					apiError = body;
-				}
-			} catch (e) {
-				console.error(e);
-			}
-			return false;
-		}
-	};
-
-	let newUser = $state({
-		name: '',
-		surname: '',
-		email: '',
-		password: '',
-		passwordConfirmation: '',
-		admin: false,
-		operator: false
-	});
-
-	let newUserVerification = $derived({
-		name: fieldSchema.safeParse(newUser.name),
-		surname: fieldSchema.safeParse(newUser.surname),
-		email: emailSchema.safeParse(newUser.email),
-		password: passwordSchema.safeParse(newUser.password),
-		passwordConfirmation: passwordSchema
-			.refine((data) => data === newUser.password, { message: "Passwords don't match" })
-			.safeParse(newUser.passwordConfirmation)
-	});
-
-	let newUserValid = $derived(
-		newUserVerification.name.success &&
-			newUserVerification.surname.success &&
-			newUserVerification.email.success &&
-			newUserVerification.password.success &&
-			newUserVerification.passwordConfirmation.success
-	);
 
 	let showRegistrationModal = $state(() => {});
 	const prepareForRegistration = () => {
 		showRegistrationModal();
 	};
-	const registerNewUser = async (): Promise<boolean> => {
-		const res = await fetch('/api/user', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(newUser)
-		});
-
-		if (res.ok) {
-			successMessage = 'User registered successfully!';
-			newUser = {
-				name: '',
-				surname: '',
-				email: '',
-				password: '',
-				passwordConfirmation: '',
-				admin: false,
-				operator: false
-			};
-			await reloadCurrentPage();
-			return true;
-		} else {
-			try {
-				let body: ApiError | ZodIssue[] = await res.json();
-
-				if (Array.isArray(body)) {
-					zodIssues = body;
-				} else {
-					apiError = body;
-				}
-			} catch (e) {
-				console.error(e);
-			}
-			return false;
-		}
-	};
 
 	onMount(async () => {
-		users = (await data.users).users.map((user) => ({
-			...user,
-			editing: false
-		}));
 		count = (await data.users).count;
 	});
 </script>
@@ -304,138 +108,37 @@
 	/>
 {/if}
 
-<ModalRunCancel
-	id="confirm-deletion"
-	title="Are you sure you want to delete?"
-	message="Account to be deleted: "
-	messageEmphasis={`${userToAlter.name} ${userToAlter.surname}`}
-	btnClass="btn-error"
-	btnText="Delete"
-	onclickCallback={() => deleteUser(userToAlter)}
-	bind:showModal={showDeletionModal}
+<PasswordChangeModal
+	{userToAlter}
+	bind:showModal={showPasswordChangeModal}
+	reloadCurrentPage={async () => {
+		await loadPage(page)();
+	}}
+	bind:successMessage
+	bind:apiError
+	bind:zodIssues
 />
 
-<ModalRunCancel
-	id="password-change"
-	title="Password change"
-	message="Password change for: "
-	messageEmphasis={`${userToAlter.name} ${userToAlter.surname}`}
-	btnClass="btn-warning"
-	btnText="Change password"
-	btnDisabledCondition={!passwordChangeValid}
-	onclickCallback={() => changePassword(userToAlter)}
-	bind:showModal={showPasswordChangeModal}
-	onHideModal={() => {
-		passwordChange = {
-			password: '',
-			passwordConfirmation: ''
-		};
+<DeleteUserModal
+	{userToAlter}
+	bind:showModal={showDeletionModal}
+	reloadCurrentPage={async () => {
+		await loadPage(page)();
 	}}
->
-	<div class="space-y-8">
-		<ValidatedInputWithLabel
-			label="Password"
-			type="password"
-			id="new-password"
-			name="password"
-			bind:value={passwordChange.password}
-			validation={passwordChangeVerification.password}
-			classes="w-full max-w-xs"
-		/>
-		<ValidatedInputWithLabel
-			label="Confirm Password"
-			type="password"
-			id="new-passwordConfirmation"
-			name="passwordConfirmation"
-			bind:value={passwordChange.passwordConfirmation}
-			validation={passwordChangeVerification.passwordConfirmation}
-			classes="w-full max-w-xs"
-		/>
-	</div>
-</ModalRunCancel>
+	bind:successMessage
+	bind:apiError
+	bind:zodIssues
+/>
 
-<ModalRunCancel
-	id="register-new-user"
-	title="Register new user"
-	btnClass="btn-success"
-	btnText="Register new user"
-	btnDisabledCondition={!newUserValid}
-	onclickCallback={registerNewUser}
-	bind:showModal={showRegistrationModal}
-	onHideModal={() => {
-		newUser = {
-			name: '',
-			surname: '',
-			email: '',
-			password: '',
-			passwordConfirmation: '',
-			admin: false,
-			operator: false
-		};
+<NewUserModal
+	bind:successMessage
+	bind:apiError
+	bind:zodIssues
+	reloadCurrentPage={async () => {
+		await loadPage(page)();
 	}}
->
-	<div class="space-y-8">
-		<ValidatedInputWithLabel
-			label="Name"
-			type="text"
-			id="name"
-			name="name"
-			bind:value={newUser.name}
-			validation={newUserVerification.name}
-			classes="w-full max-w-xs"
-		/>
-		<ValidatedInputWithLabel
-			label="Surname"
-			type="text"
-			id="surname"
-			name="surname"
-			bind:value={newUser.surname}
-			validation={newUserVerification.surname}
-			classes="w-full max-w-xs"
-		/>
-		<ValidatedInputWithLabel
-			label="Email"
-			type="email"
-			id="email"
-			name="email"
-			bind:value={newUser.email}
-			validation={newUserVerification.email}
-			classes="w-full max-w-xs"
-		/>
-		<ValidatedInputWithLabel
-			label="Password"
-			type="password"
-			id="password"
-			name="password"
-			bind:value={newUser.password}
-			validation={newUserVerification.password}
-			classes="w-full max-w-xs"
-		/>
-		<ValidatedInputWithLabel
-			label="Confirm Password"
-			type="password"
-			id="passwordConfirmation"
-			name="passwordConfirmation"
-			bind:value={newUser.passwordConfirmation}
-			validation={newUserVerification.passwordConfirmation}
-			classes="w-full max-w-xs"
-		/>
-		<div class="flex w-full justify-around">
-			<div class="form-control max-w-40 flex-1">
-				<label class="label cursor-pointer">
-					<span class="label-text">Admin</span>
-					<input type="checkbox" bind:checked={newUser.admin} class="checkbox-warning checkbox" />
-				</label>
-			</div>
-			<div class="form-control max-w-40 flex-1">
-				<label class="label cursor-pointer">
-					<span class="label-text">Operator</span>
-					<input type="checkbox" bind:checked={newUser.operator} class="checkbox-info checkbox" />
-				</label>
-			</div>
-		</div>
-	</div>
-</ModalRunCancel>
+	bind:showModal={showRegistrationModal}
+/>
 
 <div class="mt-3 flex w-full justify-center space-x-3">
 	<div class="hidden flex-1 text-center md:block">
@@ -483,178 +186,22 @@
 	</thead>
 	<tbody>
 		{#await data.users}
-			<tr>
-				<td><div class="skeleton h-6 w-full"></div> </td>
-				<td class="hidden md:table-cell">
-					<div class="skeleton h-6 w-full"></div>
-				</td>
-				<td class="hidden md:table-cell">
-					<div class="skeleton h-6 w-full"></div>
-				</td>
-				<td class="hidden md:table-cell">
-					<div class="skeleton h-6 w-full"></div>
-				</td>
-				<td class="hidden md:table-cell">
-					<div class="skeleton h-6 w-full"></div>
-				</td>
-				<td>
-					<div class="flex w-full items-center justify-center">
-						<div class="skeleton h-6 w-14"></div>
-					</div>
-				</td>
-			</tr>
-		{:catch error}
-			<tr>
-				<td colspan="6" class="text-center">
-					Error loading users: {error}
-				</td>
-			</tr>
+			<UserTableEntryLoading />
+		{:then users}
+			<!--eslint-disable-next-line @typescript-eslint/no-unused-vars-->
+			{#each users.users as _, i}
+				<UserTableEntry
+					bind:user={users.users[i]}
+					elementIndex={i}
+					{prepareForPasswordChange}
+					{prepareForDeletion}
+					{count}
+					{pageSize}
+					bind:successMessage
+					bind:apiError
+					bind:zodIssues
+				/>
+			{/each}
 		{/await}
-		{#each users as user, i}
-			{#if !user.editing}
-				<tr class="max-w-dvw hover">
-					<td class="no-scrollbar hidden overflow-x-auto md:table-cell">{user.name}</td>
-					<td class="no-scrollbar hidden overflow-x-auto md:table-cell">{user.surname}</td>
-					<td class="no-scrollbar overflow-x-auto">{user.email}</td>
-					<td>
-						<input
-							type="checkbox"
-							checked={user.admin}
-							disabled
-							class="checkbox-warning checkbox checkbox-sm"
-						/>
-					</td>
-					<td>
-						<input
-							type="checkbox"
-							checked={user.operator}
-							disabled
-							class="checkbox-info checkbox checkbox-sm"
-						/>
-					</td>
-					<td>
-						<!-- Dropdown accounting for hiding under the dropdown for last elements -->
-						<div
-							class="dropdown dropdown-end"
-							class:dropdown-bottom={i <= 2 || i + 1 < (count > pageSize ? pageSize : count) - 2}
-							class:dropdown-top={i > 2 && i + 1 >= (count > pageSize ? pageSize : count) - 2}
-						>
-							<div tabindex="-1" role="button" class="btn btn-neutral btn-sm mb-1">Options</div>
-							<ul
-								tabindex="-1"
-								class="menu dropdown-content z-[1] w-52 space-y-1.5 rounded-box bg-base-100 p-2 shadow"
-							>
-								<li>
-									<button
-										class="btn btn-sm"
-										on:click={() => {
-											user.editing = true;
-											lastUserValues = { ...user };
-										}}>Edit</button
-									>
-								</li>
-								<li>
-									<button
-										class="btn btn-warning btn-sm"
-										on:click={() => {
-											prepareForPasswordChange(user)();
-										}}>Change password</button
-									>
-								</li>
-								<li>
-									<button
-										class="btn btn-error btn-sm"
-										on:click={() => {
-											prepareForDeletion(user)();
-										}}>Delete</button
-									>
-								</li>
-							</ul>
-						</div>
-					</td>
-				</tr>
-			{:else}
-				{@const nameCheck = fieldSchema.safeParse(user.name)}
-				{@const surnameCheck = fieldSchema.safeParse(user.surname)}
-				{@const emailCheck = emailSchema.safeParse(user.email)}
-				{@const editingValid = nameCheck.success && surnameCheck.success && emailCheck.success}
-				<tr class="max-w-dvw hover">
-					<td class="hidden md:table-cell">
-						<div class="md:-mt-2">
-							<ValidatedInput
-								type="text"
-								id="name"
-								name="name"
-								bind:value={user.name}
-								validation={nameCheck}
-								classes="input-sm mb-5 w-full"
-							/>
-						</div>
-					</td>
-					<td class="hidden md:table-cell">
-						<div class="md:-mt-2">
-							<ValidatedInput
-								type="text"
-								id="surname"
-								name="surname"
-								bind:value={user.surname}
-								validation={surnameCheck}
-								classes="input-sm mb-5 w-full"
-							/>
-						</div>
-					</td>
-					<td>
-						<div class="md:-mt-2">
-							<ValidatedInput
-								type="email"
-								id="email"
-								name="email"
-								bind:value={user.email}
-								validation={emailCheck}
-								classes="input-sm mb-5 w-full"
-							/>
-						</div>
-					</td>
-					<td>
-						<input
-							type="checkbox"
-							bind:checked={user.admin}
-							class="checkbox-warning checkbox checkbox-sm"
-						/>
-					</td>
-					<td>
-						<input
-							type="checkbox"
-							bind:checked={user.operator}
-							class="checkbox-info checkbox checkbox-sm"
-						/>
-					</td>
-					<td class="my-1.5 flex flex-col items-center justify-center space-y-3">
-						{#if loading}
-							<div class="my-4 h-11">
-								<span class="loading loading-spinner loading-lg text-info"></span>
-							</div>
-						{:else}
-							<button
-								class="btn btn-success btn-sm w-14"
-								class:btn-disabled={JSON.stringify(user) === JSON.stringify(lastUserValues) ||
-									!editingValid}
-								on:click={() => {
-									updateUser(user);
-								}}>Save</button
-							>
-							<button
-								class="btn btn-sm"
-								on:click={() => {
-									// so that the input fields are reset. In runes mode, cannot use `user = lastUserValues`
-									users[i] = lastUserValues;
-									users[i].editing = false;
-								}}>Cancel</button
-							>
-						{/if}
-					</td>
-				</tr>
-			{/if}
-		{/each}
 	</tbody>
 </table>

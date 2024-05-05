@@ -1,11 +1,10 @@
 <script lang="ts">
 	import ModalRunCancel from '$lib/components/modals/ModalRunCancel.svelte';
-	import type { ProjectTableEntryType } from '$lib/components/custom/admin/projects/types';
-	import type { ApiError } from '$lib';
+	import type { ApiError, UserWithRoles } from '$lib';
 	import type { ZodIssue } from 'zod';
 
 	type InputProps = {
-		projectToAlter: ProjectTableEntryType;
+		userToAlter: UserWithRoles;
 		showModal: () => void;
 		reloadCurrentPage: () => Promise<void>;
 		successMessage: string | undefined;
@@ -14,7 +13,7 @@
 	};
 
 	let {
-		projectToAlter,
+		userToAlter,
 		showModal = $bindable(),
 		reloadCurrentPage,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -25,15 +24,15 @@
 		apiError = $bindable()
 	}: InputProps = $props();
 
-	const deleteProject = async (project: ProjectTableEntryType): Promise<boolean> => {
-		const res = await fetch(`/api/project/${project.id}`, {
+	const deleteUser = async (user: UserWithRoles): Promise<boolean> => {
+		const res = await fetch(`/api/user/${user.id}`, {
 			method: 'DELETE'
 		});
 
 		if (res.ok) {
 			await reloadCurrentPage();
 
-			successMessage = 'Project deleted successfully!';
+			successMessage = 'User deleted successfully!';
 			return true;
 		} else {
 			try {
@@ -55,10 +54,10 @@
 <ModalRunCancel
 	id="confirm-deletion"
 	title="Are you sure you want to delete?"
-	message="Project to be deleted: "
-	messageEmphasis={`${projectToAlter.name}`}
+	message="Account to be deleted: "
+	messageEmphasis={`${userToAlter.name} ${userToAlter.surname}`}
 	btnClass="btn-error"
 	btnText="Delete"
-	onclickCallback={() => deleteProject(projectToAlter)}
+	onclickCallback={() => deleteUser(userToAlter)}
 	bind:showModal
 />

@@ -108,7 +108,7 @@
 
 <DeleteProjectModal
 	{projectToAlter}
-	bind:showDeletionModal
+	bind:showModal={showDeletionModal}
 	reloadCurrentPage={async () => {
 		await loadPage(page)();
 	}}
@@ -120,7 +120,7 @@
 <AssignOperatorsModal
 	{projectToAlter}
 	users={allOperators}
-	bind:showOperatorAssignmentModal
+	bind:showModal={showOperatorAssignmentModal}
 	bind:successMessage
 	bind:apiError
 	bind:zodIssues
