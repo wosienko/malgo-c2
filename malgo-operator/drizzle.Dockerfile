@@ -1,8 +1,8 @@
 FROM node:22-slim as builder
 WORKDIR /app
 
-COPY ./migrations .
-COPY ./drizzle.config.ts .
+COPY . .
+RUN rm ./package.json
 
 RUN npm install drizzle-kit drizzle-orm dotenv
 
