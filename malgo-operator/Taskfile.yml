@@ -1,0 +1,17 @@
+version: '3'
+
+tasks:
+  dev:
+    desc: Run the operator frontend with hot reload
+    cmds:
+      - bun run dev
+
+  studio:
+    desc: Run drizzle studio
+    cmds:
+      - bun run studio
+
+  format:
+    desc: Format & lint the frontend code
+    cmds:
+      - bun run format && bun run lint

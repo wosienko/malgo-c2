@@ -1,0 +1,10 @@
+version: "3"
+
+includes:
+  operator:
+    taskfile: ./malgo-operator/Taskfile.yml
+    dir: ./malgo-operator
+
+  services:
+    taskfile: ./services/Taskfile.yml
+    dir: ./services
