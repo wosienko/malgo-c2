@@ -34,7 +34,7 @@ There are two options for preparing redirectors.
 
 #### Option 1
 
-1. Download binary from the GitHub release page for your platform.
+1. Download binary for your platform from the GitHub release page.
 1. create a .env file and populate the following environment variables:
     - `GRPC_ADDR` (e.g. `GRPC_ADDR=localhost:8082`)
     - `DNS_ADDR` (e.g. `DNS_ADDR=127.0.0.1:53`)
