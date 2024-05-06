@@ -19,5 +19,5 @@ tasks:
     desc: "Run static documentation"
     cmds:
       - docker run --rm -it -v ${PWD}/documentation:/docs squidfunk/mkdocs-material build
-      - docker run --rm -it -p 8889:80 -v $(pwd)/documentation/site:/usr/share/nginx/html nginx
+      - docker run --rm -it -p 8888:80 -v $(pwd)/documentation/site:/usr/share/nginx/html nginx
 
