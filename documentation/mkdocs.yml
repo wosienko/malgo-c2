@@ -1,7 +1,23 @@
 site_name: Malgo
 site_url: http://localhost:8888/
 nav:
-  - Home: index.md
+  - Introduction: 
+    - About: index.md
+    - Architecture: architecture.md
+  - Technology Stack:
+    - Operator Panel: technologies/operator.md
+    - Websocket Server: technologies/websocket.md
+    - Gateway Server: technologies/gateway.md
+    - Redirectors: technologies/redirectors.md
+    - Database: technologies/database.md
+    - Message Broker: technologies/message-broker.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - attr_list
+  - md_in_html
 
 theme:
   name: material

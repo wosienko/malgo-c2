@@ -13,16 +13,16 @@ Deployment of the main server is as simple as populating the `.env` in the root 
 
 Once everything is populated, run: `docker compose up -d`. It will spin up the following services:
 
-- Red Team Operators' panel - Fullstack web application.
-- Websocket server - server handling realtime communication with the operator.
-- Gateway server - gRPC server designed for communication with redirectors.
-- Schema migration container - simple container designed only to perform database migrations.
+- Operator Panel - Fullstack web application.
+- Websocket Server - server handling realtime communication with the operator.
+- Gateway Server - gRPC server designed for communication with redirectors.
+- Schema Migration Container - simple container designed only to perform database migrations.
 - PostgreSQL - database for the main server.
 - Redis - Redis Stack instance used for Event-Driven Development with streams.
 - Jaeger - tracing platform. Enables tracing of each event for easier debugging.
 - Grafana - dashboard for monitoring metrics of the services.
 - VictoriaMetrics - alternative for Prometheus.
-- VictoriaMetrics agent - service scraping the services for new metrics.
+- VictoriaMetrics Agent - service scraping the services for new metrics.
 
 ### Redirectors
 
@@ -52,6 +52,7 @@ There are two options for preparing redirectors.
 
 - [Go](https://go.dev/)
 - [gRPC for Go](https://grpc.io/docs/languages/go/quickstart/)
+- [Node](https://nodejs.org/en)
 - [Bun](https://bun.sh/)
 - [Task](https://taskfile.dev/)
 - [Docker](https://www.docker.com/)
