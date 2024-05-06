@@ -2,7 +2,7 @@
 
 ## Deployment guide
 
-## Required tools
+### Tools required for deployment
 
 - [Docker](https://www.docker.com/)
 - [Go](https://go.dev/) (depends whether you want to build from sources)
@@ -48,7 +48,7 @@ There are two options for preparing redirectors.
 
 ## Development Guide
 
-### Required tools
+### Tools required for development
 
 - [Go](https://go.dev/)
 - [gRPC for Go](https://grpc.io/docs/languages/go/quickstart/)
