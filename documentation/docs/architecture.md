@@ -20,7 +20,7 @@ Considering the following requirements, an idea emerged that included the follow
 - Operator Panel - a dedicated fullstack application for operators. It is from here that operators interact with implants, admins manage accounts and projects.
 - Websocket Server - a separate service designed around Event-Driven Development. Communication is completely asynchronous.
 - Gateway Server - a separate service designed to handle communication from redirectors to core components. Communication is synchronous. Emits events that Websocket Server handles.
-- Redirectors - separate services designed to directly communicate with implants. They validate and relay information to the Gateway Server.
+- Redirectors - separate services designed to directly communicate with implants. They validate and relay information to the Gateway Server. They convert covert traffic (HTTP, DNS, ICMP, etc.) to gRPC.
 - Database - for storing all the data.
 - Message Broker - to enable Event-Driven Development.
 

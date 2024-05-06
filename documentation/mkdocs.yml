@@ -11,6 +11,7 @@ nav:
     - Redirectors: technologies/redirectors.md
     - Database: technologies/database.md
     - Message Broker: technologies/message-broker.md
+    - Implant: technologies/implant.md
 
 markdown_extensions:
   - admonition
