@@ -15,7 +15,7 @@ There aren't as many fullstack frameworks as there are frontend libraries. The m
 Why weren't Next.js or Nuxt used:
 
 - Next.js uses React - unreadable, constantly changing framework that is unnecessarily complicated.
-- Nuxt is a bit cluncy and has some quirks that make it slightly tedious when developing, although it's okay.
+- Nuxt is a bit clunky and has some quirks that make it slightly tedious when developing, although it's okay.
 
 Moreover, SvelteKit has several advantages:
 
