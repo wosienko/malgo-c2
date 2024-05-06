@@ -8,3 +8,16 @@ includes:
   services:
     taskfile: ./services/Taskfile.yml
     dir: ./services
+
+tasks:
+  docs-dev:
+    desc: "Preview documentation"
+    cmds:
+      - docker run --rm -it -p 8888:8000 -v ${PWD}/documentation:/docs squidfunk/mkdocs-material
+
+  docs:
+    desc: "Run static documentation"
+    cmds:
+      - docker run --rm -it -v ${PWD}/documentation:/docs squidfunk/mkdocs-material build
+      - docker run --rm -it -p 8889:80 -v $(pwd)/documentation/site:/usr/share/nginx/html nginx
+

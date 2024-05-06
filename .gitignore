@@ -11,4 +11,7 @@ vite.config.ts.timestamp-*
 .idea
 .idea/*
 
+# Documentation static page
+documentation/site/
+
 docker/volumes/
