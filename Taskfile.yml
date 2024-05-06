@@ -11,7 +11,7 @@ includes:
 
 tasks:
   docs-dev:
-    desc: "Preview documentation"
+    desc: "Run documentation with hot reload"
     cmds:
       - docker run --rm -it -p 8888:8000 -v ${PWD}/documentation:/docs squidfunk/mkdocs-material
 
