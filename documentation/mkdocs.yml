@@ -4,6 +4,7 @@ nav:
   - Introduction: 
     - About: index.md
     - Architecture: architecture.md
+    - Development: development.md
   - Technology Stack:
     - Operator Panel: technologies/operator.md
     - Websocket Server: technologies/websocket.md
@@ -19,6 +20,9 @@ markdown_extensions:
   - pymdownx.superfences
   - attr_list
   - md_in_html
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
 
 theme:
   name: material
