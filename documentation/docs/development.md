@@ -48,7 +48,7 @@ docker run -d --name some-jaeger \
   -p 9411:9411 \
   jaegertracing/all-in-one:1.6
 
-docker run -d --name redis-stack \
+docker run -d --name some-redis \
   -p 6379:6379 \
   -p 8001:8001 \
   redis/redis-stack:latest
@@ -99,6 +99,10 @@ Feel free to tweak ports, names and environment variables.
 ## Code generation
 
 Some of the functionalities require code generation (e.g. DB schemas, gRPC services).
+
+!!! info
+    Following examples assume that you are in the root directory of the project.
+    Remember that you may omit the prefix depending on the directory you are in.
 
 ### Generate DB schemas
 
