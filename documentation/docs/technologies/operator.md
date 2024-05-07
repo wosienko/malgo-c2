@@ -4,7 +4,7 @@
 
 While the original idea for the Malgo Command & Control assumed that there will be a clear distinction between frontend and backend technologies (Vue + Python, HTMX + Go + SSR), it was later deemed impractical. After all, there is no intention of creating multiple frontend views. After numerous attempts at creating Malgo, it was decided that fullstack framework is the best choice for application this complex. This way, one is able to easily reuse logic (e.g. validation schemas).
 
-### SvelteKit
+### [SvelteKit](https://kit.svelte.dev/)
 
 There aren't as many fullstack frameworks as there are frontend libraries. The main contenders were rather obvious:
 
@@ -36,7 +36,7 @@ The default Node.js is a good and reliable choice. While development is fully co
 !!! info
     To develop this project, Node.js needs to be installed either way.
 
-### Bun
+### [Bun](https://bun.sh/)
 
 That said, Bun is a faster runtime than Node.js. It outperforms Node.js in nearly any action, especially the download of the infamous `node_modules/`. It is highly encouraged to use Bun instead of Node.js during development, especially considering the fact that it is a drop-in replacement.
 
@@ -47,7 +47,7 @@ That said, Bun is a hardcoded runtime for production environment. Switching runt
 Object-Relational Mapping (ORM) is commonly used to abstract away database queries. Naturally, it was also used in this project.
 This way, developers may easily manage schema, relations and migrations with no additional tools and gain syntax highlighting when adding new functionalities.
 
-### Drizzle ORM
+### [Drizzle ORM](https://orm.drizzle.team/)
 
 Until recently, there weren't many popular ORMs in JS/TS world. Thankfully, some time ago Drizzle ORM was created - a simple, zero dependency ORM. It was a pretty blatant choice:
 
@@ -60,3 +60,15 @@ Until recently, there weren't many popular ORMs in JS/TS world. Thankfully, some
       - Abstracted queries (FindOne, FindMany).
 - Zero dependencies.
 - Additional Drizzle Studio tool so that developers don't need to use Adminer.
+
+## Styling
+
+### [Tailwind CSS](https://tailwindcss.com/)
+
+Tailwind CSS is a utility-first CSS framework. It is a great choice for this project, as it allows for rapid development and prototyping. It is also easy to understand and use, as it is based on utility classes.
+
+tl;dr: more extendible Bootstrap.
+
+### [DaisyUI](https://daisyui.com/)
+
+DaisyUI is a plugin for Tailwind CSS. It provides additional components and utilities that are not present in Tailwind CSS by default. It is a great addition to Tailwind CSS, as it provides more components and utilities to work with.
