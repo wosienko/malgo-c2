@@ -13,6 +13,8 @@ nav:
     - Database: technologies/database.md
     - Message Broker: technologies/message-broker.md
     - Implant: technologies/implant.md
+  - Operator Panel:
+    - SvelteKit: operator/sveltekit.md
 
 markdown_extensions:
   - admonition

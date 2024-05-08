@@ -25,6 +25,9 @@ Moreover, SvelteKit has several advantages:
 - Compiles directly to JavaScript, HTML and CSS, with no additional runtime.
 - [Documentation](https://kit.svelte.dev/docs/introduction) is on par with Vue's.
 
+!!! warning
+    This project uses Svelte 5, which is right now in Beta. There have been major changes between Svelte 4 and Svelte 5, such as Rune API.
+
 ## Runtime
 
 Sadly, the state of the JavaScript ecosystem is... peculiar. There are so many runtimes to choose from.
