@@ -34,6 +34,12 @@ For API endpoints, there is only one file:
 
 - `+server.ts` - endpoint logic. Has function for each HTTP method.
 
+### Dynamic Routes
+
+Dynamic routes are specified by using square brackets in the directory name. For example, `src/routes/[id]/+page.svelte` would be a dynamic route that would match `/foo/+page` and `/bar/+page`, but not `/foo/bar/+page`.
+
+One may also make a group using braces. For example, you may add additional functionality to `(authorized)` group. This would be done by creating a directory `src/routes/(authorized)/[id]/+page.svelte`. It would still match `/foo/+page` and `/bar/+page`.
+
 ## Important Files & File Structures
 
 ### +page.svelte

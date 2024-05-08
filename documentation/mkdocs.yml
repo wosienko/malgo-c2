@@ -15,6 +15,10 @@ nav:
     - Implant: technologies/implant.md
   - Operator Panel:
     - SvelteKit: operator/sveltekit.md
+    - Overview: operator/overview.md
+    - Pages:
+      - Admin: operator/pages/admin.md
+      - Settings: operator/pages/settings.md
 
 markdown_extensions:
   - admonition
@@ -35,6 +39,7 @@ theme:
   - navigation.path
   - toc.integrate
   - navigation.top
+  - content.code.copy
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
@@ -53,5 +58,3 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to system preference
-
-  
