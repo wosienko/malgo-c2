@@ -19,6 +19,13 @@ nav:
     - Pages:
       - Admin: operator/pages/admin.md
       - Settings: operator/pages/settings.md
+      - Projects:
+        - Overview: operator/pages/project/overview.md
+        - Commands: operator/pages/project/commands.md
+        - Modules: operator/pages/project/modules.md
+        - History: operator/pages/project/history.md
+        - Settings: operator/pages/project/settings.md
+    - Websocket: operator/websocket.md
 
 markdown_extensions:
   - admonition
