@@ -67,3 +67,33 @@ Each object willing to listen to Websocket event should create its own listener.
 
 !!! warning
     It is crucial to unsubscribe from the event when the object is destroyed.
+
+```ts hl_lines="4-6 10-12"
+onMount(async () => {
+    websocketStore = createWebsocketStore();
+    await websocketStore.subscribeToSession(get(page).params.sessionid);
+    websocketStore.ws?.addEventListener('close', async () => {
+        await websocketStore.subscribeToSession(get(page).params.sessionid);
+    });
+});
+onDestroy(async () => {
+    if (browser) {
+        websocketStore.ws?.removeEventListener('close', async () => {
+            await websocketStore.subscribeToSession(get(page).params.sessionid);
+        });
+        await websocketStore.unsubscribeFromSession();
+    }
+});
+```
+
+## Sending Messages
+
+```ts
+websocketStore.ws?.send(
+    JSON.stringify({
+        type: 'session-delete-key',
+        sessionId: get(page).params.sessionid,
+        key: key
+    })
+);
+```
