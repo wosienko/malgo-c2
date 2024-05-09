@@ -11,6 +11,16 @@ tasks:
     cmds:
       - bun run studio
 
+  dbgen:
+    desc: Generate the database schema
+    cmds:
+      - bun run generate
+
+  dbmigrate:
+    desc: Migrate the database schema
+    cmds:
+      - bun run migrate
+
   format:
     desc: Format & lint the frontend code
     cmds:

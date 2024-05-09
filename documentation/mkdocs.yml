@@ -1,0 +1,76 @@
+site_name: Malgo
+site_url: http://localhost:8888/
+nav:
+  - Introduction: 
+    - About: index.md
+    - Architecture: architecture.md
+    - Development: development.md
+  - Technology Stack:
+    - Operator Panel: technologies/operator.md
+    - Websocket Server: technologies/websocket.md
+    - Gateway Server: technologies/gateway.md
+    - Redirectors: technologies/redirectors.md
+    - Database: technologies/database.md
+    - Message Broker: technologies/message-broker.md
+    - Implant: technologies/implant.md
+  - Operator Panel:
+    - SvelteKit: operator/sveltekit.md
+    - Overview: operator/overview.md
+    - Pages:
+      - Admin: operator/pages/admin.md
+      - Settings: operator/pages/settings.md
+      - Projects:
+        - Overview: operator/pages/project/overview.md
+        - Commands: operator/pages/project/commands.md
+        - Modules: operator/pages/project/modules.md
+        - History: operator/pages/project/history.md
+        - Settings: operator/pages/project/settings.md
+    - Websocket: operator/websocket.md
+  - Websocket Server:
+    - Overview: websocket/overview.md
+  - Gateway Server:
+    - Overview: gateway/overview.md
+  - Redirectors:
+    - DNS: redirectors/dns.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - attr_list
+  - md_in_html
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+theme:
+  name: material
+  features:
+  - navigation.instant
+  - navigation.tracking
+  - navigation.sections
+  - navigation.path
+  - toc.integrate
+  - navigation.top
+  - content.code.copy
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default 
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+extra:
+  generator: false

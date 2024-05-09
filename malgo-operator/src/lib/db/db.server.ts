@@ -23,5 +23,3 @@ export const db = drizzle(client, {
 		...OutboxSchema
 	}
 });
-
-// Create default account and roles
