@@ -26,6 +26,12 @@ nav:
         - History: operator/pages/project/history.md
         - Settings: operator/pages/project/settings.md
     - Websocket: operator/websocket.md
+  - Websocket Server:
+    - Overview: websocket/overview.md
+  - Gateway Server:
+    - Overview: gateway/overview.md
+  - Redirectors:
+    - DNS: redirectors/dns.md
 
 markdown_extensions:
   - admonition

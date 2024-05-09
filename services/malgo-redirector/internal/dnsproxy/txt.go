@@ -5,16 +5,17 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	gateway "github.com/VipWW/malgo-c2/services/common/service"
-	"github.com/miekg/dns"
 	"strconv"
 	"strings"
+
+	gateway "github.com/VipWW/malgo-c2/services/common/service"
+	"github.com/miekg/dns"
 )
 
 // handleTXT handles command queries. Command queries look like this:
 // Either:
 // - <SessionID>.<domain>
-// - <a>.<offset>.<CommandID>.<domain>
+// - <char>.<offset>.<CommandID>.<domain>
 func (h *Handler) handleTXT(msg *dns.Msg, r *dns.Msg) error {
 	dataFromMessage := h.removeDomain(r.Question[0].Name)
 	if dataFromMessage == "" {

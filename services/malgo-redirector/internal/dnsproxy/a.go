@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
-	"github.com/VipWW/malgo-c2/services/common/log"
 	"net"
 	"strconv"
 	"strings"
+
+	"github.com/VipWW/malgo-c2/services/common/log"
 
 	gateway "github.com/VipWW/malgo-c2/services/common/service"
 	"github.com/miekg/dns"
@@ -16,7 +17,7 @@ import (
 // handleA handles result retrieval queries. Queries look like:
 // Either:
 // - <char>.<result length>.<CommandID>.<domain>
-// - <char>.<data chunk>.<offset>.<CommandID>.<domain>
+// - <data chunkS with multiple dots>.<offset>.<CommandID>.<domain>
 //
 // length and offset are in HEX. Chunk is in HEX. TODO: change to Base58
 func (h *Handler) handleA(msg *dns.Msg, r *dns.Msg) error {
