@@ -15,3 +15,5 @@ vite.config.ts.timestamp-*
 documentation/site/
 
 docker/volumes/
+
+target/

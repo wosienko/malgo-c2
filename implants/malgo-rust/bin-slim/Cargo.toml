@@ -1,0 +1,25 @@
+workspace = { members = ["dll"] }
+[package]
+name = "bin-slim"
+version = "0.1.0"
+edition = "2021"
+build = "./build.rs"
+
+[profile.dev]
+panic = "abort"
+lto = true
+
+[profile.release]
+panic = "abort"
+lto = true
+strip = "symbols"
+opt-level = "z"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+malgo-rust = {path = "../core"}
+
+[dependencies.windows-sys]
+version = "0.52.0"
+features = ["Win32_System_Threading"]
