@@ -7,6 +7,5 @@ fn main() {
     // Linker arguments for GNU MinGW cross-compilation
     else {
         println!("cargo:rustc-link-arg=-e _start");
-        println!("cargo:rustc-link-arg=-Tlink.x");
     }
 }
