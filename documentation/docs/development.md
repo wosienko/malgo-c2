@@ -96,6 +96,16 @@ Feel free to tweak ports, names and environment variables.
 !!! warning
     If you leave `ENV=production` in the `.env` file, you won't see traces in Jaeger instantly.
 
+## Implants
+
+### Windows
+
+To build implants on Windows, you need MSVC compiler.
+
+### Linux
+
+To build implants on Linux, you need MinGW compiler.
+
 ## Code generation
 
 Some of the functionalities require code generation (e.g. DB schemas, gRPC services).
