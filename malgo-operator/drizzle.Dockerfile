@@ -4,6 +4,6 @@ WORKDIR /app
 COPY . .
 RUN rm ./package.json
 
-RUN npm install drizzle-kit drizzle-orm dotenv
+RUN npm install drizzle-kit drizzle-orm dotenv postgres
 
-CMD [ "npx", "drizzle-kit", "push:pg", "--config", "drizzle.config.ts" ]
+CMD [ "npx", "drizzle-kit", "push" ]
