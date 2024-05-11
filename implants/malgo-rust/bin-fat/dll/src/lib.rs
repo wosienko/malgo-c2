@@ -1,6 +1,6 @@
-use windows_sys::Win32::UI::WindowsAndMessaging::MessageBoxA;
 use windows_sys::Win32::Foundation::HINSTANCE;
 use windows_sys::Win32::System::SystemServices::*;
+use windows_sys::Win32::UI::WindowsAndMessaging::MessageBoxA;
 
 fn attach() {
     unsafe {
@@ -10,11 +10,7 @@ fn attach() {
 
 #[no_mangle]
 #[allow(non_snake_case)]
-fn DllMain(
-    _hinstDLL: HINSTANCE,
-    fdwReason: u32,
-    _: *mut std::ffi::c_void,
-) -> bool {
+fn DllMain(_hinstDLL: HINSTANCE, fdwReason: u32, _: *mut std::ffi::c_void) -> bool {
     match fdwReason {
         DLL_PROCESS_ATTACH => attach(),
         _ => (),

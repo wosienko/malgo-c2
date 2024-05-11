@@ -3,6 +3,7 @@ workspace = { members = ["dll"] }
 name = "bin-fat"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
 
 [profile.release]
 strip = "symbols"

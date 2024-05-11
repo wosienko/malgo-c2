@@ -4,9 +4,9 @@
 #[allow(unused)]
 use bin_slim::essentials::*;
 
-use windows_sys::Win32::UI::WindowsAndMessaging::MessageBoxA;
 use windows_sys::Win32::Foundation::HINSTANCE;
 use windows_sys::Win32::System::SystemServices::*;
+use windows_sys::Win32::UI::WindowsAndMessaging::MessageBoxA;
 
 fn attach() {
     unsafe {
