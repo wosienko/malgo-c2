@@ -1,6 +1,5 @@
 use crate::command::CommandInfo;
 use crate::result::CommandResult;
-use std::process::Command;
 
 pub type LastOne = bool;
 pub trait Transport {
