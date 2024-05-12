@@ -1,7 +1,5 @@
 use core::net::{SocketAddr};
 
-use alloc::format;
-
 use hickory_resolver::{Resolver};
 use hickory_resolver::config::{NameServerConfig, ResolverConfig, ResolverOpts, Protocol};
 use rand::Rng;
@@ -16,31 +14,21 @@ pub struct DNS<'a> {
     resolver: Resolver,
 }
 
-// Generate a random blob of data of the same length as the target
-fn generate_blob(mut target: alloc::vec::Vec<u8>) -> alloc::vec::Vec<u8> {
-    let mut rng = rand::thread_rng();
-    for i in 0..target.len() {
-        match rng.gen_range(0..3) {
-            0 => target[i] = rng.gen_range(48..58), // fill with numbers
-            1 => target[i] = rng.gen_range(65..91), // fill with uppercase letters
-            _ => target[i] = rng.gen_range(97..123), // fill with lowercase letters
-        }
-    }
-    target
+fn generate_blob(length: usize) -> String {
+    rand::thread_rng()
+        .sample_iter(&rand::distributions::Alphanumeric)
+        .take(length)
+        .map(char::from)
+        .collect()
 }
 
 impl Transport for DNS<'_> {
     fn register_session(&self, session: Session) -> Result<(), &str> {
-        // Generate random value so that the DNS query is not cached
-        let mut blob = alloc::vec![0; 4];
-        blob = generate_blob(blob);
-        let blob = core::str::from_utf8(&blob).unwrap();
-
         let query = format!(
             "{}.{}.{}.{}",
             session.project_id,
             session.id,
-            blob,
+            generate_blob(4),
             self.domain
         );
 

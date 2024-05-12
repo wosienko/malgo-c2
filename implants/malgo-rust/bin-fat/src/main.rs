@@ -1,6 +1,3 @@
-#[cfg(not(windows))]
-compile_error!("This program is only designed to run on Windows");
-
 use malgo_rust::session::Session;
 use malgo_rust::transport::dns::*;
 use malgo_rust::transport::Transport;
