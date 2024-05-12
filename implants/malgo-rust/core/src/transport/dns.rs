@@ -7,9 +7,9 @@ use rand::Rng;
 use crate::transport::Transport;
 use crate::session::Session;
 
-pub struct DNS<'a> {
-    pub server: &'a str,
-    pub domain: &'a str,
+pub struct DNS {
+    pub server: String,
+    pub domain: String,
 
     resolver: Resolver,
 }
@@ -22,8 +22,8 @@ fn generate_blob(length: usize) -> String {
         .collect()
 }
 
-impl Transport for DNS<'_> {
-    fn register_session(&self, session: Session) -> Result<(), &str> {
+impl Transport for DNS {
+    fn register_session(&self, session: Session) -> Result<(), String> {
         let query = format!(
             "{}.{}.{}.{}",
             session.project_id,
@@ -37,14 +37,14 @@ impl Transport for DNS<'_> {
                 Ok(())
             }
             Err(_) => {
-                Err("Could not register session")
+                Err("Could not register session".to_string())
             }
         }
     }
 }
 
-impl DNS<'_> {
-    pub fn new<'a>(server: &'a str, domain: &'a str) -> DNS<'a> {
+impl DNS {
+    pub fn new<'a>(server: String, domain: String) -> DNS {
         let resolver;
         if server == "" {
             resolver = Resolver::from_system_conf().unwrap()

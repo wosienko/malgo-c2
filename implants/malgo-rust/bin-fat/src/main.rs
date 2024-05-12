@@ -8,7 +8,7 @@ const SESSION: Session = Session {
 };
 
 fn main() {
-    let dns = DNS::new("127.0.0.1:53", "a.example.com");
+    let dns = DNS::new("127.0.0.1:53".to_string(), "a.example.com".to_string());
 
     match dns.register_session(SESSION) {
         Ok(_) => println!("Session registered successfully"),
