@@ -1,15 +1,20 @@
 #[cfg(not(windows))]
 compile_error!("This program is only designed to run on Windows");
 
-use malgo_rust::mathy::add::*;
-use std::panic::catch_unwind;
+use malgo_rust::session::Session;
+use malgo_rust::transport::dns::*;
+use malgo_rust::transport::Transport;
+
+const SESSION: Session = Session {
+    id: "336df889-c0e9-453a-8675-8bff4176e1b0",
+    project_id: "38b6d3a1-4373-4202-b9d7-b11d399d0ebf"
+};
 
 fn main() {
-    println!("EXE Fat: {}", add(2, 2));
+    let dns = DNS::new("127.0.0.1:53", "a.example.com");
 
-    // panic and catch it, logging it
-    catch_unwind(|| {
-        panic!("Fatality!");
-    })
-    .ok();
+    match dns.register_session(SESSION) {
+        Ok(_) => println!("Session registered successfully"),
+        Err(e) => println!("Error registering session: {}", e),
+    }
 }
