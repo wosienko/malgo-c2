@@ -1,3 +1,6 @@
+#[cfg(not(windows))]
+compile_error!("This library only works on Windows");
+
 use windows_sys::Win32::Foundation::HINSTANCE;
 use windows_sys::Win32::System::SystemServices::*;
 use windows_sys::Win32::UI::WindowsAndMessaging::MessageBoxA;
