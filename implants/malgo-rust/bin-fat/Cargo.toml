@@ -13,3 +13,4 @@ lto = true
 
 [dependencies]
 malgo-rust = {path = "../core"}
+powershell_script = "1.1.0"

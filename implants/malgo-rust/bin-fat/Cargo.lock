@@ -50,10 +50,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "base64"
+version = "0.22.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
+
+[[package]]
 name = "bin-fat"
 version = "0.1.0"
 dependencies = [
  "malgo-rust",
+ "powershell_script",
 ]
 
 [[package]]
@@ -318,6 +325,7 @@ dependencies = [
 name = "malgo-rust"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "hickory-resolver",
  "rand",
  "serde",
@@ -421,6 +429,12 @@ name = "pin-utils"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
+
+[[package]]
+name = "powershell_script"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bef8336090917f3d3a044256bc0e5c51d5420e5d09dfa1df4868083c5231a454"
 
 [[package]]
 name = "ppv-lite86"
