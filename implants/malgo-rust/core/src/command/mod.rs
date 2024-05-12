@@ -7,11 +7,11 @@ pub struct CommandInfo {
     pub command_type: String, // TODO: switch to Enum
     pub command_length: u64,
     #[serde(skip_deserializing)]
-    pub command: String
+    pub command: String,
 }
 
 #[derive(Deserialize)]
 pub struct CommandDetails {
     pub data: String,
-    pub is_last_chunk: bool
+    pub is_last_chunk: bool,
 }

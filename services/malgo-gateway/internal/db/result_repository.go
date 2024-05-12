@@ -3,6 +3,9 @@ package db
 import (
 	"context"
 	"database/sql"
+	"math"
+	"time"
+
 	"github.com/VipWW/malgo-c2/services/common/entities"
 	"github.com/VipWW/malgo-c2/services/common/log"
 	internalEntities "github.com/VipWW/malgo-c2/services/malgo-gateway/internal/entities"
@@ -10,8 +13,6 @@ import (
 	"github.com/VipWW/malgo-c2/services/malgo-gateway/internal/messages/outbox"
 	"github.com/jmoiron/sqlx"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"math"
-	"time"
 )
 
 type ResultRepository struct {
@@ -26,15 +27,61 @@ func NewResultRepository(db *sqlx.DB) *ResultRepository {
 }
 
 func (r *ResultRepository) SetResultLength(ctx context.Context, commandId string, length int) error {
-	_, err := r.db.ExecContext(
+	return updateInTx(
 		ctx,
-		`UPDATE c2_commands
-		 SET result_size = $1
-		 WHERE id = $2`,
-		length,
-		commandId,
+		r.db,
+		sql.LevelReadCommitted,
+		func(ctx2 context.Context, tx *sqlx.Tx) error {
+			_, err := r.db.ExecContext(
+				ctx2,
+				`UPDATE c2_commands
+				 SET result_size = $1
+				 WHERE id = $2`,
+				length,
+				commandId,
+			)
+			if err != nil {
+				return err
+			}
+
+			if length != 0 {
+				return nil
+			}
+
+			row := tx.QueryRowxContext(
+				ctx2,
+				`UPDATE c2_commands
+				 SET status = 'completed'
+				 WHERE id = $1
+				 RETURNING session_id
+				 `,
+				commandId,
+			)
+			var sessionID string
+			err = row.Scan(&sessionID)
+			if err != nil {
+				return err
+			}
+
+			outboxPublisher, err := outbox.NewPublisherForDb(ctx, tx)
+			if err != nil {
+				return err
+			}
+
+			bus := events.NewBus(outboxPublisher)
+			err = bus.Publish(ctx2, &entities.CommandStatusModified{
+				Header:    entities.NewHeader(),
+				CommandId: commandId,
+				Status:    "completed",
+				SessionId: sessionID,
+			})
+			if err != nil {
+				return err
+			}
+
+			return nil
+		},
 	)
-	return err
 }
 
 func (r *ResultRepository) AddResultChunk(ctx context.Context, chunk internalEntities.ResultChunk) error {
