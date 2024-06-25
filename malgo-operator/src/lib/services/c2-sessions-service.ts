@@ -35,9 +35,10 @@ export const getLatestCommandForSession = async (
 	let result_progress: number = 0;
 
 	if (result.ResultChunks.length > 0) {
-		last_result_update = formatDateAndTime(
-			result.ResultChunks[result.ResultChunks.length - 1].createdAt
-		);
+		// last_result_update = formatDateAndTime(
+		// 	result.ResultChunks[result.ResultChunks.length - 1].createdAt
+		// );
+		last_result_update = result.ResultChunks[result.ResultChunks.length - 1].createdAt.toISOString();
 		const lastChunk = result.ResultChunks[result.ResultChunks.length - 1];
 		const lastChunkOffset: number = lastChunk.chunkOffset;
 		const lastChunkSize: number = hexToBytes(lastChunk.resultChunk).length;

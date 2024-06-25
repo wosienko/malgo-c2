@@ -6,9 +6,12 @@ import (
 	log2 "github.com/VipWW/malgo-c2/services/common/log"
 	gateway "github.com/VipWW/malgo-c2/services/common/service"
 	"github.com/VipWW/malgo-c2/services/malgo-redirector/internal/dnsproxy"
+	"github.com/VipWW/malgo-c2/services/malgo-redirector/internal/httpproxy"
 	"github.com/miekg/dns"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
+	"net/http"
+	"time"
 )
 
 func init() {
@@ -18,10 +21,12 @@ func init() {
 type Service struct {
 	dnsTcpServer *dns.Server
 	dnsUdpServer *dns.Server
+	httpServer   *http.Server
 }
 
 func New(
 	dnsAddr string,
+	httpAddr string,
 	grpcClient gateway.GatewayServiceClient,
 ) Service {
 	dnsHandler := dnsproxy.NewHandler(grpcClient)
@@ -41,9 +46,20 @@ func New(
 		ReusePort: true,
 	}
 
+	httpHandler := httpproxy.NewHandler(grpcClient)
+
+	httpServer := &http.Server{
+		Addr:         httpAddr,
+		Handler:      httpHandler.Routes(),
+		IdleTimeout:  time.Minute,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+
 	return Service{
 		dnsTcpServer: dnsTcpServer,
 		dnsUdpServer: dnsUdpServer,
+		httpServer:   httpServer,
 	}
 }
 
@@ -60,7 +76,12 @@ func (s Service) Run(
 		fmt.Printf("Starting DNS UDP server on %s\n", s.dnsUdpServer.Addr)
 		return s.dnsUdpServer.ListenAndServe()
 	})
+	errgrp.Go(func() error {
+		fmt.Printf("Starting HTTP server on %s\n", s.httpServer.Addr)
+		return s.httpServer.ListenAndServe()
+	})
 
+	// Shutdown
 	errgrp.Go(func() error {
 		<-ctx.Done()
 		fmt.Printf("Shutting down DNS TCP server\n")
@@ -70,6 +91,11 @@ func (s Service) Run(
 		<-ctx.Done()
 		fmt.Printf("Shutting down DNS UDP server\n")
 		return s.dnsUdpServer.Shutdown()
+	})
+	errgrp.Go(func() error {
+		<-ctx.Done()
+		fmt.Printf("Shutting down HTTP server\n")
+		return s.httpServer.Shutdown(ctx)
 	})
 
 	return errgrp.Wait()

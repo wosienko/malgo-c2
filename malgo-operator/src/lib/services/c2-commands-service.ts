@@ -21,9 +21,10 @@ export const getCommandsForSession = async (sessionId: string, page: number, pag
 			let result_progress: number = 0;
 
 			if (command.ResultChunks.length > 0) {
-				last_result_update = formatDateAndTime(
-					command.ResultChunks[command.ResultChunks.length - 1].createdAt
-				);
+				// last_result_update = formatDateAndTime(
+				// 	command.ResultChunks[command.ResultChunks.length - 1].createdAt
+				// );
+				last_result_update = command.ResultChunks[command.ResultChunks.length - 1].createdAt.toISOString();
 				const lastChunk = command.ResultChunks[command.ResultChunks.length - 1];
 				const lastChunkOffset: number = lastChunk.chunkOffset;
 				const lastChunkSize: number = hexToBytes(lastChunk.resultChunk).length;
