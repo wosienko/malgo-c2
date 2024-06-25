@@ -57,6 +57,7 @@ filter chunks {
     # Right now they are just a ratio of the number of chunks
     $sum = $Proportions.Values | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $chunkLength = $t.Length / $sum
+    # we need to make a copy so that Powershell does not complain
     $newProportions = @{}
     $Proportions.Keys | % {
         $name = $_
