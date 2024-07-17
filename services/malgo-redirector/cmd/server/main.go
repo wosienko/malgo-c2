@@ -37,6 +37,7 @@ func main() {
 	err = service.New(
 		os.Getenv("DNS_ADDR"),
 		os.Getenv("HTTP_ADDR"),
+		os.Getenv("HTTPS_ADDR"),
 		grpcClient,
 	).Run(ctx)
 	if err != nil {

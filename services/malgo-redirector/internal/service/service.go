@@ -22,11 +22,13 @@ type Service struct {
 	dnsTcpServer *dns.Server
 	dnsUdpServer *dns.Server
 	httpServer   *http.Server
+	httpsServer  *http.Server
 }
 
 func New(
 	dnsAddr string,
 	httpAddr string,
+	httpsAddr string,
 	grpcClient gateway.GatewayServiceClient,
 ) Service {
 	dnsHandler := dnsproxy.NewHandler(grpcClient)
@@ -56,10 +58,19 @@ func New(
 		WriteTimeout: 10 * time.Second,
 	}
 
+	httpsServer := &http.Server{
+		Addr:         httpsAddr,
+		Handler:      httpHandler.Routes(),
+		IdleTimeout:  time.Minute,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+
 	return Service{
 		dnsTcpServer: dnsTcpServer,
 		dnsUdpServer: dnsUdpServer,
 		httpServer:   httpServer,
+		httpsServer:  httpsServer,
 	}
 }
 
@@ -79,6 +90,10 @@ func (s Service) Run(
 	errgrp.Go(func() error {
 		fmt.Printf("Starting HTTP server on %s\n", s.httpServer.Addr)
 		return s.httpServer.ListenAndServe()
+	})
+	errgrp.Go(func() error {
+		fmt.Printf("Starting HTTPS server on %s\n", s.httpsServer.Addr)
+		return s.httpsServer.ListenAndServeTLS("server.crt", "server.key")
 	})
 
 	// Shutdown

