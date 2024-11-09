@@ -112,6 +112,10 @@ func (s Service) Run(
 		fmt.Printf("Shutting down HTTP server\n")
 		return s.httpServer.Shutdown(ctx)
 	})
-
+	errgrp.Go(func() error {
+		<-ctx.Done()
+		fmt.Printf("Shutting down HTTPS server\n")
+		return s.httpsServer.Shutdown(ctx)
+	})
 	return errgrp.Wait()
 }
