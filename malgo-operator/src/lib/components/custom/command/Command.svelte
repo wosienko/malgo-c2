@@ -23,7 +23,7 @@
 		if (command.last_result_update) {
 			return formatDateAndTime(command.last_result_update);
 		}
-		return 'N/A';
+		return command.last_result_update;
 	});
 
 	let websocketStore: WebsocketStore;

@@ -44,7 +44,7 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"generate": "bunx drizzle-kit generate --config drizzle.config.ts",
-		"migrate": "bunx drizzle-kit push --config drizzle.config.ts",
+		"migrate": "bunx drizzle-kit push --config drizzle.config.ts --force",
 		"studio": "bunx drizzle-kit studio --config drizzle.config.ts"
 	},
 	"type": "module",
